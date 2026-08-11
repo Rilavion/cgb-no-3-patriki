@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 [data-staff]{display:none !important}
@@ -107,7 +107,7 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
       <div id="crRoot" style="display:none">
         <div class="vp-arc-tabs" style="margin-bottom:14px">
           <button class="vp-arc-tab active" data-tab="pending">📥 Ожидают вердикта <span class="cr-count" id="crCntPending">0</span></button>
-          <button class="vp-arc-tab" data-tab="vpreq">⚖ Запросы от ВП <span class="cr-count" id="crCntVpReq">0</span></button>
+          <button class="vp-arc-tab" data-tab="vpreq">⚖ Запросы от АБ <span class="cr-count" id="crCntVpReq">0</span></button>
           <button class="vp-arc-tab" data-tab="decided">✓ Рассмотренные <span class="cr-count" id="crCntDecided">0</span></button>
           <button class="vp-arc-tab" data-tab="registry">📋 Реестр нарушений <span class="cr-count" id="crCntActive">0</span></button>
         </div>
@@ -301,22 +301,22 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
 
 <footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span></div></div></footer>
 
-<script src="supabase-loader.js?v=6"></script>
-<script src="config.js?v=6"></script>
-<script src="ds-autocomplete.js?v=6"></script>
-<script src="main.js?v=6"></script>
-<script src="holiday-engine.js?v=6"></script>
-<script src="settings-panel.js?v=6"></script>
-<script src="sound-engine.js?v=6"></script>
-<script src="auth.js?v=6"></script>
-<script src="roles-engine.js?v=6"></script>
-<script src="search-engine.js?v=6"></script>
-<script src="ds-cache.js?v=6"></script>
-<script src="notify-engine.js?v=6"></script>
-<script src="notify-live.js?v=6"></script>
-<script src="format-utils.js?v=6"></script>
-<script src="complaints-engine.js?v=6"></script>
-<script src="registry-engine.js?v=6"></script>
+<script src="supabase-loader.js?v=7"></script>
+<script src="config.js?v=7"></script>
+<script src="ds-autocomplete.js?v=7"></script>
+<script src="main.js?v=7"></script>
+<script src="holiday-engine.js?v=7"></script>
+<script src="settings-panel.js?v=7"></script>
+<script src="sound-engine.js?v=7"></script>
+<script src="auth.js?v=7"></script>
+<script src="roles-engine.js?v=7"></script>
+<script src="search-engine.js?v=7"></script>
+<script src="ds-cache.js?v=7"></script>
+<script src="notify-engine.js?v=7"></script>
+<script src="notify-live.js?v=7"></script>
+<script src="format-utils.js?v=7"></script>
+<script src="complaints-engine.js?v=7"></script>
+<script src="registry-engine.js?v=7"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);

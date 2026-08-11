@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
@@ -93,7 +93,7 @@
 
         <form id="vpqForm" class="apps-form" onsubmit="return false">
           <div class="cf-group">
-            <div class="cf-group-title">👤 Запрашивающий (ВП)</div>
+            <div class="cf-group-title">👤 Запрашивающий (АБ)</div>
             <div class="cf-group-body">
               <div class="msg-row">
                 <div class="form-group msg-flex-1"><label>ФИО <span style="color:#e97a7a">*</span></label><input class="msg-input" id="vpqFio" required placeholder="Начните вводить ФИО..." data-dsac data-dsac-stat="#vpqStatic" data-dsac-pos="#vpqPos" data-dsac-did="#vpqDid"></div>
@@ -130,27 +130,27 @@
 
 <footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span></div></div></footer>
 
-<script src="supabase-loader.js?v=6"></script>
-<script src="config.js?v=6"></script>
-<script src="auth.js?v=6"></script>
-<script src="roles-engine.js?v=6"></script>
-<script src="ds-autocomplete.js?v=6"></script>
-<script src="main.js?v=6"></script>
-<script src="format-utils.js?v=6"></script>
-<script src="holiday-engine.js?v=6"></script>
-<script src="settings-panel.js?v=6"></script>
-<script src="sound-engine.js?v=6"></script>
-<script src="search-engine.js?v=6"></script>
-<script src="ds-cache.js?v=6"></script>
-<script src="notify-engine.js?v=6"></script>
-<script src="notify-live.js?v=6"></script>
+<script src="supabase-loader.js?v=7"></script>
+<script src="config.js?v=7"></script>
+<script src="auth.js?v=7"></script>
+<script src="roles-engine.js?v=7"></script>
+<script src="ds-autocomplete.js?v=7"></script>
+<script src="main.js?v=7"></script>
+<script src="format-utils.js?v=7"></script>
+<script src="holiday-engine.js?v=7"></script>
+<script src="settings-panel.js?v=7"></script>
+<script src="sound-engine.js?v=7"></script>
+<script src="search-engine.js?v=7"></script>
+<script src="ds-cache.js?v=7"></script>
+<script src="notify-engine.js?v=7"></script>
+<script src="notify-live.js?v=7"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 const LS_KEY="cgb_vpq_draft_v1";
-const KIND_MAP={"Предупреждение":"warn","Выговор":"reproach","Беседа с ВП":"talk","Дисциплинарное заключение":"confinement","Увал":"uval"};
+const KIND_MAP={"Предупреждение":"warn","Выговор":"reproach","Беседа с АБ":"talk","Беседа с ВП":"talk","Дисциплинарное заключение":"confinement","Отстранение":"uval","Увал":"uval"};
 let FORMS=[], CUR=null;
 
 async function boot(){

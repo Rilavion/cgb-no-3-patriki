@@ -94,8 +94,8 @@ window.CGB_LK=(function(){
       safe(async()=>{
         const {data}=await c.from("vp_reports").select("id,fio,static_id,checked_by_name,checked_at,created_at").order("created_at",{ascending:false}).limit(15);
         (data||[]).forEach(x=>{
-          activity.push({type:"vp",title:"🎖 Проверка ВП · "+(x.fio||x.static_id||""),who:"—",at:x.created_at,icon:"🎖",href:"vp.html"});
-          if(x.checked_at) activity.push({type:"vp-check",title:"✓ Проверено ВП · "+(x.fio||""),who:x.checked_by_name||"—",at:x.checked_at,icon:"✓",href:"vp.html"});
+          activity.push({type:"vp",title:"🎖 Проверка АБ · "+(x.fio||x.static_id||""),who:"—",at:x.created_at,icon:"🎖",href:"vp.html"});
+          if(x.checked_at) activity.push({type:"vp-check",title:"✓ Проверено АБ · "+(x.fio||""),who:x.checked_by_name||"—",at:x.checked_at,icon:"✓",href:"vp.html"});
         });
       }),
       safe(async()=>{
