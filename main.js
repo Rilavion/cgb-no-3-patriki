@@ -355,7 +355,7 @@
       c.style.height=window.innerHeight+"px";
     }
     function rand(a,b){return a+Math.random()*(b-a)}
-    function getColor(){return root.getAttribute("data-theme")==="light"?"63,143,168":"93,192,209"}
+    function getColor(){return root.getAttribute("data-theme")==="light"?"63,143,168":"74,142,165"}
     function getBg(){return root.getAttribute("data-theme")==="light"?"rgba(232,241,246,":"rgba(7,13,21,"}
 
     function buildParts(){
@@ -384,11 +384,11 @@
     function renderGrid(){
       const light=root.getAttribute("data-theme")==="light";
       const step=80*devicePixelRatio;
-      ctx.strokeStyle=light?"rgba(63,143,168,.06)":"rgba(93,192,209,.045)";
+      ctx.strokeStyle=light?"rgba(63,143,168,.06)":"rgba(74,142,165,.045)";
       ctx.lineWidth=1;
       for(let x=0;x<W;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
       for(let y=0;y<H;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
-      ctx.strokeStyle=light?"rgba(63,143,168,.11)":"rgba(93,192,209,.08)";
+      ctx.strokeStyle=light?"rgba(63,143,168,.11)":"rgba(74,142,165,.08)";
       for(let x=0;x<W;x+=step*4){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
       for(let y=0;y<H;y+=step*4){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
       const color=getColor();

@@ -96,7 +96,10 @@
         <div class="hero-v4-emblem-ring"></div>
         <div class="hero-v4-emblem-ring hero-v4-emblem-ring-2"></div>
         <div class="hero-v4-emblem-star" aria-hidden="true">
-          <svg viewBox="0 0 200 200"><polygon points="100,10 122,74 190,74 135,114 156,180 100,140 44,180 65,114 10,74 78,74" fill="none" stroke="#5bc0d1" stroke-width="1" opacity=".55"/></svg>
+          <svg viewBox="0 0 200 200">
+            <path d="M80 20 L120 20 L120 80 L180 80 L180 120 L120 120 L120 180 L80 180 L80 120 L20 120 L20 80 L80 80 Z"
+                  fill="none" stroke="#4a8ea5" stroke-width="1.2" opacity=".45"/>
+          </svg>
         </div>
         <div class="hero-v4-emblem-3d">
           <div class="hero-v4-emblem-inner">
@@ -107,9 +110,9 @@
       </div>
 
       <div class="hero-v4-newsline" id="heroNewsline">
-        <span class="hero-v4-newsline-label">◉ Оперативная сводка</span>
-        <div class="hero-v4-newsline-track" id="heroNewsTrack">
-          <span class="hero-v4-newsline-hint">Загрузка сводки...</span>
+        <span class="hero-v4-newsline-label">◉ Новости больницы</span>
+        <div class="hero-v4-newsline-track" id="heroNewsTrack" data-count="0">
+          <span class="hero-v4-newsline-hint">Публикаций пока нет · заходите позже</span>
         </div>
         <a class="hero-v4-newsline-more" href="news.html">Все →</a>
       </div>
@@ -210,39 +213,7 @@
 </div>
 
 <script src="main.js?v=1"></script>
-<script>
-document.getElementById("year").textContent=new Date().getFullYear();
-
-const NEWS=[
-  {title:"Новое отделение УЗИ", body:"Открыто современное отделение ультразвуковой диагностики с оборудованием экспертного класса.", date:new Date()},
-  {title:"Вакцинация от гриппа", body:"С 1 октября начинается бесплатная вакцинация от сезонного гриппа для всех прикреплённых.", date:new Date(Date.now()-86400000)},
-  {title:"День донора крови", body:"15 октября в больнице пройдёт акция по сбору донорской крови. Приглашаем всех желающих.", date:new Date(Date.now()-3*86400000)},
-  {title:"Новые специалисты", body:"К нам присоединились три врача высшей категории: кардиолог, невролог и эндокринолог.", date:new Date(Date.now()-5*86400000)}
-];
-
-function fmtDate(d){try{return new Date(d).toLocaleDateString("ru-RU",{timeZone:"Europe/Moscow",day:"2-digit",month:"2-digit"})}catch(e){return""}}
-function esc(s){return String(s||"").replace(/[<>&"']/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;","'":"&#39;"}[c]))}
-
-(function loadNewsline(){
-  const track=document.getElementById("heroNewsTrack");
-  if(!track) return;
-  const PLACEHOLDER='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%230d1a29" width="100" height="100"/><path d="M42 25h16v25h25v16H58v25H42V66H17V50h25z" fill="%235bc0d1" opacity="0.7"/></svg>';
-  const show=NEWS.slice(0,4);
-  track.dataset.count=String(show.length);
-  track.innerHTML=show.map(n=>{
-    const title=esc(n.title||"Без заголовка");
-    const body=esc((n.body||"").slice(0,120));
-    return `<button class="hero-v4-news-card" title="${title}">
-      <span class="hero-v4-news-thumb"><img src="${PLACEHOLDER}" alt=""></span>
-      <span class="hero-v4-news-body">
-        <span class="hero-v4-news-date">${fmtDate(n.date)}</span>
-        <span class="hero-v4-news-title">${title}</span>
-        <span class="hero-v4-news-excerpt">${body}</span>
-      </span>
-    </button>`;
-  }).join("");
-})();
-</script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2961d95981f9dac',t:'MTc4NjQzOTUxNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
+<script>document.getElementById("year").textContent=new Date().getFullYear();</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2962e93efb09dac',t:'MTc4NjQ0MDIxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
 </body>
 </html>
