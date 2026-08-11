@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="logo.png" type="image/png">
 <link rel="apple-touch-icon" href="logo.png">
-<title>Уставы · ЦГБ №3</title>
+<title>Устав · ЦГБ №3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -59,8 +59,8 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
       <a href="services.html" data-page="services.html" data-transition>Услуги</a>
       <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
-      <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
-      <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
+      <a href="ustav.html" data-page="ustav.html" data-transition>Устав</a>
+      <a href="learn.html" data-page="learn.html" data-transition data-loggedin>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
       <a href="composition.html" data-page="composition.html" data-transition>Состав</a>
       <a href="docs.html" data-page="docs.html" data-transition data-perm="docs:view">Документы</a>
@@ -114,7 +114,7 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
     <section class="hero">
       <div class="container hero-grid">
         <div class="reveal-l">
-          <h1>Уставы больницы</h1>
+          <h1>Устав больницы</h1>
           <p class="hero-lead">Свод уставов Центральной Городской Больницы №3 — порядок работы учреждения, обязанности сотрудников и правила оказания помощи пациентам. Единый документ для ознакомления всего персонала.</p>
           <div class="hero-actions">
             <a class="btn btn-gold" href="#doc/svod-ustavov">Читать свод уставов →</a>
@@ -146,8 +146,8 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
       <div class="container">
         <div class="section-head reveal">
           <div>
-            <span class="badge">Документ больницы</span>
-            <h2>Основной устав</h2>
+            <span class="badge">Единый документ больницы</span>
+            <h2>Устав ЦГБ №3</h2>
             <p>Кликните на книгу — откроется полный текст с оглавлением и поиском.</p>
           </div>
         </div>
@@ -219,7 +219,7 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
         <a href="services.html" data-page="services.html">Услуги и цены</a>
         <a href="meds.html" data-page="meds.html">Медикаменты</a>
         <a href="index.html" data-page="index.html">Главная</a>
-        <a href="ustav.html" data-page="ustav.html">Уставы</a>
+        <a href="ustav.html" data-page="ustav.html">Устав</a>
         <a href="composition.html" data-page="composition.html">Состав</a>
         <a href="news.html" data-page="news.html">Новости</a>
       </div>
@@ -453,7 +453,7 @@ function renderList(){
 
 /* ---------- чтение ---------- */
 function showList(){
-  document.title=(DOC?DOC.title:"Уставы")+" · ЦГБ №3";
+  document.title=(DOC?DOC.title:"Устав")+" · ЦГБ №3";
   viewList.style.display="block";viewDoc.style.display="none";
   currentSlug=null;
   if(tocObserver){tocObserver.disconnect();tocObserver=null}

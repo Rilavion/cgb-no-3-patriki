@@ -68,7 +68,7 @@ const SECTIONS=[
   {key:"vp_archive",label:"📊 Архив проверок АБ",actions:["view","edit","delete","send","settings"]},
   {key:"report",label:"🗓 Отчёты",actions:["view","submit","settings"]},
   {key:"payroll",label:"💰 Реестр премирования",actions:["view","edit","settings"]},
-  {key:"tests",label:"📝 Тесты",actions:["view","edit","delete","create","stats"]},
+  {key:"tests",label:"📝 Тесты",actions:["view","edit","delete","create","stats","reset_attempts"]},
   {key:"supply",label:"📦 Поставки",actions:["view","stats","admin","replace"]},
   {key:"messages",label:"💬 Отправка сообщений",actions:["send"]},
   {key:"docs",label:"📄 Документы",actions:["view"]},
@@ -78,14 +78,14 @@ const SECTIONS=[
   {key:"services",label:"💉 Услуги и цены",actions:["edit"]},
   {key:"meds",label:"💊 Медикаменты",actions:["edit"]},
   {key:"site",label:"⚙ Контент сайта",actions:["edit"]},
-  {key:"composition",label:"👥 Состав",actions:["edit"]},
+  {key:"composition",label:"👥 Состав",actions:["view","edit"]},
   {key:"autopark",label:"🚗 Автопарк",actions:["edit"]},
   {key:"faq",label:"❓ FAQ",actions:["edit"]},
   {key:"training",label:"🎯 Обучение (курсы)",actions:["edit"]},
   {key:"learn",label:"🎓 Учебные материалы",actions:["view","edit"]},
   {key:"news",label:"📰 Новости",actions:["view","create","edit","delete"]},
 ];
-const ACTION_LABELS={view:"Просмотр",edit:"Редакт.",delete:"Удаление",settings:"Настройки",send:"Отправка",create:"Создание",stats:"Статистика",admin:"Админ",replace:"Замена",users:"Юзеры",roles:"Роли",review:"Рассмотр.",form_edit:"Форма",submit:"Подача"};
+const ACTION_LABELS={view:"Просмотр",edit:"Редакт.",delete:"Удаление",settings:"Настройки",send:"Отправка",create:"Создание",stats:"Статистика",admin:"Админ",replace:"Замена",users:"Юзеры",roles:"Роли",review:"Рассмотр.",form_edit:"Форма",submit:"Подача",reset_attempts:"Сброс попыток"};
 
 async function boot(){
   const box=$("rlList");

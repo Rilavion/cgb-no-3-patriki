@@ -1110,6 +1110,60 @@ exception when duplicate_object then null;
 end $$;
 
 -- =====================================================================
+-- 4.1 СИСТЕМНЫЕ РОЛИ (пресеты прав). key = системный идентификатор.
+--     Старший состав (ключ ss) применяется автоматически всем, у кого
+--     базовая роль в user_roles = 'ss'. Операторы назначаются админом
+--     через ЛК → панель ролей.
+-- =====================================================================
+
+insert into public.custom_roles (key, base_role, name, description, color, permissions, default_perms, sort)
+values
+('ss','ss','Старший состав',
+ 'Доступ ко всем служебным разделам без настроек',
+ '#0891b2',
+ '{
+   "apps":{"view":true,"edit":true},
+   "vp":{"view":true,"edit":true},
+   "vp_archive":{"view":true,"edit":true,"send":true},
+   "tests":{"view":true,"edit":true,"create":true,"stats":true,"reset_attempts":true},
+   "supply":{"view":true,"stats":true,"replace":true},
+   "docs":{"view":true},
+   "info":{"edit":true},
+   "composition":{"view":true},
+   "autopark":{"edit":true},
+   "faq":{"edit":true},
+   "training":{"edit":true},
+   "learn":{"view":true,"edit":true},
+   "news":{"view":true,"edit":true,"create":true}
+ }'::jsonb,'{}'::jsonb,10),
+('ab_operator','ss','Оператор АБ',
+ 'Оператор Администрации Больницы. Проверки АБ и архив проверок',
+ '#7c3aed',
+ '{
+   "vp":{"view":true,"edit":true},
+   "vp_archive":{"view":true,"edit":true,"send":true},
+   "docs":{"view":true},
+   "learn":{"view":true},
+   "news":{"view":true}
+ }'::jsonb,'{}'::jsonb,20),
+('orp_operator','ss','Оператор ОРП',
+ 'Оператор Отдела по Работе с Персоналом. Заявления, тесты, FAQ и обучение',
+ '#2563eb',
+ '{
+   "apps":{"view":true,"edit":true},
+   "tests":{"view":true,"edit":true,"create":true,"stats":true,"reset_attempts":true},
+   "docs":{"view":true},
+   "faq":{"edit":true},
+   "training":{"edit":true},
+   "learn":{"view":true},
+   "news":{"view":true}
+ }'::jsonb,'{}'::jsonb,30)
+on conflict (key) do update set
+  name=excluded.name, description=excluded.description, color=excluded.color,
+  base_role=excluded.base_role, permissions=excluded.permissions,
+  sort=excluded.sort, updated_at=now();
+
+-- =====================================================================
 -- 5. ПЕРВЫЙ АДМИНИСТРАТОР (раскомментируй и подставь свой UUID)
 --    UUID смотри: Authentication → Users → твой email → колонка UID.
 --    Без этого шага служебные разделы на сайте будут скрыты!

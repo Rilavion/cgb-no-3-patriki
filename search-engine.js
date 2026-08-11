@@ -18,7 +18,7 @@ window.CGB_SEARCH=(function(){
     {group:"Страницы",title:"Главная",hint:"Общая информация о больнице",href:"index.html",kw:"главная home о части"},
     {group:"Страницы",title:"Услуги",hint:"Платные медицинские услуги и цены",href:"services.html",kw:"услуги прайс цены стоимость запись платно"},
     {group:"Страницы",title:"Медикаменты",hint:"Справочник препаратов и лекарств",href:"meds.html",kw:"медикаменты лекарства препараты таблетки мази уколы"},
-    {group:"Страницы",title:"Уставы",hint:"Свод уставов больницы",href:"ustav.html",kw:"устав документы"},
+    {group:"Страницы",title:"Устав",hint:"Свод уставов больницы",href:"ustav.html",kw:"устав документы"},
     {group:"Страницы",title:"Обучение",hint:"Курсы и уроки",href:"learn.html",kw:"обучение курсы уроки тренировка"},
     {group:"Страницы",title:"Состав",hint:"Личный состав и штаб",href:"composition.html",kw:"состав личный офицеры штаб"},
     {group:"Страницы",title:"Документы",hint:"Конструктор документов",href:"docs.html",kw:"документы приказ рапорт указание конструктор"},
@@ -51,7 +51,7 @@ window.CGB_SEARCH=(function(){
         (async()=>{try{
           const {data:rows}=await client.from("ustavy").select("slug,title,code,content").order("sort_order",{ascending:true}).limit(50);
           if(rows) rows.forEach(r=>{
-            data.push({group:"Уставы",title:r.title||r.slug,hint:r.code||"Устав",href:"ustav.html#doc/"+r.slug,kw:(r.title+" "+(r.code||"")).toLowerCase()});
+            data.push({group:"Устав",title:r.title||r.slug,hint:r.code||"Устав",href:"ustav.html#doc/"+r.slug,kw:(r.title+" "+(r.code||"")).toLowerCase()});
             const c=r.content;
             if(c&&c.sections&&Array.isArray(c.sections)){
               c.sections.forEach(s=>{
@@ -91,7 +91,7 @@ window.CGB_SEARCH=(function(){
     }
 
     if(window.CGB_USTAV_TOC){
-      window.CGB_USTAV_TOC.forEach(t=>data.push({group:"Разделы устава",title:t.label,hint:"Устав внутренней службы",href:"ustav.html#doc/ustav-vnutrenney-sluzhby|"+t.id,kw:t.label.toLowerCase()}));
+      window.CGB_USTAV_TOC.forEach(t=>data.push({group:"Разделы устава",title:t.label,hint:"Свод уставов ЦГБ №3",href:"ustav.html#doc/svod-ustavov--"+t.id,kw:t.label.toLowerCase()}));
     }
 
     cache=data;writeCache(data);

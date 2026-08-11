@@ -11,15 +11,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=5">
 <style>
-.sv-hero{padding:56px 0 8px;text-align:center;position:relative}
+.sv-hero{padding:72px 0 8px;text-align:center;position:relative;overflow:visible}
+.sv-hero::before{
+  content:"";position:absolute;left:50%;top:-40px;transform:translateX(-50%);
+  width:min(720px,92vw);height:340px;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 30%,rgba(34,211,238,.16),transparent 65%);
+  filter:blur(10px);
+}
+.sv-hero::after{
+  content:"✚";position:absolute;left:50%;top:120px;transform:translateX(-50%);
+  font-size:130px;color:var(--gold);opacity:.045;pointer-events:none;font-family:"Cormorant Garamond",serif;
+}
+.sv-hero>*{position:relative}
 .sv-overline{
   display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;
   background:var(--gold-s);border:1px solid var(--line);color:var(--gold-b);
   font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;
+  box-shadow:0 6px 20px rgba(8,145,178,.12);
 }
-.sv-title{font-family:"Cormorant Garamond",serif;font-size:clamp(34px,5vw,54px);font-weight:700;color:var(--text);line-height:1.1}
-.sv-title span{color:var(--gold-b)}
-.sv-desc{color:var(--muted);max-width:640px;margin:12px auto 0;font-size:15px;line-height:1.75}
+.sv-title{
+  font-family:"Cormorant Garamond",serif;font-size:clamp(36px,5.4vw,60px);font-weight:700;
+  color:var(--text);line-height:1.08;letter-spacing:-.01em;
+}
+.sv-title span{
+  background:linear-gradient(120deg,var(--gold-b),#22d3ee 55%,var(--gold-b));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sv-desc{color:var(--muted);max-width:640px;margin:14px auto 0;font-size:15px;line-height:1.75}
 .sv-chips{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:20px}
 .sv-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 15px;border-radius:999px;background:var(--card-bg);border:1px solid var(--line);color:var(--text);font-size:12.5px;font-weight:600}
 .sv-chip i,.sv-chip .em{color:var(--gold);font-style:normal}
@@ -28,7 +46,23 @@
 .sv-stat b{font-family:"Cormorant Garamond",serif;font-size:24px;color:var(--gold-b)}
 .sv-stat div{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-top:2px}
 
-.sv-toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:34px 0 20px}
+.sv-toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:34px 0 14px}
+
+/* фильтр по категориям */
+.sv-cats{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 24px}
+.sv-cat-chip{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;cursor:pointer;
+  background:var(--card-bg);border:1px solid var(--line);color:var(--muted);
+  font-size:12.5px;font-weight:700;font-family:inherit;transition:.25s;
+}
+.sv-cat-chip .em{font-style:normal;font-size:14px}
+.sv-cat-chip small{opacity:.7;font-weight:600}
+.sv-cat-chip:hover{border-color:var(--gold);color:var(--text);transform:translateY(-2px)}
+.sv-cat-chip.active{
+  background:linear-gradient(135deg,#0e7490,#06b6d4);color:#fff;border-color:transparent;
+  box-shadow:0 8px 22px rgba(6,182,212,.3);
+}
+.sv-cat-chip.active small{opacity:.85}
 .sv-search{flex:1;min-width:220px;position:relative}
 .sv-search input{
   width:100%;padding:12px 16px 12px 42px;border-radius:14px;border:1px solid var(--line);
@@ -63,13 +97,13 @@
 }
 .sv-card:hover{transform:translateY(-5px);border-color:var(--gold);box-shadow:0 18px 44px rgba(14,116,144,.2)}
 .sv-card.selected{border-color:var(--gold);box-shadow:0 6px 22px rgba(14,116,144,.2);background:linear-gradient(135deg,var(--gold-s),var(--card-bg))}
-.sv-card.featured{grid-column:1/-1;border-color:rgba(251,191,36,.35);background:linear-gradient(135deg,rgba(251,191,36,.06),var(--card-bg))}
+.sv-card.featured{grid-column:1/-1;border-color:rgba(34,211,238,.42);background:linear-gradient(135deg,rgba(34,211,238,.07),var(--card-bg))}
 .sv-num{
   display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9px;
   background:var(--gold-s);color:var(--gold-b);font-size:12px;font-weight:700;margin-bottom:8px;
 }
-.sv-card.featured .sv-num{background:rgba(251,191,36,.14);color:#d97706}
-[data-theme="light"] .sv-card.featured .sv-num{color:#b45309}
+.sv-card.featured .sv-num{background:rgba(34,211,238,.16);color:#0891b2}
+[data-theme="light"] .sv-card.featured .sv-num{color:#0e7490}
 .sv-name{font-weight:700;font-size:15px;color:var(--text);line-height:1.35}
 .sv-card:hover .sv-name{color:var(--gold-b)}
 .sv-description{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:5px}
@@ -79,7 +113,7 @@
   border:1px solid rgba(16,185,129,.18);padding:8px 15px;border-radius:12px;white-space:nowrap;
   font-variant-numeric:tabular-nums;
 }
-.sv-price-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#d97706}
+.sv-price-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0891b2}
 .sv-check{
   position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:8px;border:2px solid var(--line);
   display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:.3s;
@@ -92,8 +126,8 @@
   margin-top:36px;background:var(--card-bg);border:1px solid var(--line);border-radius:20px;padding:24px 26px;
   display:flex;gap:18px;align-items:flex-start;position:relative;overflow:hidden;
 }
-.sv-banner::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24,#f59e0b)}
-.sv-banner-ico{width:50px;height:50px;min-width:50px;border-radius:14px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;font-size:22px}
+.sv-banner::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0891b2,#22d3ee,#0891b2)}
+.sv-banner-ico{width:50px;height:50px;min-width:50px;border-radius:14px;background:rgba(34,211,238,.12);display:flex;align-items:center;justify-content:center;font-size:22px}
 .sv-banner h4{font-family:"Cormorant Garamond",serif;font-size:19px;color:var(--text);margin-bottom:6px}
 .sv-banner p{font-size:13.5px;color:var(--muted);line-height:1.75}
 .sv-banner strong{color:var(--text)}
@@ -168,8 +202,8 @@ input[type="color"].sv-color{width:44px;height:34px;padding:2px;border:1px solid
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
       <a href="services.html" data-page="services.html" data-transition>Услуги</a>
       <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
-      <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
-      <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
+      <a href="ustav.html" data-page="ustav.html" data-transition>Устав</a>
+      <a href="learn.html" data-page="learn.html" data-transition data-loggedin>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
       <a href="composition.html" data-page="composition.html" data-transition>Состав</a>
       <a href="docs.html" data-page="docs.html" data-transition data-perm="docs:view">Документы</a>
@@ -235,6 +269,8 @@ input[type="color"].sv-color{width:44px;height:34px;padding:2px;border:1px solid
       <div class="sv-search"><input id="svSearch" type="search" placeholder="Поиск услуги..." autocomplete="off"></div>
       <button class="btn btn-ghost btn-sm admin-only" id="editPageBtn" style="display:none">✎ Редактировать страницу</button>
     </div>
+
+    <div class="sv-cats" id="svCats"></div>
 
     <div id="svChapters"></div>
 
@@ -448,16 +484,30 @@ function renderAll(){
   $("svBanner").style.display=(DATA.banner.title||DATA.banner.text)?"":"none";
   $("svOrderBtn").textContent="✈ "+(DATA.orderLabel||"Записаться");
   $("svOrderBtn").href=DATA.orderUrl||"#";
+  renderCats();
   renderChapters();
   updateCalc();
 }
 
 let query="";
+let activeCat=null;
+function renderCats(){
+  const box=$("svCats");if(!box) return;
+  const cats=DATA.categories||[];
+  const mk=(idx,icon,label,count)=>`<button class="sv-cat-chip ${activeCat===idx?"active":""}" data-cat="${idx}"><span class="em">${esc(icon)}</span>${esc(label)}<small>${count}</small></button>`;
+  let total=0;cats.forEach(c=>total+=(c.items||[]).length);
+  box.innerHTML=mk(null,"🗂","Все разделы",total)+cats.map((c,i)=>mk(i,c.icon||"🩺",c.title,(c.items||[]).length)).join("");
+  box.querySelectorAll("[data-cat]").forEach(b=>b.addEventListener("click",()=>{
+    activeCat=(b.dataset.cat==="null")?null:+b.dataset.cat;
+    renderCats();renderChapters();
+  }));
+}
 function renderChapters(){
   const box=$("svChapters");
   const q=query.trim().toLowerCase();
   let n=0;
   box.innerHTML=(DATA.categories||[]).map((cat,ci)=>{
+    if(activeCat!==null&&ci!==activeCat) return "";
     let items=(cat.items||[]).map((it,ii)=>({it,ii})).filter(x=>!q||(x.it.name+" "+(x.it.desc||"")).toLowerCase().includes(q));
     if(!items.length&&q) return "";
     n++;

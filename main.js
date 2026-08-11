@@ -335,7 +335,7 @@
       {group:"Страницы",title:"Главная",hint:"Общая информация о больнице",href:"index.html",kw:"главная home"},
       {group:"Страницы",title:"Услуги",hint:"Платные медицинские услуги и цены",href:"services.html",kw:"услуги прайс цены запись"},
       {group:"Страницы",title:"Медикаменты",hint:"Справочник препаратов",href:"meds.html",kw:"медикаменты лекарства препараты таблетки"},
-      {group:"Страницы",title:"Уставы",hint:"Свод уставов больницы",href:"ustav.html",kw:"устав документы"},
+      {group:"Страницы",title:"Устав",hint:"Свод уставов больницы",href:"ustav.html",kw:"устав документы"},
       {group:"Страницы",title:"Новости",hint:"Оперативная сводка",href:"news.html",kw:"новости"},
       {group:"Страницы",title:"Автопарк",hint:"Транспорт больницы",href:"autopark.html",kw:"автопарк техника"},
       {group:"Страницы",title:"Карта",hint:"Схема территории",href:"map.html",kw:"карта"},
@@ -346,12 +346,12 @@
       window.CGB_SEARCH.build().then(d=>{DATASET=d;if(modal.classList.contains("active")) render(input.value)}).catch(()=>{});
     }
     if(window.CGB_USTAV_TOC){
-      window.CGB_USTAV_TOC.forEach(t=>DATASET.push({group:"Разделы устава",title:t.label,hint:"Устав внутренней службы",href:"ustav.html#doc/ustav-vnutrenney-sluzhby|"+t.id,kw:t.label}));
+      window.CGB_USTAV_TOC.forEach(t=>DATASET.push({group:"Разделы устава",title:t.label,hint:"Свод уставов ЦГБ №3",href:"ustav.html#doc/svod-ustavov--"+t.id,kw:t.label}));
     }
 
     const iconFor=g=>({
       "Страницы":`<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zm2 4v12h14V7z"/></svg>`,
-      "Уставы":`<svg viewBox="0 0 24 24"><path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-1 15H7v-2h10zm0-4H7v-2h10zm0-4H7V7h10z"/></svg>`,
+      "Устав":`<svg viewBox="0 0 24 24"><path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-1 15H7v-2h10zm0-4H7v-2h10zm0-4H7V7h10z"/></svg>`,
       "Разделы устава":`<svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>`,
       "Новости":`<svg viewBox="0 0 24 24"><path d="M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM8 17H5v-2h3zm0-4H5v-2h3zm0-4H5V7h3zm5 8h-3v-2h3zm0-4h-3v-2h3zm0-4h-3V7h3zm6 8h-4v-2h4zm0-4h-4v-2h4zm0-4h-4V7h4z"/></svg>`,
       "Автопарк":`<svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>`,
