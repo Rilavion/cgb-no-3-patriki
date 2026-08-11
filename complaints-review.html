@@ -35,6 +35,8 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
     <nav class="nav" id="mainNav">
       <a href="index.html" data-page="index.html" data-transition>Главная</a>
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
+      <a href="services.html" data-page="services.html" data-transition>Услуги</a>
+      <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
       <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
       <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
@@ -343,7 +345,7 @@ const VERDICTS=[
   {key:"refuse",label:"Отказать",color:"#7a8a4a",icon:"✕",req_comment:true,notify:false},
   {key:"warn",label:"Предупреждение",color:"#e6b800",icon:"⚠",req_comment:false,notify:true},
   {key:"reproach",label:"Выговор",color:"#e67e22",icon:"‼",req_comment:false,notify:true},
-  {key:"talk",label:"Беседа с АБ",color:"#5a8fcd",icon:"💬",req_comment:false,notify:true},
+  {key:"talk",label:"Беседа с АБ",color:"#38bdf8",icon:"💬",req_comment:false,notify:true},
   {key:"confinement",label:"Дисциплинарное заключение",color:"#9b59b6",icon:"🔒",req_comment:false,notify:true,confinement:true},
   {key:"uval",label:"Отстранение",color:"#e74c3c",icon:"⛔",req_comment:false,notify:true}
 ];
@@ -804,7 +806,7 @@ function renderRegistry(){
     const badges=[];
     if(warns) badges.push(`<span class="cr-kbadge" style="background:#e6b80022;color:#e6b800;border:1px solid #e6b800">⚠ ${warns}</span>`);
     if(reps) badges.push(`<span class="cr-kbadge" style="background:#e67e2222;color:#e67e22;border:1px solid #e67e22">‼ ${reps}</span>`);
-    if(talks) badges.push(`<span class="cr-kbadge" style="background:#5a8fcd22;color:#5a8fcd;border:1px solid #5a8fcd">💬 ${talks}</span>`);
+    if(talks) badges.push(`<span class="cr-kbadge" style="background:#38bdf822;color:#38bdf8;border:1px solid #38bdf8">💬 ${talks}</span>`);
     if(uvals) badges.push(`<span class="cr-kbadge" style="background:#e74c3c22;color:#e74c3c;border:1px solid #e74c3c">⛔ ${uvals}</span>`);
     if(!badges.length) badges.push('<span class="cr-kbadge cr-clean">✓ Чист</span>');
     return `<div class="cr-reg-group">

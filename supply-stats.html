@@ -194,7 +194,7 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 let FORM=null,REQS=[],GUILD_ID=null;
 const STATUS_LABELS={ok:"Успешно",fail:"Отказались",offline:"Не вышли на связь",undelivered:"Не довезли",replaced:"Замена (спорная)",dispute:"Спорная",none:"Без реакции",deleted:"Удалено"};
 const STATUS_ICONS={ok:"✅",fail:"❌",offline:"📵",undelivered:"🚫",replaced:"🔄",dispute:"⚠",none:"➖",deleted:"🗑"};
-const STATUS_COLORS={ok:"#7dd97d",fail:"#e97a7a",offline:"#e9d29a",undelivered:"#e97a7a",replaced:"#a2d8ff",dispute:"#f0d89b",none:"#999",deleted:"#666"};
+const STATUS_COLORS={ok:"#34d399",fail:"#e97a7a",offline:"#e9d29a",undelivered:"#e97a7a",replaced:"#a2d8ff",dispute:"#a5f3fc",none:"#999",deleted:"#666"};
 
 function ruDT(d){try{return new Date(d).toLocaleString("ru-RU",{timeZone:"Europe/Moscow",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}catch(e){return String(d||"")}}
 function isoDate(d){const dt=new Date(d);return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0")}
@@ -258,7 +258,7 @@ function render(){
   `;
   renderPie();
   $("ssStatusChart").innerHTML=renderBars(counts,total,k=>STATUS_ICONS[k]+" "+STATUS_LABELS[k],k=>STATUS_COLORS[k]);
-  $("ssOrgChart").innerHTML=renderBars(orgCount,total,k=>k,()=>"#cda85a",8);
+  $("ssOrgChart").innerHTML=renderBars(orgCount,total,k=>k,()=>"#22d3ee",8);
   $("ssKindChart").innerHTML=renderBars(kindCount,total,k=>k,()=>"#a2d8ff",8);
   renderList();
 }
@@ -269,18 +269,18 @@ function renderPie(){
   let segments;
   if(!detail){
     segments=[
-      {key:"ok",label:"Успешно",value:c.ok,color:"#7dd97d"},
+      {key:"ok",label:"Успешно",value:c.ok,color:"#34d399"},
       {key:"undelivered",label:"Не довезли",value:c.undelivered,color:"#e97a7a"},
       {key:"other",label:"Иные (отказы, спорные, без реакции)",value:c.fail+c.offline+c.replaced+c.dispute+c.none,color:"#e9d29a"}
     ];
   } else {
     segments=[
-      {key:"ok",label:"Успешно",value:c.ok,color:"#7dd97d"},
+      {key:"ok",label:"Успешно",value:c.ok,color:"#34d399"},
       {key:"undelivered",label:"Не довезли",value:c.undelivered,color:"#e97a7a"},
       {key:"fail",label:"Отказались",value:c.fail,color:"#d97878"},
       {key:"offline",label:"Не вышли на связь",value:c.offline,color:"#e9d29a"},
       {key:"replaced",label:"Замена",value:c.replaced,color:"#a2d8ff"},
-      {key:"dispute",label:"Спорные",value:c.dispute,color:"#f0d89b"},
+      {key:"dispute",label:"Спорные",value:c.dispute,color:"#a5f3fc"},
       {key:"none",label:"Без реакции",value:c.none,color:"#888"}
     ];
   }
@@ -309,7 +309,7 @@ function renderPie(){
     }
     angle=a2;
   }
-  box.innerHTML=`<svg viewBox="0 0 200 200" width="200" height="200">${paths.join("")}<circle cx="${CX}" cy="${CY}" r="45" fill="#15241d"/><text x="${CX}" y="${CY-4}" text-anchor="middle" fill="#f0d89b" font-family="Cormorant Garamond" font-size="28" font-weight="700">${total}</text><text x="${CX}" y="${CY+14}" text-anchor="middle" fill="#8fa39a" font-size="10">всего</text></svg>`;
+  box.innerHTML=`<svg viewBox="0 0 200 200" width="200" height="200">${paths.join("")}<circle cx="${CX}" cy="${CY}" r="45" fill="#07242e"/><text x="${CX}" y="${CY-4}" text-anchor="middle" fill="#a5f3fc" font-family="Cormorant Garamond" font-size="28" font-weight="700">${total}</text><text x="${CX}" y="${CY+14}" text-anchor="middle" fill="#8fa39a" font-size="10">всего</text></svg>`;
   legendBox.innerHTML=segments.filter(s=>s.value>0).map(s=>{
     const pct=Math.round(s.value*100/total);
     return `<div class="ss-pie-item">

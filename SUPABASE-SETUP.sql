@@ -967,6 +967,16 @@ begin
     from public.payroll_drafts d where d.id = p_id;
 end $$;
 
+-- Контент страниц сайта (Услуги, Медикаменты и др.): читают все,
+-- запись — админ или делегированное право (site:edit / services:edit / meds:edit).
+-- Строки НЕ сидим: страницы берут встроенный дефолт, если записи нет.
+create table if not exists public.site_data (
+  key text primary key,
+  data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now(),
+  updated_by uuid
+);
+
 -- 2.0 Проверка «вызывающий — админ» (security definer — не рекурсирует в RLS)
 create or replace function public.is_admin()
 returns boolean
@@ -1032,6 +1042,39 @@ create policy cr_admin_write on public.custom_roles
   using (public.is_admin())
   with check (public.is_admin());
 
+-- site_data: право записи = admin ИЛИ делегированное право в кастомной роли
+-- (site:edit либо <раздел>:edit, где раздел — ключ без суффикса "_page").
+create or replace function public.can_edit_site_data(row_key text)
+returns boolean
+language sql security definer stable set search_path = public as $$
+  select exists(
+    select 1
+    from public.user_roles ur
+    left join public.custom_roles cr
+      on cr.id = ur.custom_role_id or cr.key = ur.role
+    where ur.user_id = auth.uid()
+      and (
+        ur.role = 'admin'
+        or coalesce(cr.permissions->'site'->>'edit', 'false') = 'true'
+        or coalesce(cr.permissions->replace(row_key, '_page', '')->>'edit', 'false') = 'true'
+        or coalesce(cr.permissions->row_key->>'edit', 'false') = 'true'
+      )
+  );
+$$;
+grant execute on function public.can_edit_site_data(text) to authenticated;
+
+alter table public.site_data enable row level security;
+
+drop policy if exists sd_select on public.site_data;
+create policy sd_select on public.site_data
+  for select to anon, authenticated using (true);
+
+drop policy if exists sd_write on public.site_data;
+create policy sd_write on public.site_data
+  for all to authenticated
+  using (public.can_edit_site_data(key))
+  with check (public.can_edit_site_data(key));
+
 -- Остальные таблицы: чтение всем, запись авторизованным
 do $$
 declare
@@ -1040,7 +1083,7 @@ begin
   for t in
     select tablename from pg_tables
     where schemaname = 'public'
-      and tablename not in ('user_roles', 'custom_roles')
+      and tablename not in ('user_roles', 'custom_roles', 'site_data')
   loop
     execute format('alter table public.%I enable row level security', t);
     execute format('drop policy if exists read_all on public.%I', t);

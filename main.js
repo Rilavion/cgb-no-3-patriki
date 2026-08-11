@@ -10,22 +10,123 @@
     setupBurger();
     setupReveal();
     setupBackground();
+    setupSiteSettings();
     setupTransitions();
     setupActiveNav();
     setupFab();
     setupSearch();
   }
 
+  function applyTheme(next){
+    if(next==="light") root.setAttribute("data-theme","light");
+    else root.removeAttribute("data-theme");
+    localStorage.setItem("cgb-theme",next);
+  }
+  window.CGB_THEME={apply:applyTheme,get:()=>root.getAttribute("data-theme")==="light"?"light":"dark"};
+
   function setupThemeToggle(){
-    const btn=document.getElementById("themeToggle");
+    let btn=document.getElementById("themeToggle");
+    if(!btn){
+      // Автосоздание кнопки темы на страницах, где её нет в разметке
+      const host=document.querySelector(".header-actions");
+      if(host){
+        btn=document.createElement("button");
+        btn.className="icon-btn theme-toggle";
+        btn.id="themeToggle";
+        btn.setAttribute("aria-label","Сменить тему");
+        btn.setAttribute("title","Сменить тему");
+        btn.innerHTML='<svg class="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'+
+          '<svg class="sun" viewBox="0 0 24 24"><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66l1.42-1.42M4.92 19.08l1.42-1.42m0-11.32L4.92 4.92m14.16 14.16l-1.42-1.42M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+        const burger=document.getElementById("burger");
+        host.insertBefore(btn,burger||null);
+      }
+    }
     if(!btn) return;
     btn.addEventListener("click",()=>{
       const cur=root.getAttribute("data-theme")==="light"?"light":"dark";
-      const next=cur==="light"?"dark":"light";
-      if(next==="light") root.setAttribute("data-theme","light");
-      else root.removeAttribute("data-theme");
-      localStorage.setItem("cgb-theme",next);
+      applyTheme(cur==="light"?"dark":"light");
+      document.dispatchEvent(new CustomEvent("cgb-theme-change"));
     });
+  }
+
+  /* ===== Глобальная панель «Настройки сайта» (доступна на каждой странице) ===== */
+  function setupSiteSettings(){
+    // Создаём плавающую кнопку и панель настроек
+    if(document.getElementById("siteSetBtn")) return;
+    const btn=document.createElement("button");
+    btn.id="siteSetBtn";btn.className="site-set-btn";
+    btn.setAttribute("aria-label","Настройки сайта");
+    btn.title="Настройки сайта";
+    btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>';
+    document.body.appendChild(btn);
+
+    const panel=document.createElement("div");
+    panel.id="siteSetPanel";panel.className="site-set-panel";
+    panel.innerHTML=
+      '<div class="ssp-head">Настройки сайта</div>'+
+      '<div class="ssp-row"><span class="ssp-label">Тема</span>'+
+        '<div class="ssp-seg" id="sspTheme">'+
+          '<button data-theme-val="dark">Тёмная</button>'+
+          '<button data-theme-val="light">Светлая</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="ssp-row"><span class="ssp-label">Анимации фона</span>'+
+        '<label class="ssp-switch"><input type="checkbox" id="sspAnim" checked><span class="ssp-switch-track"><span class="ssp-switch-thumb"></span></span></label>'+
+      '</div>'+
+      '<div class="ssp-row ssp-row-col"><span class="ssp-label">Фон</span>'+
+        '<div class="ssp-modes" id="sspModes">'+
+          '<button data-bg="falling">Атмосфера</button>'+
+          '<button data-bg="grid">Сеть</button>'+
+          '<button data-bg="dots">Точки</button>'+
+          '<button data-bg="waves">Волны</button>'+
+          '<button data-bg="stars">Звёзды</button>'+
+          '<button data-bg="radar">Радар</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="ssp-note">Сохраняется в браузере</div>';
+    document.body.appendChild(panel);
+
+    const close=()=>{panel.classList.remove("open");btn.classList.remove("active")};
+    btn.addEventListener("click",e=>{
+      e.stopPropagation();
+      const willOpen=!panel.classList.contains("open");
+      close();
+      if(willOpen){sync();panel.classList.add("open");btn.classList.add("active")}
+    });
+    panel.addEventListener("click",e=>e.stopPropagation());
+    document.addEventListener("click",close);
+    document.addEventListener("keydown",e=>{if(e.key==="Escape") close()});
+
+    const themeSeg=panel.querySelector("#sspTheme");
+    themeSeg.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+      applyTheme(b.dataset.themeVal);
+      document.dispatchEvent(new CustomEvent("cgb-theme-change"));
+      sync();
+    }));
+    const animChk=panel.querySelector("#sspAnim");
+    animChk.addEventListener("change",()=>{
+      if(window.CGB_BG) window.CGB_BG.setEnabled(animChk.checked);
+      const fsAnim=document.getElementById("fsAnim");if(fsAnim) fsAnim.checked=animChk.checked;
+      sync();
+    });
+    const modesBox=panel.querySelector("#sspModes");
+    modesBox.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+      if(window.CGB_BG) window.CGB_BG.setMode(b.dataset.bg);
+      sync();
+    }));
+
+    function sync(){
+      const theme=root.getAttribute("data-theme")==="light"?"light":"dark";
+      themeSeg.querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.themeVal===theme));
+      const themeBtnIcon=document.getElementById("themeToggle");
+      if(window.CGB_BG){
+        animChk.checked=window.CGB_BG.isEnabled();
+        const m=window.CGB_BG.getMode();
+        modesBox.querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.bg===m));
+        modesBox.querySelectorAll("button").forEach(b=>b.disabled=!animChk.checked);
+      }
+    }
+    document.addEventListener("cgb-theme-change",sync);
   }
 
   function setupBurger(){
@@ -70,7 +171,7 @@
         a.removeAttribute("data-staff");
       });
 
-      const publicPages=["index.html","info.html","ustav.html","learn.html","composition.html","news.html","autopark.html","map.html","faq.html","complaints.html"];
+      const publicPages=["index.html","info.html","services.html","meds.html","ustav.html","learn.html","composition.html","news.html","autopark.html","map.html","faq.html","complaints.html"];
       const loggedInPages=["tests.html","leave.html","vacation-ic.html","vacation-ooc.html","dismissal.html","promotion.html","restoration.html","report.html","vp-request.html"];
       const staffPages=["apps.html","apps-stats.html","vp.html","complaints-review.html","complaints-stats.html","requests-review.html","requests-stats.html","requests-settings.html","payroll.html","supply.html","supply-stats.html","docs.html","lk.html","report-settings.html","vp-request-settings.html"];
       const alwaysVisibleForLogged=["lk.html"];
@@ -232,7 +333,9 @@
 
     let DATASET=[
       {group:"Страницы",title:"Главная",hint:"Общая информация о больнице",href:"index.html",kw:"главная home"},
-      {group:"Страницы",title:"Уставы",hint:"Каталог документов",href:"ustav.html",kw:"устав документы"},
+      {group:"Страницы",title:"Услуги",hint:"Платные медицинские услуги и цены",href:"services.html",kw:"услуги прайс цены запись"},
+      {group:"Страницы",title:"Медикаменты",hint:"Справочник препаратов",href:"meds.html",kw:"медикаменты лекарства препараты таблетки"},
+      {group:"Страницы",title:"Уставы",hint:"Свод уставов больницы",href:"ustav.html",kw:"устав документы"},
       {group:"Страницы",title:"Новости",hint:"Оперативная сводка",href:"news.html",kw:"новости"},
       {group:"Страницы",title:"Автопарк",hint:"Транспорт больницы",href:"autopark.html",kw:"автопарк техника"},
       {group:"Страницы",title:"Карта",hint:"Схема территории",href:"map.html",kw:"карта"},
@@ -343,9 +446,11 @@
     if(!c) return;
     const ctx=c.getContext("2d");
     let W=0,H=0,raf=null;
-    let mode=localStorage.getItem("cgb-bg-mode")||"grid";
+    let FALL_TYPES=["plus","heart","pill","tablet","syringe","drop","star","pulse"];
+    let mode=localStorage.getItem("cgb-bg-mode")||"falling";
+    if(["grid","dots","waves","stars","radar","falling"].indexOf(mode)<0) mode="falling";
     let enabled=localStorage.getItem("cgb-bg-enabled")!=="0";
-    let parts=[],stars=[],radarAngle=0;
+    let parts=[],stars=[],falls=[],radarAngle=0,waveT=0;
 
     function resize(){
       W=c.width=window.innerWidth*devicePixelRatio;
@@ -380,14 +485,202 @@
       }
     }
 
+    /* ---------- «Атмосфера»: падающие медицинские элементы ---------- */
+    function fallPalettes(){
+      const light=root.getAttribute("data-theme")==="light";
+      return light
+        ?[[8,145,178],[14,116,144],[16,150,135],[2,132,199],[6,182,212]]
+        :[[103,232,249],[74,142,165],[52,211,153],[165,243,252],[96,190,220]];
+    }
+    function newFall(anyY){
+      const dpr=devicePixelRatio;
+      const depth=rand(.35,1); // глубина слоя: ближе = крупнее/быстрее
+      return {
+        x:rand(0,W),
+        y:anyY?rand(-H,H):rand(-H*.25,-50*dpr),
+        s:rand(9,30)*dpr*depth+8*dpr*0.4,
+        vy:rand(.22,.75)*dpr*(0.55+depth),
+        sway:rand(10,34)*dpr,
+        swaySp:rand(.4,1.1),
+        phase:rand(0,Math.PI*2),
+        rot:rand(0,Math.PI*2),
+        vr:rand(-.0045,.0045),
+        a:rand(.08,.22)+depth*.08,
+        col:(Math.random()*5)|0,
+        type:FALL_TYPES[(Math.random()*FALL_TYPES.length)|0]
+      };
+    }
+    function buildFalls(){
+      const N=Math.min(52,Math.max(20,Math.floor(window.innerWidth/30)));
+      falls=[];
+      for(let i=0;i<N;i++) falls.push(newFall(true));
+    }
+    function drawFallShape(f,pal){
+      const c=pal[f.col%pal.length];
+      const s=f.s;
+      ctx.save();
+      ctx.translate(f.x+Math.sin(f.phase+f.y/220*f.swaySp)*f.sway,f.y);
+      ctx.rotate(f.rot);
+      ctx.strokeStyle=`rgba(${c[0]},${c[1]},${c[2]},${Math.min(f.a*1.35,.5)})`;
+      ctx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${Math.min(f.a,.4)})`;
+      ctx.lineWidth=Math.max(1.4,s*.14);
+      ctx.lineCap="round";ctx.lineJoin="round";
+      switch(f.type){
+        case "plus": // медицинский крест
+          ctx.beginPath();
+          const a=s*.32;
+          ctx.moveTo(-a,-s);ctx.lineTo(a,-s);ctx.lineTo(a,-a);ctx.lineTo(s,-a);ctx.lineTo(s,a);ctx.lineTo(a,a);ctx.lineTo(a,s);ctx.lineTo(-a,s);ctx.lineTo(-a,a);ctx.lineTo(-s,a);ctx.lineTo(-s,-a);ctx.lineTo(-a,-a);ctx.closePath();
+          ctx.fill();ctx.stroke();
+          break;
+        case "heart":
+          ctx.beginPath();
+          ctx.moveTo(0,s*.8);
+          ctx.bezierCurveTo(-s*1.25,-s*.15,-s*.65,-s*1.05,0,-s*.35);
+          ctx.bezierCurveTo(s*.65,-s*1.05,s*1.25,-s*.15,0,s*.8);
+          ctx.fill();ctx.stroke();
+          break;
+        case "pill": // капсула
+          ctx.save();ctx.rotate(-.6);
+          ctx.beginPath();
+          if(ctx.roundRect) ctx.roundRect(-s*1.05,-s*.42,s*2.1,s*.84,s*.42);
+          else ctx.rect(-s*1.05,-s*.42,s*2.1,s*.84);
+          ctx.fill();ctx.stroke();
+          ctx.beginPath();ctx.moveTo(0,-s*.42);ctx.lineTo(0,s*.42);ctx.stroke();
+          ctx.restore();
+          break;
+        case "tablet": // круглая таблетка с риской
+          ctx.beginPath();ctx.arc(0,0,s*.72,0,Math.PI*2);ctx.fill();ctx.stroke();
+          ctx.beginPath();ctx.moveTo(-s*.5,0);ctx.lineTo(s*.5,0);ctx.stroke();
+          break;
+        case "syringe":
+          ctx.save();ctx.rotate(.7);
+          ctx.beginPath();ctx.rect(-s*.9,-s*.22,s*1.5,s*.44);ctx.fill();ctx.stroke();
+          ctx.beginPath();ctx.moveTo(s*.55,0);ctx.lineTo(s*1.25,0);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(-s*1.15,-s*.34);ctx.lineTo(-s*1.15,s*.34);ctx.moveTo(-s*1.15,0);ctx.lineTo(-s*.9,0);ctx.stroke();
+          ctx.restore();
+          break;
+        case "drop": // капля
+          ctx.beginPath();
+          ctx.moveTo(0,-s*.95);
+          ctx.bezierCurveTo(s*.75,-s*.05,s*.55,s*.8,0,s*.8);
+          ctx.bezierCurveTo(-s*.55,s*.8,-s*.75,-s*.05,0,-s*.95);
+          ctx.fill();ctx.stroke();
+          break;
+        case "star": // звезда жизни (6 лучей)
+          ctx.beginPath();
+          for(let k=0;k<6;k++){
+            const ang=k*Math.PI/3;
+            ctx.moveTo(0,0);
+            ctx.lineTo(Math.cos(ang)*s,Math.sin(ang)*s);
+          }
+          ctx.lineWidth=Math.max(2,s*.22);ctx.stroke();
+          break;
+        case "pulse": // отрезок ЭКГ
+          ctx.beginPath();
+          ctx.moveTo(-s*1.2,0);ctx.lineTo(-s*.6,0);ctx.lineTo(-s*.35,-s*.55);ctx.lineTo(-s*.08,s*.6);ctx.lineTo(s*.18,-s*.12);ctx.lineTo(s*.4,0);ctx.lineTo(s*1.2,0);
+          ctx.stroke();
+          break;
+      }
+      ctx.restore();
+    }
+    function renderFalling(){
+      const pal=fallPalettes();
+      // лёгкая медицинская сетка-решётка из крестов, почти незаметная
+      const dpr=devicePixelRatio;
+      const step=170*dpr;
+      const light=root.getAttribute("data-theme")==="light";
+      ctx.strokeStyle=light?"rgba(8,145,178,.05)":"rgba(103,232,249,.045)";
+      ctx.lineWidth=1.2*dpr;
+      const cr=7*dpr;
+      for(let x=step/2;x<W;x+=step){
+        for(let y=step/2;y<H;y+=step){
+          ctx.beginPath();
+          ctx.moveTo(x-cr,y);ctx.lineTo(x+cr,y);
+          ctx.moveTo(x,y-cr);ctx.lineTo(x,y+cr);
+          ctx.stroke();
+        }
+      }
+      for(let i=0;i<falls.length;i++){
+        const f=falls[i];
+        f.y+=f.vy;f.rot+=f.vr;f.phase+=.006*f.swaySp;
+        if(f.y-f.s*2>H){falls[i]=newFall(false);continue}
+        drawFallShape(f,pal);
+      }
+    }
+
+    /* ---------- Точки ---------- */
+    function renderDots(){
+      const dpr=devicePixelRatio;
+      const step=44*dpr;
+      const light=root.getAttribute("data-theme")==="light";
+      const t=Date.now()/1000;
+      for(let x=step/2;x<W;x+=step){
+        for(let y=step/2;y<H;y+=step){
+          const pulse=.5+.5*Math.sin(t*.8+(x+y)/240);
+          const r=(1.1+pulse*1.3)*dpr;
+          ctx.beginPath();
+          ctx.fillStyle=light?`rgba(8,145,178,${.07+pulse*.08})`:`rgba(103,232,249,${.06+pulse*.09})`;
+          ctx.arc(x,y,r,0,Math.PI*2);
+          ctx.fill();
+        }
+      }
+      // дрейфующие крупные точки-«молекулы»
+      const color=getColor();
+      for(let i=0;i<parts.length;i++){
+        const p=parts[i];
+        p.x+=p.vx*.6;p.y+=p.vy*.6;
+        if(p.x<0) p.x=W;if(p.x>W) p.x=0;
+        if(p.y<0) p.y=H;if(p.y>H) p.y=0;
+        ctx.beginPath();
+        ctx.fillStyle=`rgba(${color},${p.a*.7})`;
+        ctx.arc(p.x,p.y,p.r*1.4,0,Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    /* ---------- Волны ---------- */
+    function renderWaves(){
+      waveT+=.006;
+      const light=root.getAttribute("data-theme")==="light";
+      const dpr=devicePixelRatio;
+      const layers=[
+        {amp:26*dpr,len:.004/dpr*800,sp:1,al:light?.05:.055,off:.18},
+        {amp:40*dpr,len:.003/dpr*800,sp:-.7,al:light?.045:.05,off:.38},
+        {amp:58*dpr,len:.0022/dpr*800,sp:.45,al:light?.04:.045,off:.62}
+      ];
+      const color=getColor();
+      for(const L of layers){
+        ctx.beginPath();
+        const baseY=H*L.off;
+        for(let x=0;x<=W;x+=8*dpr){
+          const y=baseY+Math.sin(x*L.len/2+waveT*L.sp*2)*L.amp+Math.sin(x*L.len/3.7-waveT*L.sp)*L.amp*.5;
+          if(x===0) ctx.moveTo(x,y);else ctx.lineTo(x,y);
+        }
+        ctx.strokeStyle=`rgba(${color},${L.al*2})`;
+        ctx.lineWidth=1.4*dpr;
+        ctx.stroke();
+      }
+      // плавающие блики
+      for(let i=0;i<parts.length;i++){
+        const p=parts[i];
+        p.x+=p.vx*.4;p.y+=p.vy*.4;
+        if(p.x<0) p.x=W;if(p.x>W) p.x=0;
+        if(p.y<0) p.y=H;if(p.y>H) p.y=0;
+        ctx.beginPath();
+        ctx.fillStyle=`rgba(${color},${p.a*.5})`;
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+      }
+    }
+
     function renderGrid(){
       const light=root.getAttribute("data-theme")==="light";
       const step=80*devicePixelRatio;
-      ctx.strokeStyle=light?"rgba(61,90,73,.06)":"rgba(205,168,90,.045)";
+      ctx.strokeStyle=light?"rgba(8,145,178,.06)":"rgba(34,211,238,.045)";
       ctx.lineWidth=1;
       for(let x=0;x<W;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
       for(let y=0;y<H;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
-      ctx.strokeStyle=light?"rgba(61,90,73,.11)":"rgba(205,168,90,.08)";
+      ctx.strokeStyle=light?"rgba(8,145,178,.11)":"rgba(34,211,238,.08)";
       for(let x=0;x<W;x+=step*4){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
       for(let y=0;y<H;y+=step*4){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
       const color=getColor();
@@ -501,6 +794,9 @@
       if(mode==="grid") renderGrid();
       else if(mode==="stars") renderStars();
       else if(mode==="radar") renderRadar();
+      else if(mode==="dots") renderDots();
+      else if(mode==="waves") renderWaves();
+      else if(mode==="falling") renderFalling();
       raf=requestAnimationFrame(tick);
     }
 
@@ -508,14 +804,15 @@
       if(!enabled){stop();c.style.opacity="0";return}
       c.style.opacity="1";
       if(mode==="stars"&&!stars.length) buildStars();
-      if((mode==="grid"||mode==="radar")&&!parts.length) buildParts();
+      if((mode==="grid"||mode==="radar"||mode==="dots"||mode==="waves")&&!parts.length) buildParts();
+      if(mode==="falling"&&!falls.length) buildFalls();
       if(!raf) tick();
     }
     function stop(){if(raf){cancelAnimationFrame(raf);raf=null}}
 
     function applyMode(m){
       mode=m;localStorage.setItem("cgb-bg-mode",m);
-      parts=[];stars=[];
+      parts=[];stars=[];falls=[];
       start();
     }
     function toggleEnabled(v){
@@ -529,7 +826,7 @@
     let rt;
     window.addEventListener("resize",()=>{
       clearTimeout(rt);
-      rt=setTimeout(()=>{resize();parts=[];stars=[];start()},200);
+      rt=setTimeout(()=>{resize();parts=[];stars=[];falls=[];start()},200);
     });
     document.addEventListener("visibilitychange",()=>{
       if(document.hidden) stop();else if(enabled) start();

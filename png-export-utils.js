@@ -19,7 +19,7 @@ window.CGB_PNG=(function(){
     }
     if(str==="transparent") return {r:0,g:0,b:0,a:0};
     if(str==="currentcolor"||str==="inherit"||str==="initial"||str==="unset") return null;
-    const named={black:"#000",white:"#fff",red:"#f00",green:"#080",blue:"#00f",gold:"#cda85a"};
+    const named={black:"#000",white:"#fff",red:"#f00",green:"#080",blue:"#00f",gold:"#22d3ee"};
     if(named[str.toLowerCase()]) return parseColorToRgba(named[str.toLowerCase()]);
     return null;
   }
@@ -184,7 +184,7 @@ window.CGB_PNG=(function(){
           }
           .hier-cmd-inner{
             box-shadow:0 12px 28px rgba(0,0,0,.4) !important;
-            border:2px solid #cda85a !important;
+            border:2px solid #22d3ee !important;
             transform:none !important;
           }
           .hier-cmd-inner:hover{

@@ -47,6 +47,8 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
     <nav class="nav" id="mainNav">
       <a href="index.html" data-page="index.html" data-transition>Главная</a>
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
+      <a href="services.html" data-page="services.html" data-transition>Услуги</a>
+      <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
       <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
       <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
@@ -123,6 +125,8 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
       </div>
       <div class="footer-col">
         <h5>Разделы</h5>
+        <a href="services.html" data-page="services.html">Услуги и цены</a>
+        <a href="meds.html" data-page="meds.html">Медикаменты</a>
         <a href="index.html" data-page="index.html">Главная</a>
         <a href="ustav.html" data-page="ustav.html">Уставы</a>
         <a href="composition.html" data-page="composition.html">Состав</a>
@@ -211,7 +215,7 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
     <button class="modal-close" aria-label="Закрыть">✕</button>
     <h3 style="margin:0 0 8px">📸 Экспорт иерархии в PNG</h3>
     <div class="modal-sub" style="margin-bottom:14px">Красивая обложка для публикации в Discord / соц.сети. Превью ниже — что вы видите, то и получите.</div>
-    <div class="exp-controls" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding:12px;background:rgba(21,36,29,.45);border-radius:10px;border:1px solid rgba(205,168,90,.2)">
+    <div class="exp-controls" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding:12px;background:rgba(21,36,29,.45);border-radius:10px;border:1px solid rgba(34,211,238,.2)">
       <label class="cr-notify" style="display:inline-flex"><input type="checkbox" id="expShowContacts" checked><span>Показывать контакты (📞 📡)</span></label>
       <label class="cr-notify" style="display:inline-flex"><input type="checkbox" id="expShowPhotos" checked><span>Показывать фото</span></label>
       <label class="cr-notify" style="display:inline-flex"><input type="checkbox" id="expOnlyCards"><span>🎴 Только карточки (без обложки/фона)</span></label>
@@ -223,7 +227,7 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
         </select>
       </label>
     </div>
-    <div style="max-height:60vh;overflow:auto;border:1px solid rgba(205,168,90,.2);border-radius:12px;background:#0a1410;padding:16px">
+    <div style="max-height:60vh;overflow:auto;border:1px solid rgba(34,211,238,.2);border-radius:12px;background:#05202b;padding:16px">
       <div id="expPreviewWrap" style="display:flex;justify-content:center"><div id="expPreview"></div></div>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap">
@@ -578,7 +582,7 @@ function parseColorToRgba(str){
   }
   if(str==="transparent") return {r:0,g:0,b:0,a:0};
   if(str==="currentcolor"||str==="inherit"||str==="initial"||str==="unset") return null;
-  const named={black:"#000",white:"#fff",red:"#f00",green:"#080",blue:"#00f",gold:"#cda85a"};
+  const named={black:"#000",white:"#fff",red:"#f00",green:"#080",blue:"#00f",gold:"#22d3ee"};
   if(named[str.toLowerCase()]) return parseColorToRgba(named[str.toLowerCase()]);
   return null;
 }
@@ -759,7 +763,7 @@ async function expRender(){
   let canvas=null;
   try{
     canvas=await html2canvas(node,{
-      backgroundColor:transparent?null:"#0f1e17",
+      backgroundColor:transparent?null:"#0b3542",
       scale:scale,
       useCORS:true,
       allowTaint:true,
@@ -781,7 +785,7 @@ async function expRender(){
           }
           #expCanvas .hier-cmd,#expCanvas .hier-cmd-inner{
             box-shadow:0 8px 20px rgba(0,0,0,.4) !important;
-            border:2px solid #cda85a !important;
+            border:2px solid #22d3ee !important;
             transform:none !important;
             background:linear-gradient(180deg,#1c2b23,#0f1a14) !important;
             filter:none !important;

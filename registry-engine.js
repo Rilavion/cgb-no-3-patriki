@@ -2,7 +2,7 @@ window.CGB_REGISTRY=(function(){
   function client(){return window.CGB_AUTH&&window.CGB_AUTH.state&&window.CGB_AUTH.state.client}
 
   const KIND_LABELS={warn:"Предупреждение",reproach:"Выговор",talk:"Беседа с АБ",confinement:"Дисциплинарное заключение",uval:"Отстранение"};
-  const KIND_COLORS={warn:"#e6b800",reproach:"#e67e22",talk:"#5a8fcd",confinement:"#9b59b6",uval:"#e74c3c"};
+  const KIND_COLORS={warn:"#e6b800",reproach:"#e67e22",talk:"#38bdf8",confinement:"#9b59b6",uval:"#e74c3c"};
   const KIND_ICONS={warn:"⚠",reproach:"‼",talk:"💬",confinement:"🔒",uval:"⛔"};
 
   async function fetchSettings(){

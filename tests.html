@@ -34,6 +34,8 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
     <nav class="nav" id="mainNav">
       <a href="index.html" data-page="index.html" data-transition>Главная</a>
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
+      <a href="services.html" data-page="services.html" data-transition>Услуги</a>
+      <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
       <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
       <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
@@ -126,7 +128,7 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
     <div class="vp-arc-tab-body" data-tab="cats" style="display:none">
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <input type="text" id="tCatNewName" class="vp-search" placeholder="Название новой категории" style="flex:1">
-        <input type="color" id="tCatNewColor" value="#cda85a" style="width:44px;height:36px;border-radius:6px;border:1px solid var(--gold-b);cursor:pointer">
+        <input type="color" id="tCatNewColor" value="#22d3ee" style="width:44px;height:36px;border-radius:6px;border:1px solid var(--gold-b);cursor:pointer">
         <button class="btn btn-gold btn-sm" id="tCatAdd">+ Добавить</button>
       </div>
       <div class="tests-cats-list" id="tCatsList"></div>
@@ -241,7 +243,7 @@ function renderList(){
   for(const [cid,items] of byCat){
     const cat=catById(cid);
     const name=cat?cat.name:"Без категории";
-    const color=cat?cat.color:"#cda85a";
+    const color=cat?cat.color:"#22d3ee";
     parts.push(`<div class="tests-cat">
       <div class="tests-cat-title"><span class="tests-cat-dot" style="background:${esc(color)}"></span>${esc(name)}<span class="tests-cat-count">${items.length}</span></div>
       <div class="tests-cards">
@@ -315,7 +317,7 @@ async function renderAdminCats(){
   box.innerHTML=CATS.map(c=>`<div class="tests-cat-row">
     <span class="tests-cat-dot" style="background:${esc(c.color)}"></span>
     <input type="text" data-cat-name="${c.id}" value="${esc(c.name)}" class="vp-search" style="flex:1">
-    <input type="color" data-cat-color="${c.id}" value="${esc(c.color||'#cda85a')}" style="width:44px;height:36px;border-radius:6px;border:1px solid var(--gold-b);cursor:pointer">
+    <input type="color" data-cat-color="${c.id}" value="${esc(c.color||'#22d3ee')}" style="width:44px;height:36px;border-radius:6px;border:1px solid var(--gold-b);cursor:pointer">
     <input type="number" data-cat-sort="${c.id}" value="${c.sort||100}" style="width:70px" class="vp-search">
     <button class="btn btn-ghost btn-sm" data-cat-save="${c.id}">💾</button>
     <button class="btn btn-ghost btn-sm" data-cat-del="${c.id}">🗑</button>

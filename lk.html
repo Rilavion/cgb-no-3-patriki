@@ -53,6 +53,8 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
     <nav class="nav" id="mainNav">
       <a href="index.html" data-page="index.html" data-transition>Главная</a>
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
+      <a href="services.html" data-page="services.html" data-transition>Услуги</a>
+      <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
       <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
       <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
@@ -276,6 +278,7 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
           <div>
             <div class="footer-settings-label" style="margin-bottom:8px"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>Фон</div>
             <div class="fs-modes">
+              <button class="fs-mode" data-bg="falling">Атмосфера</button>
               <button class="fs-mode" data-bg="grid"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zm-10 10h6v6H4zm10 0h6v6h-6z"/></svg>Сеть</button>
               <button class="fs-mode" data-bg="stars"><svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .8-5.2 4.7 1.5 7L12 17.3 5.7 21l1.5-7L2 9.3l7-.8z"/></svg>Звёзды</button>
               <button class="fs-mode" data-bg="radar"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7V3z"/><circle cx="12" cy="12" r="1.5"/></svg>Радар</button>
@@ -294,6 +297,8 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
       </div>
       <div class="footer-col">
         <h5>Разделы</h5>
+        <a href="services.html" data-page="services.html">Услуги и цены</a>
+        <a href="meds.html" data-page="meds.html">Медикаменты</a>
         <a href="index.html" data-page="index.html">Главная</a>
         <a href="ustav.html" data-page="ustav.html">Уставы</a>
         <a href="composition.html" data-page="composition.html">Состав</a>
@@ -378,13 +383,13 @@ function initials(s){const p=(s||"").trim().split(/[\s@.]+/);return (p.slice(0,2
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
 const TYPE_COLORS={
-  news:"#f0d89b",vehicle:"#8fd97a",ustav:"#7ac3f0",lesson:"#c99af7",
-  app:"#5a8fcd","app-verdict":"#a2d8ff",
-  complaint:"#e97a7a","complaint-verdict":"#f0d89b",
+  news:"#a5f3fc",vehicle:"#8fd97a",ustav:"#7ac3f0",lesson:"#c99af7",
+  app:"#38bdf8","app-verdict":"#a2d8ff",
+  complaint:"#e97a7a","complaint-verdict":"#a5f3fc",
   violation:"#e97a7a","violation-removed":"#8fd97a",
-  vp:"#cda85a","vp-check":"#8fd97a",
-  supply:"#c99af7",payroll:"#f0d89b",
-  role:"#cda85a"
+  vp:"#22d3ee","vp-check":"#8fd97a",
+  supply:"#c99af7",payroll:"#a5f3fc",
+  role:"#22d3ee"
 };
 const TYPE_LABELS={
   news:"Новость",vehicle:"Техника",ustav:"Устав",lesson:"Урок",
@@ -396,18 +401,18 @@ const TYPE_LABELS={
   role:"Роль"
 };
 ["leave","vacation_ic","vacation_ooc","promotion","dismissal"].forEach(k=>{
-  TYPE_COLORS["request-"+k]="#5a8fcd";
+  TYPE_COLORS["request-"+k]="#38bdf8";
   TYPE_LABELS["request-"+k]="Заявка";
 });
 TYPE_COLORS["request-verdict"]="#a2d8ff";
 TYPE_LABELS["request-verdict"]="Вердикт";
 TYPE_COLORS["test"]="#c99af7";TYPE_LABELS["test"]="Тест";
 TYPE_COLORS["test-attempt"]="#8fd97a";TYPE_LABELS["test-attempt"]="Экзамен";
-TYPE_COLORS["test-review"]="#f0d89b";TYPE_LABELS["test-review"]="Проверка";
+TYPE_COLORS["test-review"]="#a5f3fc";TYPE_LABELS["test-review"]="Проверка";
 TYPE_COLORS["lesson-cat"]="#c99af7";TYPE_LABELS["lesson-cat"]="Категория";
-TYPE_COLORS["holiday"]="#f0d89b";TYPE_LABELS["holiday"]="Тема";
+TYPE_COLORS["holiday"]="#a5f3fc";TYPE_LABELS["holiday"]="Тема";
 TYPE_COLORS["composition"]="#7ac3f0";TYPE_LABELS["composition"]="Состав";
-TYPE_COLORS["raid-success"]="#7dd97d";TYPE_LABELS["raid-success"]="Налёт ✅";
+TYPE_COLORS["raid-success"]="#34d399";TYPE_LABELS["raid-success"]="Налёт ✅";
 TYPE_COLORS["raid-fail"]="#e97a7a";TYPE_LABELS["raid-fail"]="Налёт ❌";
 
 async function boot(){

@@ -75,6 +75,9 @@ const SECTIONS=[
   {key:"lk",label:"🔒 Личный кабинет",actions:["users","roles","settings"]},
   {key:"info",label:"ℹ Информация",actions:["edit"]},
   {key:"ustav",label:"📜 Уставы",actions:["edit"]},
+  {key:"services",label:"💉 Услуги и цены",actions:["edit"]},
+  {key:"meds",label:"💊 Медикаменты",actions:["edit"]},
+  {key:"site",label:"⚙ Контент сайта",actions:["edit"]},
   {key:"composition",label:"👥 Состав",actions:["edit"]},
   {key:"autopark",label:"🚗 Автопарк",actions:["edit"]},
   {key:"faq",label:"❓ FAQ",actions:["edit"]},
@@ -99,7 +102,7 @@ async function boot(){
     if(!perms.length) perms=[`<span class="vp-checker-empty">права не заданы</span>`];
     return `<div class="rl-item">
       <div class="rl-item-head">
-        <div class="rl-item-color" style="background:${esc(r.color||'#cda85a')}"></div>
+        <div class="rl-item-color" style="background:${esc(r.color||'#22d3ee')}"></div>
         <div class="rl-item-title">${esc(r.name)} <span class="rl-sys-badge">системная</span></div>
         <div class="rl-item-key"><code>${esc(r.key)}</code></div>
         <div class="rl-item-base">RLS-база: <b>${esc(r.base_role)}</b></div>

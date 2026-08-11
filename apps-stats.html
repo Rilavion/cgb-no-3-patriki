@@ -35,6 +35,8 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
     <nav class="nav" id="mainNav">
       <a href="index.html" data-page="index.html" data-transition>Главная</a>
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
+      <a href="services.html" data-page="services.html" data-transition>Услуги</a>
+      <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
       <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
       <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
@@ -230,7 +232,7 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 
 const STATUS_LABELS={new:"Новые",approved:"Одобрено",rejected:"Отказано",archived:"Архив"};
 const STATUS_ICONS={new:"🆕",approved:"✅",rejected:"❌",archived:"📦"};
-const STATUS_COLORS={new:"#a2d8ff",approved:"#7dd97d",rejected:"#e97a7a",archived:"#999"};
+const STATUS_COLORS={new:"#a2d8ff",approved:"#34d399",rejected:"#e97a7a",archived:"#999"};
 
 let ALL=[];
 
@@ -332,8 +334,8 @@ function render(){
 
   renderPie(counts,total);
   $("asStatusChart").innerHTML=renderBars(counts,total,k=>STATUS_ICONS[k]+" "+STATUS_LABELS[k],k=>STATUS_COLORS[k]);
-  $("asUserChart").innerHTML=renderBars(userStats,Math.max(1,total),k=>k,()=>"#cda85a",10);
-  $("asApprovedChart").innerHTML=renderBars(userApproved,Math.max(1,counts.approved||1),k=>k,()=>"#7dd97d",10);
+  $("asUserChart").innerHTML=renderBars(userStats,Math.max(1,total),k=>k,()=>"#22d3ee",10);
+  $("asApprovedChart").innerHTML=renderBars(userApproved,Math.max(1,counts.approved||1),k=>k,()=>"#34d399",10);
   $("asTypeChart").innerHTML=renderBars(typeCount,total,k=>k,()=>"#a2d8ff",10);
 
   renderList(list);

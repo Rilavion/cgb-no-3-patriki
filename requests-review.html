@@ -24,6 +24,8 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
   <nav class="nav" id="mainNav">
       <a href="index.html" data-page="index.html" data-transition>Главная</a>
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
+      <a href="services.html" data-page="services.html" data-transition>Услуги</a>
+      <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
       <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
       <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
@@ -104,7 +106,7 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
   <div class="modal-sub" id="rvVerdSub"></div>
   <div class="form-group"><label>Решение *</label>
     <div class="cr-verd-grid">
-      <button type="button" class="cr-verd-btn" data-v="approved" style="--vc:#7dd97d">✅ Одобрить</button>
+      <button type="button" class="cr-verd-btn" data-v="approved" style="--vc:#34d399">✅ Одобрить</button>
       <button type="button" class="cr-verd-btn" data-v="rejected" style="--vc:#e97a7a">❌ Отказать</button>
     </div>
   </div>
@@ -189,7 +191,7 @@ function renderList(){
   if(!list.length){box.innerHTML='<div class="apps-empty"><h3>Пусто</h3></div>';return}
   box.innerHTML=list.map(r=>{
     const m=CGB_REQUESTS.KIND_META[r.kind]||{icon:"📋",label:r.kind,color:"#888"};
-    const stColor=r.status==="approved"?"#7dd97d":r.status==="rejected"?"#e97a7a":r.status==="withdrawn"?"#999":"#a2d8ff";
+    const stColor=r.status==="approved"?"#34d399":r.status==="rejected"?"#e97a7a":r.status==="withdrawn"?"#999":"#a2d8ff";
     const stIcon=r.status==="approved"?"✅":r.status==="rejected"?"❌":r.status==="withdrawn"?"↩":"⏳";
     const stLbl=r.status==="approved"?"Одобрено":r.status==="rejected"?"Отказано":r.status==="withdrawn"?"Отозвано":"Ожидает";
     return `<div class="cr-item" data-id="${r.id}">

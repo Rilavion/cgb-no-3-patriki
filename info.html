@@ -50,6 +50,8 @@ body.cgb-is-admin .info-admin-bar{display:flex !important}
         <nav class="nav" id="mainNav">
       <a href="index.html" data-page="index.html" data-transition>Главная</a>
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
+      <a href="services.html" data-page="services.html" data-transition>Услуги</a>
+      <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
       <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
       <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
@@ -161,6 +163,7 @@ body.cgb-is-admin .info-admin-bar{display:flex !important}
           <div>
             <div class="footer-settings-label" style="margin-bottom:8px">Фон</div>
             <div class="fs-modes" id="fsModes">
+              <button class="fs-mode" data-bg="falling">Атмосфера</button>
               <button class="fs-mode" data-bg="grid">Сеть</button>
               <button class="fs-mode" data-bg="dots">Точки</button>
               <button class="fs-mode" data-bg="waves">Волны</button>
@@ -173,6 +176,8 @@ body.cgb-is-admin .info-admin-bar{display:flex !important}
         <h5>Разделы</h5>
         <a href="index.html">Главная</a>
         <a href="info.html">О больнице</a>
+        <a href="services.html">Услуги и цены</a>
+        <a href="meds.html">Медикаменты</a>
         <a href="news.html">Новости</a>
       </div>
       <div class="footer-col">
@@ -730,8 +735,8 @@ $("infoJsonApply").addEventListener("click",()=>{
       const p=parts[i];p.phase+=p.tw;
       p.x+=p.vx+Math.sin(p.phase)*.12;p.y+=p.vy;
       const alpha=p.a*(0.6+Math.sin(p.phase*2)*0.4);
-      ctx.beginPath();ctx.fillStyle=`rgba(240,216,155,${alpha})`;
-      ctx.shadowBlur=6;ctx.shadowColor="rgba(205,168,90,0.5)";
+      ctx.beginPath();ctx.fillStyle=`rgba(165,243,252,${alpha})`;
+      ctx.shadowBlur=6;ctx.shadowColor="rgba(34,211,238,0.5)";
       ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
       if(p.y<-20||p.x<-20||p.x>w+20){parts.splice(i,1);parts.push(spawn(w,h,false))}
     }

@@ -49,6 +49,8 @@ html,body{overflow:hidden}
     <nav class="nav" id="mainNav">
       <a href="index.html" data-page="index.html" data-transition>Главная</a>
       <a href="info.html" data-page="info.html" data-transition>Информация</a>
+      <a href="services.html" data-page="services.html" data-transition>Услуги</a>
+      <a href="meds.html" data-page="meds.html" data-transition>Медикаменты</a>
       <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
       <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
       <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
@@ -303,7 +305,7 @@ function renderAllMarkers(){
     el.style.left=m.x+"%";el.style.top=m.y+"%";
     var isC=INFO_CATS.indexOf(m.cat)!==-1;
     if(isC) el.classList.add("clickable");
-    var color=CAT_COLORS[m.cat]||"#cda85a";
+    var color=CAT_COLORS[m.cat]||"#22d3ee";
     var iu=m.icon||CAT_ICONS[m.cat];
     var dh;
     if(iu){
@@ -335,7 +337,7 @@ function openInfoPanel(m){
   $("mapIpName").textContent=m.name;
   var badge=$("mapIpCat");
   badge.textContent=m.cat;
-  var col=CAT_COLORS[m.cat]||"#cda85a";
+  var col=CAT_COLORS[m.cat]||"#22d3ee";
   badge.style.color=col;
   badge.style.background=col+"22";
   var descEl=$("mapIpDesc");
@@ -356,7 +358,7 @@ function buildSidePanel(){
   var list=$("mapSpList");list.innerHTML="";
   cats.forEach(function(cat){
     var items=MARKERS.filter(function(m){return m.cat===cat});
-    var color=CAT_COLORS[cat]||"#cda85a";
+    var color=CAT_COLORS[cat]||"#22d3ee";
     var block=document.createElement("div");block.className="map-cat-block";block.dataset.cat=cat;
     var header=document.createElement("div");header.className="map-cat-head";
     header.innerHTML='<input type="checkbox" class="map-cat-cb" data-cat="'+esc(cat)+'" checked>'+

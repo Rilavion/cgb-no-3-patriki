@@ -70,7 +70,7 @@ window.CGB_HOLIDAY=(function(){
 
   let bannerEl=null;
   let welcomeShown=false;
-  let fxCanvas=null,fxCtx=null,fxParticles=[],fxRaf=0,fxMode="none",fxColors=["#cda85a"];
+  let fxCanvas=null,fxCtx=null,fxParticles=[],fxRaf=0,fxMode="none",fxColors=["#22d3ee"];
 
   function apply(){
     const cfg=readCfg();
@@ -128,7 +128,7 @@ window.CGB_HOLIDAY=(function(){
     fxCtx.setTransform(dpr,0,0,dpr,0,0);
   }
   function startFx(mode,colors){
-    fxMode=mode;fxColors=colors&&colors.length?colors:["#cda85a"];
+    fxMode=mode;fxColors=colors&&colors.length?colors:["#22d3ee"];
     const bgOff=window.CGB_BG&&window.CGB_BG.isEnabled&&!window.CGB_BG.isEnabled();
     if(mode==="none"||!mode||bgOff){
       if(fxCanvas){fxCanvas.remove();fxCanvas=null;fxCtx=null;fxParticles=[]}

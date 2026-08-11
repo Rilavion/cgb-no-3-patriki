@@ -98,55 +98,57 @@ window.CGB_STATS=(function(){
 
   function inlineHTML(sections, title, subtitle){
     const CSS_INLINE=`
-      background:#15241d;padding:32px 40px 24px;border:2px solid #cda85a;border-radius:20px;
-      width:1100px;color:#f5ecd6;font-family:Arial,sans-serif;box-sizing:border-box;
+      background:#07242e;padding:32px 40px 24px;border:2px solid #22d3ee;border-radius:20px;
+      width:1100px;color:#eaf6fa;font-family:Arial,sans-serif;box-sizing:border-box;
     `;
     let html=`<div style="${CSS_INLINE}">`;
-    html+=`<div style="text-align:center;padding-bottom:16px;border-bottom:1px solid rgba(205,168,90,.35);margin-bottom:20px">
-      <div style="font-family:Georgia,serif;font-size:36px;font-weight:700;color:#f0d89b;line-height:1.1">${esc(title)}</div>
-      ${subtitle?`<div style="color:#c8bea4;font-size:13px;margin-top:8px">${esc(subtitle)}</div>`:""}
+    html+=`<div style="height:6px;border-radius:6px;background:linear-gradient(90deg,#06b6d4,#34d399,#22d3ee);margin-bottom:18px"></div>`;
+    html+=`<div style="text-align:center;padding-bottom:16px;border-bottom:1px solid rgba(34,211,238,.35);margin-bottom:20px;position:relative">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#10b981);color:#05202b;font-size:26px;font-weight:800;margin-bottom:10px;box-shadow:0 8px 24px rgba(6,182,212,.35)">✚</div>
+      <div style="font-family:Georgia,serif;font-size:36px;font-weight:700;color:#a5f3fc;line-height:1.1">${esc(title)}</div>
+      ${subtitle?`<div style="color:#a9ccd6;font-size:13px;margin-top:8px">${esc(subtitle)}</div>`:""}
     </div>`;
     for(const s of sections){
-      if(s.title && !s.rows && !s.cards) html+=`<div style="color:#cda85a;font:600 12px Arial;letter-spacing:.2em;text-transform:uppercase;margin:16px 0 10px">${esc(s.title)}</div>`;
+      if(s.title && !s.rows && !s.cards) html+=`<div style="color:#22d3ee;font:600 12px Arial;letter-spacing:.2em;text-transform:uppercase;margin:16px 0 10px">${esc(s.title)}</div>`;
       if(Array.isArray(s.cards)){
         html+=`<div style="display:grid;grid-template-columns:repeat(${Math.min(s.cards.length,6)},1fr);gap:12px;margin-bottom:16px">`;
         for(const c of s.cards){
-          const col=c[2]==="ok"?"#7dd97d":c[2]==="err"?"#e97a7a":c[2]==="pend"?"#e6b800":c[2]==="info"?"#5a8fcd":"#f0d89b";
-          html+=`<div style="background:#0f1e17;border:1px solid rgba(205,168,90,.35);border-radius:8px;padding:14px;text-align:center">
-            <div style="color:#a8a08a;font:600 10px Arial;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">${esc(c[0])}</div>
+          const col=c[2]==="ok"?"#34d399":c[2]==="err"?"#e97a7a":c[2]==="pend"?"#e6b800":c[2]==="info"?"#38bdf8":"#a5f3fc";
+          html+=`<div style="background:#0b3542;border:1px solid rgba(34,211,238,.35);border-radius:8px;padding:14px;text-align:center">
+            <div style="color:#8fb6c2;font:600 10px Arial;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">${esc(c[0])}</div>
             <div style="color:${col};font-family:Georgia,serif;font-size:32px;font-weight:700;line-height:1">${esc(String(c[1]))}</div>
           </div>`;
         }
         html+=`</div>`;
       }
       if(Array.isArray(s.rows)){
-        if(s.title && (s.cards===undefined)) html+=`<div style="color:#cda85a;font:600 12px Arial;letter-spacing:.2em;text-transform:uppercase;margin:16px 0 10px">${esc(s.title)}</div>`;
-        html+=`<div style="background:#0f1e17;border:1px solid rgba(205,168,90,.25);border-radius:8px;padding:14px;margin-bottom:12px">
+        if(s.title && (s.cards===undefined)) html+=`<div style="color:#22d3ee;font:600 12px Arial;letter-spacing:.2em;text-transform:uppercase;margin:16px 0 10px">${esc(s.title)}</div>`;
+        html+=`<div style="background:#0b3542;border:1px solid rgba(34,211,238,.25);border-radius:8px;padding:14px;margin-bottom:12px">
           <table style="width:100%;border-collapse:collapse;font-size:13px">`;
         for(const r of s.rows){
           html+=`<tr>
-            <td style="padding:6px 10px;color:#f5ecd6;border-bottom:1px solid rgba(205,168,90,.12)">${esc(r[0])}</td>
-            <td style="padding:6px 10px;text-align:right;color:#f0d89b;font-weight:600;border-bottom:1px solid rgba(205,168,90,.12);font-variant-numeric:tabular-nums">${esc(r[1])}</td>
+            <td style="padding:6px 10px;color:#eaf6fa;border-bottom:1px solid rgba(34,211,238,.12)">${esc(r[0])}</td>
+            <td style="padding:6px 10px;text-align:right;color:#a5f3fc;font-weight:600;border-bottom:1px solid rgba(34,211,238,.12);font-variant-numeric:tabular-nums">${esc(r[1])}</td>
           </tr>`;
         }
         html+=`</table></div>`;
       }
       if(Array.isArray(s.bars)){
-        if(s.title) html+=`<div style="color:#cda85a;font:600 12px Arial;letter-spacing:.2em;text-transform:uppercase;margin:16px 0 10px">${esc(s.title)}</div>`;
-        html+=`<div style="background:#0f1e17;border:1px solid rgba(205,168,90,.25);border-radius:8px;padding:14px;margin-bottom:12px">`;
+        if(s.title) html+=`<div style="color:#22d3ee;font:600 12px Arial;letter-spacing:.2em;text-transform:uppercase;margin:16px 0 10px">${esc(s.title)}</div>`;
+        html+=`<div style="background:#0b3542;border:1px solid rgba(34,211,238,.25);border-radius:8px;padding:14px;margin-bottom:12px">`;
         const max=Math.max(...s.bars.map(b=>b[1]),1);
         for(const b of s.bars){
           const w=Math.max(2,b[1]*100/max);
           html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:13px">
-            <div style="min-width:180px;color:#f5ecd6">${esc(b[0])}</div>
-            <div style="flex:1;height:16px;background:#0a1410;border-radius:4px;overflow:hidden"><div style="height:100%;width:${w}%;background:linear-gradient(90deg,#cda85a,#f0d89b)"></div></div>
-            <div style="min-width:50px;text-align:right;color:#f0d89b;font-weight:600;font-size:12px">${b[1]}</div>
+            <div style="min-width:180px;color:#eaf6fa">${esc(b[0])}</div>
+            <div style="flex:1;height:16px;background:#05202b;border-radius:4px;overflow:hidden"><div style="height:100%;width:${w}%;background:linear-gradient(90deg,#22d3ee,#a5f3fc)"></div></div>
+            <div style="min-width:50px;text-align:right;color:#a5f3fc;font-weight:600;font-size:12px">${b[1]}</div>
           </div>`;
         }
         html+=`</div>`;
       }
     }
-    html+=`<div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(205,168,90,.3);text-align:center;color:#a8a08a;font-size:11px;letter-spacing:.1em">ЦГБ №3 · Центральная Городская · ${nowStamp()} МСК</div>`;
+    html+=`<div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(34,211,238,.3);text-align:center;color:#8fb6c2;font-size:11px;letter-spacing:.1em">ЦГБ №3 · Центральная Городская · ${nowStamp()} МСК</div>`;
     html+=`</div>`;
     return html;
   }
@@ -164,7 +166,7 @@ window.CGB_STATS=(function(){
     try{
       const canvas=await window.html2canvas(wrap.firstElementChild,{
         scale:opts.scale||2,
-        backgroundColor:"#15241d",
+        backgroundColor:"#07242e",
         useCORS:true,
         logging:false,
         imageTimeout:15000,

@@ -2,11 +2,11 @@ window.CGB_REQUESTS=(function(){
   function client(){return window.CGB_AUTH&&window.CGB_AUTH.state&&window.CGB_AUTH.state.client}
 
   const KIND_META={
-    leave:{label:"Отгул",icon:"🕒",color:"#5a8fcd"},
+    leave:{label:"Отгул",icon:"🕒",color:"#38bdf8"},
     vacation_ic:{label:"Отпуск (IC)",icon:"🏖",color:"#8fd97a"},
     vacation_ooc:{label:"Отпуск (OOC)",icon:"💤",color:"#a2d8ff"},
     dismissal:{label:"Увольнение",icon:"⛔",color:"#e97a7a"},
-    promotion:{label:"Повышение",icon:"⭐",color:"#f0d89b"},
+    promotion:{label:"Повышение",icon:"⭐",color:"#a5f3fc"},
     restoration:{label:"Восстановление",icon:"🔄",color:"#7ac3f0"}
   };
 
