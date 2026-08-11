@@ -1,8 +1,54 @@
+/* Автоподстановка данных сотрудников в формы (ФИО/Статик/Discord ID/Должность).
+   Источник — таблица ds_members, которую наполняет Discord-бот.
+   Ник на сервере: «Должность | ФИО | Статик» (например: «Фел | Иванов И.И. | 355-221»).
+   parseNick работает и на сайте, поэтому даже старые строки (до ресинхронизации
+   бота) отображаются корректно. Результаты кэшируются в localStorage на 10 минут. */
 window.CGB_DSAC=(function(){
   let DS_LIST=null;
   let loading=null;
+  const LS_KEY="cgb-dsac-members-v2";
+  const LS_TTL=10*60*1000;
 
-  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c])}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+  /* --- парсер ника «Должность | ФИО | Статик» (та же логика, что у бота) --- */
+  const POS_ROOTS=["замзав","орд2г","орд1г","згв","ввк","в1к","в2к","фарм","всп","асс","зав","орд","фел","сан","гв",
+    "заместитель","заведующ","главврач","ассистент","ординатор","фельдшер","санитар","фармацевт"];
+  function looksLikePosition(p){
+    const t=String(p||"").toLowerCase().replace(/[\s.]+/g,"");
+    if(!t) return false;
+    return POS_ROOTS.some(r=>t.startsWith(r));
+  }
+  function staticOf(p){
+    const d=String(p||"").replace(/\D/g,"");
+    return (d.length>=4&&d.length<=7)?p.trim().replace(/^[\s№#]+/,""):null;
+  }
+  function parseNick(raw){
+    const s=String(raw||"").trim();
+    if(!s) return {pos:null,fio:null,stat:null};
+    const parts=s.split("|").map(p=>p.trim()).filter(Boolean);
+    if(parts.length===1) return {pos:null,fio:s,stat:staticOf(s)};
+    let stat=null,rest=parts;
+    const si=parts.findIndex(p=>staticOf(p));
+    if(si>=0){stat=staticOf(parts[si]);rest=parts.filter((_,i)=>i!==si);}
+    let pos=null,fio=null;
+    if(rest.length>=2){
+      if(looksLikePosition(rest[0])||!looksLikePosition(rest[1])){ pos=rest[0];fio=rest.slice(1).join(" | "); }
+      else{ fio=rest[0];pos=rest.slice(1).join(" | "); }
+    }else if(rest.length===1){
+      if(looksLikePosition(rest[0])) pos=rest[0]; else fio=rest[0];
+    }
+    return {pos,fio:fio||null,stat};
+  }
+
+  function readLS(){
+    try{
+      const j=JSON.parse(localStorage.getItem(LS_KEY)||"null");
+      if(j&&j.at&&Date.now()-j.at<LS_TTL&&Array.isArray(j.data)) return j.data;
+    }catch(e){}
+    return null;
+  }
+  function writeLS(list){try{localStorage.setItem(LS_KEY,JSON.stringify({at:Date.now(),data:list}))}catch(e){}}
 
   async function waitForClient(timeoutMs){
     const deadline=Date.now()+(timeoutMs||10000);
@@ -20,25 +66,39 @@ window.CGB_DSAC=(function(){
     loading=(async()=>{
       try{
         const c=await waitForClient(10000);
-        if(!c){ console.warn("[dsac] no client after 10s"); return []; }
-        const {data,error}=await c.from("ds_members").select("parsed_fio,parsed_static,parsed_dept,discord_id,raw_nick,display_name").eq("active",true).limit(2000);
-        if(error){ console.warn("[dsac] load:",error.message); return []; }
+        if(!c){
+          console.warn("[dsac] no client after 10s");
+          return readLS()||[];
+        }
+        const {data,error}=await c.from("ds_members").select("parsed_fio,parsed_static,parsed_dept,discord_id,raw_nick,display_name,username").eq("active",true).limit(2000);
+        if(error){
+          console.warn("[dsac] load:",error.message);
+          return readLS()||[];
+        }
         const seen=new Set();
-        const list=(data||[]).filter(m=>{
-          const fio=(m.parsed_fio||m.display_name||m.raw_nick||"").trim();
-          if(!fio) return false;
-          const k=fio+"|"+(m.parsed_static||"");
+        const list=(data||[]).map(m=>{
+          // raw_nick — источник правды: сами парсим «Должность | ФИО | Статик»
+          const p=parseNick(m.raw_nick);
+          return {
+            fio:(p.fio||m.parsed_fio||m.display_name||m.raw_nick||"").trim(),
+            static:p.stat||m.parsed_static||"",
+            did:m.discord_id||"",
+            position:p.pos||m.parsed_dept||"",
+            username:m.username||"",
+            nick:m.raw_nick||""
+          };
+        }).filter(m=>{
+          if(!m.fio) return false;
+          const k=m.fio+"|"+m.static;
           if(seen.has(k)) return false; seen.add(k); return true;
-        }).map(m=>({
-          fio:(m.parsed_fio||m.display_name||m.raw_nick||"").trim(),
-          static:m.parsed_static||"",
-          did:m.discord_id||"",
-          position:m.parsed_dept||""
-        }));
-        if(list.length) DS_LIST=list;
+        });
+        if(list.length){ DS_LIST=list; writeLS(list); }
         console.log("[dsac] loaded",list.length);
-        return list;
-      }catch(e){ console.warn("[dsac]:",e.message); return []; }
+        return list.length?list:(readLS()||[]);
+      }catch(e){
+        console.warn("[dsac]:",e.message);
+        return readLS()||[];
+      }
       finally { loading=null; }
     })();
     return loading;
@@ -123,19 +183,27 @@ window.CGB_DSAC=(function(){
       const digits=q.replace(/\D/g,"");
       const matches=list.filter(m=>{
         const fioLow=(m.fio||"").toLowerCase();
+        const posLow=(m.position||"").toLowerCase();
         const statNorm=(m.static||"").replace(/\D/g,"");
-        return fioLow.includes(qLow) || (digits && digits.length>=2 && statNorm.includes(digits));
+        return fioLow.includes(qLow)
+          || posLow.includes(qLow)
+          || (m.username||"").toLowerCase().includes(qLow)
+          || (digits && digits.length>=2 && statNorm.includes(digits));
       }).slice(0,10);
       if(!matches.length){
-        dd.innerHTML='<div class="cr-dd-empty">Ничего не найдено</div>';
+        dd.innerHTML='<div class="cr-dd-empty">'+(list.length
+          ? 'Ничего не найдено'
+          : 'Список состава пуст — бот ещё не синхронизировал Discord (см. BOT-SETUP.md)')+'</div>';
         dd.style.display=""; positionDropdown(input,dd); return;
       }
       dd.innerHTML=matches.map(m=>{
-        const posPart=m.position?`<span class="cr-dd-pos">${esc(m.position)}</span>`:"";
-        const statPart=m.static?`<span class="cr-dd-stat">${esc(m.static)}</span>`:"";
+        // строка метаданных: Должность | Статик (ФИО — крупно выше)
+        let meta="";
+        if(m.position) meta+=`<span class="cr-dd-pos">${esc(m.position)}</span>`;
+        if(m.static) meta+=(m.position?'<span class="cr-dd-sep">|</span>':"")+`<span class="cr-dd-stat">Статик ${esc(m.static)}</span>`;
         return `<div class="cr-dd-item" data-fio="${esc(m.fio)}" data-static="${esc(m.static)}" data-did="${esc(m.did)}" data-pos="${esc(m.position)}">
           <div class="cr-dd-fio">${esc(m.fio)}</div>
-          <div class="cr-dd-meta">${statPart}${posPart}</div>
+          <div class="cr-dd-meta">${meta||`<span class="cr-dd-pos">${esc(m.nick||"")}</span>`}</div>
         </div>`;
       }).join("");
       dd.style.display="";
@@ -232,5 +300,5 @@ window.CGB_DSAC=(function(){
     setTimeout(bindAll,3000);
   }
 
-  return { load, bind, bindAll };
+  return { load, bind, bindAll, parseNick, invalidate(){ DS_LIST=null; try{localStorage.removeItem(LS_KEY)}catch(e){} } };
 })();

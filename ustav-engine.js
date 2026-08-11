@@ -1,22 +1,10 @@
 window.CGB_USTAV=(function(){
   const DEFAULT_EMBLEM="logo.png";
 
-  const DEFAULT_DATA=[
-    {slug:"kodeks-etiki",theme:"t1",title:"Кодекс этики медицинского работника",code:"1781813401486",meta:"Министерство здравоохранения<br>ЦГБ №3",emblem:DEFAULT_EMBLEM,
-      full:"КОДЕКС ЭТИКИ МЕДИЦИНСКОГО РАБОТНИКА ЦГБ №3",
-      sub:"Центральная Городская Больница №3 · ЦГБ №3",
-      preamble:"",chapters:[],
-      signature:{title:"Главный врач ЦГБ №3",rank:"заслуженный врач",name:"Волков Р.А."}
-    },
-    {slug:"vnutrenniy-rasporyadok",theme:"t2",title:"Правила внутреннего распорядка",code:"1781813453292",meta:"Трудовой распорядок<br>ЦГБ №3",emblem:DEFAULT_EMBLEM,
-      full:"ПРАВИЛА ВНУТРЕННЕГО ТРУДОВОГО РАСПОРЯДКА",sub:"ЦГБ №3 · Центральная Городская Больница",preamble:"",chapters:[],signature:null},
-    {slug:"disciplinarnoe-polozhenie",theme:"t3",title:"Дисциплинарное положение",code:"1781813512103",meta:"Трудовая дисциплина<br>ЦГБ №3",emblem:DEFAULT_EMBLEM,
-      full:"ДИСЦИПЛИНАРНОЕ ПОЛОЖЕНИЕ",sub:"ЦГБ №3 · Центральная Городская Больница",preamble:"",chapters:[],signature:null},
-    {slug:"sanitarnyy-reglament",theme:"t4",title:"Санитарный регламент",code:"1781813587291",meta:"Санитарные нормы<br>ЦГБ №3",emblem:DEFAULT_EMBLEM,
-      full:"САНИТАРНО-ЭПИДЕМИОЛОГИЧЕСКИЙ РЕГЛАМЕНТ",sub:"ЦГБ №3 · Центральная Городская Больница",preamble:"",chapters:[],signature:null},
-    {slug:"reglament-administracii",theme:"t5",title:"Регламент администрации",code:"1781813632975",meta:"Администрация больницы<br>ЦГБ №3",emblem:DEFAULT_EMBLEM,
-      full:"РЕГЛАМЕНТ АДМИНИСТРАЦИИ БОЛЬНИЦЫ",sub:"ЦГБ №3 · Центральная Городская Больница",preamble:"",chapters:[],signature:null}
-  ];
+  // На сайте ОДИН документ — Устав (слаг ustav, старый svod-ustavov подхватывается
+  // страницей ustav.html как легаси). Армейских заглушек больше нет: если база
+  // недоступна, страница покажет встроенный defaultDoc().
+  const DEFAULT_DATA=[];
 
   const THEMES=[
     {id:"t1",name:"Бирюзовый"},

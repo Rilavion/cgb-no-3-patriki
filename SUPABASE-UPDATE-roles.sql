@@ -11,7 +11,29 @@
 --   Личный кабинет → панель ролей → выбрать пользователя → роль.
 -- • Системные роли видны на странице roles.html, удалить их нельзя,
 --   при повторном запуске файла права просто обновятся (on conflict).
+--
+-- Если здесь (или ниже) падает "column ... does not exist" — ваша таблица
+-- создана старым скриптом: сначала выполните SUPABASE-FIX.sql, он достроит
+-- все колонки одним файлом. Спасательный блок ниже делает то же самое.
 -- =====================================================================
+
+create extension if not exists pgcrypto;
+
+-- Спасательные колонки custom_roles (если таблица создавалась раньше без них)
+alter table public.custom_roles add column if not exists id uuid;
+alter table public.custom_roles add column if not exists key text;
+alter table public.custom_roles add column if not exists base_role text;
+alter table public.custom_roles add column if not exists name text;
+alter table public.custom_roles add column if not exists description text;
+alter table public.custom_roles add column if not exists color text;
+alter table public.custom_roles add column if not exists permissions jsonb not null default '{}'::jsonb;
+alter table public.custom_roles add column if not exists default_perms jsonb not null default '{}'::jsonb;
+alter table public.custom_roles add column if not exists sort integer not null default 0;
+alter table public.custom_roles add column if not exists updated_at timestamptz not null default now();
+update public.custom_roles set id = gen_random_uuid() where id is null;
+alter table public.custom_roles alter column id set default gen_random_uuid();
+create unique index if not exists custom_roles_id_uidx on public.custom_roles(id);
+create unique index if not exists custom_roles_key_uidx on public.custom_roles(key);
 
 insert into public.custom_roles (key, base_role, name, description, color, permissions, default_perms, sort)
 values

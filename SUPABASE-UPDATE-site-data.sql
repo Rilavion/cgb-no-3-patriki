@@ -5,6 +5,21 @@
 -- Выполни целиком в: Supabase Dashboard → SQL Editor → New query → Run.
 -- =====================================================================
 
+-- 0. Спасательные колонки (если роли создавались старым скриптом и функция
+--    ниже падала с "column cr.id does not exist" — этот блок чинит причину).
+--    Ещё проще: выполнить один файл SUPABASE-FIX.sql — он чинит всё сразу.
+create extension if not exists pgcrypto;
+alter table public.custom_roles add column if not exists id uuid;
+alter table public.custom_roles add column if not exists key text;
+alter table public.custom_roles add column if not exists permissions jsonb not null default '{}'::jsonb;
+alter table public.custom_roles add column if not exists updated_at timestamptz not null default now();
+update public.custom_roles set id = gen_random_uuid() where id is null;
+alter table public.custom_roles alter column id set default gen_random_uuid();
+create unique index if not exists custom_roles_id_uidx on public.custom_roles(id);
+create unique index if not exists custom_roles_key_uidx on public.custom_roles(key);
+alter table public.user_roles add column if not exists custom_role_id uuid;
+alter table public.user_roles add column if not exists updated_at timestamptz not null default now();
+
 -- 1. Таблица. Строки специально НЕ создаём: страницы берут встроенный
 --    дефолтный контент, пока кто-то с правами не нажмёт «Сохранить».
 create table if not exists public.site_data (

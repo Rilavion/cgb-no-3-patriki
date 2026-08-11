@@ -44,6 +44,7 @@ create table if not exists public.custom_roles (
 alter table public.user_roles add column if not exists display_name text;
 alter table public.user_roles add column if not exists custom_role_id uuid;
 alter table public.user_roles add column if not exists updated_at timestamptz not null default now();
+alter table public.custom_roles add column if not exists id uuid;
 alter table public.custom_roles add column if not exists key text;
 alter table public.custom_roles add column if not exists base_role text;   -- admin / ss / user
 alter table public.custom_roles add column if not exists name text;
@@ -52,6 +53,11 @@ alter table public.custom_roles add column if not exists color text;
 alter table public.custom_roles add column if not exists permissions jsonb not null default '{}'::jsonb;
 alter table public.custom_roles add column if not exists default_perms jsonb not null default '{}'::jsonb;
 alter table public.custom_roles add column if not exists sort integer not null default 0;
+alter table public.custom_roles add column if not exists updated_at timestamptz not null default now();
+update public.custom_roles set id = gen_random_uuid() where id is null;
+alter table public.custom_roles alter column id set default gen_random_uuid();
+create unique index if not exists custom_roles_id_uidx on public.custom_roles(id);
+create unique index if not exists custom_roles_key_uidx on public.custom_roles(key);
 
 -- ---------- Контентные страницы ----------
 create table if not exists public.news (
@@ -752,6 +758,19 @@ create table if not exists public.ds_sync_requests (
   created_at timestamptz not null default now(),
   processed_at timestamptz
 );
+
+-- Спасательные колонки для таблиц бота (если они созданы старым скриптом).
+-- Бот (bot/vp.js) умеет пропускать отсутствующие колонки сам, но для полных
+-- данных (аватарки, global_name, даты) лучше иметь весь набор.
+alter table public.ds_roles add column if not exists updated_at timestamptz not null default now();
+alter table public.ds_members add column if not exists username text;
+alter table public.ds_members add column if not exists global_name text;
+alter table public.ds_members add column if not exists is_bot boolean not null default false;
+alter table public.ds_members add column if not exists joined_at timestamptz;
+alter table public.ds_members add column if not exists last_seen timestamptz;
+alter table public.ds_sync_requests add column if not exists message text;
+alter table public.ds_sync_requests add column if not exists members_scanned integer;
+alter table public.ds_sync_requests add column if not exists finished_at timestamptz;
 
 -- ---------- Прочее ----------
 create table if not exists public.raids_events (

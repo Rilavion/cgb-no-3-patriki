@@ -6,15 +6,11 @@
   document.addEventListener("DOMContentLoaded",init);
 
   function init(){
-    setupThemeToggle();
-    setupBurger();
-    setupReveal();
-    setupBackground();
-    setupSiteSettings();
-    setupTransitions();
-    setupActiveNav();
-    setupFab();
-    setupSearch();
+    // каждый блок независим: сбой одного не ломает остальные (в т.ч. поиск)
+    [setupThemeToggle,setupBurger,setupReveal,setupBackground,setupSiteSettings,
+     setupTransitions,setupActiveNav,setupFab,setupSearch].forEach(fn=>{
+      try{fn()}catch(e){console.warn("[main] init step failed:",e&&e.message)}
+    });
   }
 
   function applyTheme(next){
@@ -324,20 +320,51 @@
   }
 
   function setupSearch(){
-    const modal=document.getElementById("searchModal");
-    if(!modal) return;
+    // Если на странице нет разметки окна поиска — создаём её сами,
+    // чтобы поиск работал на КАЖДОЙ странице, а не только там, где модалка вставлена вручную.
+    let modal=document.getElementById("searchModal");
+    if(!modal){
+      modal=document.createElement("div");
+      modal.className="search-modal";
+      modal.id="searchModal";
+      modal.innerHTML='<div class="search-box">'+
+        '<div class="search-input-wrap">'+
+          '<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.49-1.49-5-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>'+
+          '<input class="search-input" placeholder="Поиск по сайту..." spellcheck="false">'+
+          '<button class="search-close-kbd">Esc</button>'+
+        '</div>'+
+        '<div class="search-results"></div>'+
+      '</div>';
+      document.body.appendChild(modal);
+    }
     const input=modal.querySelector(".search-input");
     const results=modal.querySelector(".search-results");
-    const openers=document.querySelectorAll("[data-open-search]");
+    // Если в шапке страницы нет кнопки поиска — добавляем её сами
+    let openers=document.querySelectorAll("[data-open-search]");
+    if(!openers.length){
+      const host=document.querySelector(".header-actions");
+      if(host){
+        const b=document.createElement("button");
+        b.className="search-btn";
+        b.setAttribute("data-open-search","");
+        b.title="Поиск (Ctrl+K)";
+        b.innerHTML='<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.49-1.49-5-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg><span>Поиск</span>';
+        const burger=document.getElementById("burger");
+        host.insertBefore(b,burger||null);
+      }
+      openers=document.querySelectorAll("[data-open-search]");
+    }
     const closer=modal.querySelector(".search-close-kbd");
 
-    let DATASET=[
-      {group:"Страницы",title:"Главная",hint:"Общая информация о больнице",href:"index.html",kw:"главная home"},
-      {group:"Страницы",title:"Услуги",hint:"Платные медицинские услуги и цены",href:"services.html",kw:"услуги прайс цены запись"},
+    // Стартовый набор — список страниц. Полный индекс (новости, устав,
+    // сотрудники, услуги, медикаменты...) подгрузит search-engine.js.
+    let DATASET=(window.CGB_SEARCH&&window.CGB_SEARCH.STATIC)?window.CGB_SEARCH.STATIC.slice():[
+      {group:"Страницы",title:"Главная",hint:"Общая информация о больнице",href:"index.html",kw:"главная home стартовая"},
+      {group:"Страницы",title:"Услуги",hint:"Платные медицинские услуги и цены",href:"services.html",kw:"услуги прайс цены запись платно"},
       {group:"Страницы",title:"Медикаменты",hint:"Справочник препаратов",href:"meds.html",kw:"медикаменты лекарства препараты таблетки"},
-      {group:"Страницы",title:"Устав",hint:"Свод уставов больницы",href:"ustav.html",kw:"устав документы"},
+      {group:"Страницы",title:"Устав",hint:"Единый устав больницы",href:"ustav.html",kw:"устав правила регламент"},
       {group:"Страницы",title:"Новости",hint:"Оперативная сводка",href:"news.html",kw:"новости"},
-      {group:"Страницы",title:"Автопарк",hint:"Транспорт больницы",href:"autopark.html",kw:"автопарк техника"},
+      {group:"Страницы",title:"Автопарк",hint:"Фотогалерея транспорта",href:"autopark.html",kw:"автопарк техника фото"},
       {group:"Страницы",title:"Карта",hint:"Схема территории",href:"map.html",kw:"карта"},
       {group:"Страницы",title:"FAQ",hint:"Частые вопросы",href:"faq.html",kw:"faq вопросы"}
     ];
@@ -345,18 +372,21 @@
     if(window.CGB_SEARCH){
       window.CGB_SEARCH.build().then(d=>{DATASET=d;if(modal.classList.contains("active")) render(input.value)}).catch(()=>{});
     }
-    if(window.CGB_USTAV_TOC){
-      window.CGB_USTAV_TOC.forEach(t=>DATASET.push({group:"Разделы устава",title:t.label,hint:"Свод уставов ЦГБ №3",href:"ustav.html#doc/svod-ustavov--"+t.id,kw:t.label}));
-    }
 
     const iconFor=g=>({
       "Страницы":`<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zm2 4v12h14V7z"/></svg>`,
       "Устав":`<svg viewBox="0 0 24 24"><path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-1 15H7v-2h10zm0-4H7v-2h10zm0-4H7V7h10z"/></svg>`,
       "Разделы устава":`<svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>`,
+      "Статьи устава":`<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm4 18V9h-5V4H6v16zM8 12h8v2H8zm0 4h8v2H8z"/></svg>`,
       "Новости":`<svg viewBox="0 0 24 24"><path d="M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM8 17H5v-2h3zm0-4H5v-2h3zm0-4H5V7h3zm5 8h-3v-2h3zm0-4h-3v-2h3zm0-4h-3V7h3zm6 8h-4v-2h4zm0-4h-4v-2h4zm0-4h-4V7h4z"/></svg>`,
       "Автопарк":`<svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>`,
       "Обучение":`<svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>`,
       "Состав":`<svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`,
+      "Сотрудники":`<svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/></svg>`,
+      "Услуги":`<svg viewBox="0 0 24 24"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zm-6 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM9 8V6a3 3 0 0 1 6 0v2z"/></svg>`,
+      "Медикаменты":`<svg viewBox="0 0 24 24"><path d="M4.22 11.29l5.66-5.66a5.003 5.003 0 0 1 7.07 0l2.83 2.83a5.003 5.003 0 0 1 0 7.07l-5.66 5.66a5.003 5.003 0 0 1-7.07 0l-2.83-2.83a5.003 5.003 0 0 1 0-7.07zm8.49 2.83l-4.95-4.95" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+      "Заявления и формы":`<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9z"/></svg>`,
+      "Администрирование":`<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5zm-2 16h4v-2h-4zm0-8h4v6h-4z" opacity=".9"/></svg>`,
       "FAQ":`<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>`
     }[g]||`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>`);
 
@@ -364,7 +394,13 @@
 
     function render(q){
       q=(q||"").trim().toLowerCase();
-      const list=q?DATASET.filter(d=>(d.title+" "+d.hint+" "+d.kw).toLowerCase().includes(q)):DATASET;
+      // многословный запрос: все слова должны встречаться (в любом месте)
+      const words=q?q.split(/\s+/).filter(Boolean):[];
+      const match=d=>{
+        const hay=(d.title+" "+(d.hint||"")+" "+(d.kw||"")).toLowerCase();
+        return words.every(w=>hay.includes(w));
+      };
+      const list=words.length?DATASET.filter(match).slice(0,120):DATASET;
       visible=list;selectedIdx=0;
       if(!list.length){
         results.innerHTML=`<div class="search-empty">Ничего не найдено по запросу «${q}»</div>`;
