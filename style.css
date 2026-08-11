@@ -977,7 +977,7 @@ select,option{color-scheme:inherit}
 }
 .modal-back.active{display:flex}
 .modal{
-  width:100%;max-width:460px;padding:32px;border-radius:22px;
+  width:100%;max-width:580px;padding:32px;border-radius:22px;
   background:var(--card-bg);border:1px solid var(--line);box-shadow:var(--shadow);
   animation:scaleIn .35s ease;position:relative;max-height:calc(100vh - 40px);overflow-y:auto;
 }
@@ -6409,7 +6409,7 @@ option{color-scheme:inherit}
 }
 .modal-back.active{display:flex}
 .modal{
-  width:100%;max-width:460px;padding:32px;border-radius:22px;
+  width:100%;max-width:580px;padding:32px;border-radius:22px;
   background:var(--card-bg);border:1px solid var(--line);box-shadow:var(--shadow);
   animation:scaleIn .35s ease;position:relative;max-height:calc(100vh - 40px);overflow-y:auto;
 }
@@ -7688,3 +7688,14 @@ body.cgb-is-logged .footer-col a[data-loggedin]{display:block !important}
 /* --- шестая итерация: автоподстановка сотрудников (сепаратор «Должность | Статик») --- */
 .cr-dd-meta{align-items:center}
 .cr-dd-sep{opacity:.45;color:var(--muted)}
+
+/* ══ Скроллбар всей страницы: тонкий, в цвет темы (вместо системного со стрелками) ══ */
+html{scrollbar-width:thin;scrollbar-color:rgba(74,142,165,.45) rgba(8,15,20,.6)}
+html::-webkit-scrollbar{width:10px}
+html::-webkit-scrollbar-track{background:rgba(8,15,20,.6)}
+html::-webkit-scrollbar-thumb{background:rgba(74,142,165,.4);border-radius:6px;border:2px solid transparent;background-clip:content-box}
+html::-webkit-scrollbar-thumb:hover{background:rgba(74,142,165,.65);background-clip:content-box}
+[data-theme="light"] html{scrollbar-color:rgba(58,125,107,.45) rgba(226,232,235,.7)}
+[data-theme="light"] html::-webkit-scrollbar-track{background:rgba(226,232,235,.7)}
+[data-theme="light"] html::-webkit-scrollbar-thumb{background:rgba(58,125,107,.4);border:2px solid transparent;background-clip:content-box;border-radius:6px}
+[data-theme="light"] html::-webkit-scrollbar-thumb:hover{background:rgba(58,125,107,.6);background-clip:content-box}
