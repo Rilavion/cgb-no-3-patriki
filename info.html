@@ -3,32 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="favicon/favicon.ico" sizes="any">
-<link rel="icon" href="favicon/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="favicon/favicon.png">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="logo.png" type="image/png">
+<link rel="apple-touch-icon" href="logo.png">
 <title>Информация — ЦГБ №3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=1">
-<style id="vsrf-admin-guard">
+<style id="cgb-admin-guard">
 [data-admin]{display:none !important}
-body.vsrf-is-admin .nav a[data-admin]{display:inline-flex !important}
-body.vsrf-is-admin [data-admin]:not(.nav a){display:initial !important}
-body.vsrf-is-admin .info-admin-bar{display:flex !important}
+body.cgb-is-admin .nav a[data-admin]{display:inline-flex !important}
+body.cgb-is-admin [data-admin]:not(.nav a){display:initial !important}
+body.cgb-is-admin .info-admin-bar{display:flex !important}
 </style>
 <script>
 (function(){
   function apply(){
-    var can=window.VSRF_ROLES&&window.VSRF_ROLES.can("info","edit");
-    document.body.classList.toggle("vsrf-is-admin",!!can);
+    var can=window.CGB_ROLES&&window.CGB_ROLES.can("info","edit");
+    document.body.classList.toggle("cgb-is-admin",!!can);
     document.body.classList.toggle("is-admin",!!can);
   }
   document.addEventListener("DOMContentLoaded",function(){
     apply();
-    if(window.VSRF_ROLES&&window.VSRF_ROLES.onChange) window.VSRF_ROLES.onChange(apply);
-    if(window.VSRF_AUTH&&window.VSRF_AUTH.onChange) window.VSRF_AUTH.onChange(apply);
-    var t=setInterval(function(){if(window.VSRF_ROLES){clearInterval(t);apply();window.VSRF_ROLES.onChange(apply)}},80);
+    if(window.CGB_ROLES&&window.CGB_ROLES.onChange) window.CGB_ROLES.onChange(apply);
+    if(window.CGB_AUTH&&window.CGB_AUTH.onChange) window.CGB_AUTH.onChange(apply);
+    var t=setInterval(function(){if(window.CGB_ROLES){clearInterval(t);apply();window.CGB_ROLES.onChange(apply)}},80);
     setTimeout(function(){clearInterval(t)},4000);
   });
 })();
@@ -50,15 +50,8 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
             <nav class="nav" id="mainNav">
       <a href="index.html">Главная</a>
       <a href="info.html" class="active">Информация</a>
-      <a href="departments.html">Отделения</a>
-      <a href="doctors.html">Врачи</a>
-      <a href="services.html">Услуги</a>
-      <a href="appointment.html">Запись</a>
-      <a href="ustav.html">Устав</a>
       <a href="news.html">Новости</a>
-      <a href="contacts.html">Контакты</a>
-      <a href="faq.html">FAQ</a>
-      <a href="lk.html" data-loggedin>Личный кабинет</a>
+      <a href="faq.html">Вопросы и ответы</a>
     </nav>
     <div class="header-actions">
       <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
@@ -67,7 +60,7 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
       </button>
       <button class="icon-btn" data-open-notify title="Уведомления" style="position:relative">
         <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-        <span class="vsrf-notify-badge" data-notify-badge></span>
+        <span class="cgb-notify-badge" data-notify-badge></span>
       </button>
       <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Сменить тему">
         <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -77,7 +70,7 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
         <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/></svg>
         <span>Войти</span>
       </button>
-      <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+      <button class="burger" id="burger" type="button" aria-label="Открыть меню" aria-controls="mainNav" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
@@ -94,7 +87,7 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
       </div>
 
       <h1 class="info3-title" id="infoTitle">Центральная Городская Больница №3</h1>
-      <div class="info3-subtitle" id="infoSubtitle">Структура, функции и условия службы</div>
+      <div class="info3-subtitle" id="infoSubtitle">Структура, направления и условия оказания помощи</div>
 
       <div class="info3-intro-wrap">
         <div class="info3-intro-mark">«</div>
@@ -146,8 +139,8 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
             <div class="footer-settings-label" style="margin-bottom:8px">Фон</div>
             <div class="fs-modes" id="fsModes">
               <button class="fs-mode" data-bg="grid">Сеть</button>
-              <button class="fs-mode" data-bg="stars">Кресты</button>
-              <button class="fs-mode" data-bg="radar">Радар</button>
+              <button class="fs-mode" data-bg="dots">Точки</button>
+              <button class="fs-mode" data-bg="waves">Волны</button>
             </div>
           </div>
           <div class="footer-note">Настройки сохраняются в браузере</div>
@@ -156,18 +149,15 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
       <div class="footer-col">
         <h5>Разделы</h5>
         <a href="index.html">Главная</a>
-        <a href="info.html">Информация</a>
-        <a href="departments.html">Отделения</a>
-        <a href="doctors.html">Врачи</a>
+        <a href="info.html">О больнице</a>
         <a href="news.html">Новости</a>
       </div>
       <div class="footer-col">
         <h5>Пациентам</h5>
-        <a href="appointment.html">Запись на приём</a>
-        <a href="services.html">Услуги</a>
-        <a href="ustav.html">Устав</a>
-        <a href="contacts.html">Контакты</a>
-        <a href="faq.html">FAQ</a>
+        <a href="info.html#functions">Направления помощи</a>
+        <a href="info.html#forms">Виды помощи</a>
+        <a href="info.html#steps">Как записаться</a>
+        <a href="faq.html">Вопросы и ответы</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -239,7 +229,7 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
         </div>
         <div class="ie-field">
           <label>Подзаголовок</label>
-          <input class="ie-input" data-field="subtitle" placeholder="Структура, функции и условия службы">
+          <input class="ie-input" data-field="subtitle" placeholder="Структура, направления и условия оказания помощи">
         </div>
         <div class="ie-field">
           <label>Вступительный абзац</label>
@@ -294,19 +284,15 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
 <script src="roles-engine.js?v=1"></script>
 <script src="info-engine.js?v=1"></script>
 <script src="main.js?v=1"></script>
-<script src="format-utils.js?v=1"></script>
 <script src="holiday-engine.js?v=1"></script>
 <script src="sound-engine.js?v=1"></script>
-<script src="settings-panel.js?v=1"></script>
 <script src="faq-engine.js?v=1"></script>
 <script src="search-engine.js?v=1"></script>
-<script src="ds-cache.js?v=1"></script>
 <script src="notify-engine.js?v=1"></script>
-<script src="notify-live.js?v=1"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
-const esc=s=>window.VSRF_INFO.esc(s);
+const esc=s=>window.CGB_INFO.esc(s);
 const uid=(p)=>p+"_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 let DATA=null;
 let EDIT=null;
@@ -407,16 +393,16 @@ function setupTocObserver(){
 }
 
 async function boot(){
-  DATA=await VSRF_INFO.load();
+  DATA=await CGB_INFO.load();
   renderView();
 }
 boot();
-if(window.VSRF_AUTH) window.VSRF_AUTH.onChange(()=>boot());
+if(window.CGB_AUTH) window.CGB_AUTH.onChange(()=>boot());
 
 // ===== Редактор =====
 const editModal=$("infoEditModal");
 function openEditor(){
-  EDIT=JSON.parse(JSON.stringify(DATA||VSRF_INFO.DEFAULT_DATA));
+  EDIT=JSON.parse(JSON.stringify(DATA||CGB_INFO.DEFAULT_DATA));
   editModal.classList.add("active");
   switchTab("header");
   fillHeader();
@@ -656,7 +642,7 @@ function liveRender(){
 // Reset
 $("infoResetBtn").addEventListener("click",()=>{
   if(!confirm("Заменить содержимое редактора на стандартный шаблон? (Сохранение не выполняется до кнопки «Сохранить».)")) return;
-  EDIT=JSON.parse(JSON.stringify(VSRF_INFO.DEFAULT_DATA));
+  EDIT=JSON.parse(JSON.stringify(CGB_INFO.DEFAULT_DATA));
   fillHeader();fillSecs();fillFooter();liveRender();
   msg("Загружен стандартный шаблон. Не забудь «Сохранить».","info");
 });
@@ -664,9 +650,10 @@ $("infoResetBtn").addEventListener("click",()=>{
 // Save
 $("infoEditSave").addEventListener("click",async()=>{
   msg("Сохранение...","info");
-  const r=await VSRF_INFO.save(EDIT);
-  if(r.remote){msg("✓ Сохранено в Supabase","success");if(window.VSRF_SOUND) VSRF_SOUND.play("success")}
-  else{msg("Сохранено локально"+(r.error?" ("+r.error+")":""),"info")}
+  const result=await CGB_INFO.save(EDIT);
+  if(!result.ok){msg("Ошибка сохранения: "+(result.error||"неизвестная ошибка"),"error");return}
+  if(result.remote){msg("✓ Сохранено в Supabase","success");if(window.CGB_SOUND) CGB_SOUND.play("success")}
+  else{msg("✓ Сохранено локально","success")}
   DATA=JSON.parse(JSON.stringify(EDIT));renderView();
   setTimeout(closeEditor,700);
 });
@@ -730,6 +717,5 @@ $("infoJsonApply").addEventListener("click",()=>{
   resize();window.addEventListener("resize",resize);loop();
 })();
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
 </body>
 </html>

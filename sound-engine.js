@@ -1,7 +1,7 @@
-window.VSRF_SOUND=(function(){
+window.CGB_SOUND=(function(){
   let ctx=null;
-  let enabled=localStorage.getItem("vsrf-sound-enabled")==="1";
-  let volume=parseFloat(localStorage.getItem("vsrf-sound-volume")||"0.35");
+  let enabled=localStorage.getItem("cgb-sound-enabled")==="1";
+  let volume=parseFloat(localStorage.getItem("cgb-sound-volume")||"0.35");
   if(!isFinite(volume)) volume=0.35;
 
   function ensure(){
@@ -68,12 +68,12 @@ window.VSRF_SOUND=(function(){
 
   function setEnabled(v){
     enabled=!!v;
-    localStorage.setItem("vsrf-sound-enabled",enabled?"1":"0");
+    localStorage.setItem("cgb-sound-enabled",enabled?"1":"0");
     if(enabled) play("tap");
   }
   function setVolume(v){
     volume=Math.max(0,Math.min(1,parseFloat(v)||0));
-    localStorage.setItem("vsrf-sound-volume",String(volume));
+    localStorage.setItem("cgb-sound-volume",String(volume));
   }
   function isEnabled(){return enabled}
   function getVolume(){return volume}
@@ -87,7 +87,7 @@ window.VSRF_SOUND=(function(){
       if(t.closest("[data-sound='page']")){play("page");return}
       if(t.closest(".btn-primary,.hero-cta,.btn-cta")){play("click");return}
       if(t.closest("a.nav-link,.topbar a,.footer a")){play("page");return}
-      if(t.closest("button,.btn,a.card,.card,.news-card,.vehicle-card,.doc-item,.ustav-card,.hf-preset,.hf-fx-btn,.hf-icon-btn,.fs-mode")){play("tap");return}
+      if(t.closest("button,.btn,a.card,.card,.news-card,.faq-item,.fs-mode")){play("tap");return}
     },true);
     document.addEventListener("submit",()=>play("success"),true);
   });

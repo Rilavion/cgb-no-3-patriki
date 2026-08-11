@@ -1,5 +1,5 @@
-window.VSRF_DRAFT=(function(){
-  const KEY_PREFIX="vsrf-draft-";
+window.CGB_DRAFT=(function(){
+  const KEY_PREFIX="cgb-draft-";
   const SAVE_DELAY=1200;
   const timers={};
   const badges={};

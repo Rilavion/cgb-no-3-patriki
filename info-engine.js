@@ -1,4 +1,4 @@
-window.VSRF_INFO=(function(){
+window.CGB_INFO=(function(){
   const DEFAULT_DATA={
     title:"Центральная Городская Больница №3",
     subtitle:"История, структура, услуги и льготы",
@@ -77,58 +77,76 @@ window.VSRF_INFO=(function(){
         ]
       }
     ],
-    footer:"Медицинская помощь в ЦГБ №3 доступна всем гражданам РФ в рамках программы ОМС, а также иностранным гражданам на платной основе. Работаем в соответствии с федеральными стандартами оказания медицинской помощи и постоянно повышаем квалификацию персонала. Ваше здоровье — наша главная забота."
+    footer:"Медицинская помощь в ЦГБ №3 доступна всем гражданам Российской Федерации в рамках программы ОМС, а также иностранным гражданам на платной основе. Работаем в соответствии с федеральными стандартами оказания медицинской помощи и постоянно повышаем квалификацию персонала. Ваше здоровье — наша главная забота."
   };
 
   function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
   function waitReady(timeoutMs){
     return new Promise(resolve=>{
-      const deadline=Date.now()+(timeoutMs||5000);
-      function check(){
-        const s=window.VSRF_AUTH&&window.VSRF_AUTH.state;
-        if(s&&s.ready){resolve(s);return true}
-        return false;
+      const current=window.CGB_AUTH&&window.CGB_AUTH.state;
+      if(current&&current.ready){resolve(current);return}
+      let done=false;
+      let timer=0;
+      let off=()=>{};
+      const finish=state=>{
+        if(done) return;
+        done=true;clearTimeout(timer);off();
+        resolve(state||window.CGB_AUTH&&window.CGB_AUTH.state||null);
+      };
+      if(window.CGB_AUTH&&window.CGB_AUTH.onChange){
+        off=window.CGB_AUTH.onChange(state=>{if(state&&state.ready) finish(state)});
+        if(done){off();return}
       }
-      if(check()) return;
-      const t=setInterval(()=>{
-        if(check()){clearInterval(t);return}
-        if(Date.now()>deadline){clearInterval(t);resolve(window.VSRF_AUTH&&window.VSRF_AUTH.state||null)}
-      },80);
-      if(window.VSRF_AUTH&&window.VSRF_AUTH.onChange){
-        window.VSRF_AUTH.onChange(st=>{if(st&&st.ready){clearInterval(t);resolve(st)}});
-      }
+      timer=setTimeout(()=>finish(null),timeoutMs||5000);
     });
+  }
+
+  function normalize(value){
+    const result=JSON.parse(JSON.stringify(DEFAULT_DATA));
+    if(!value||typeof value!=="object"||Array.isArray(value)) return result;
+    ["title","subtitle","intro","footer"].forEach(key=>{
+      if(typeof value[key]==="string"&&value[key].trim()) result[key]=value[key];
+    });
+    if(Array.isArray(value.sections)&&value.sections.length) result.sections=value.sections;
+    return result;
   }
 
   async function load(){
     await waitReady(5000);
-    const s=window.VSRF_AUTH&&window.VSRF_AUTH.state;
+    const s=window.CGB_AUTH&&window.CGB_AUTH.state;
     if(s&&s.available&&s.client){
       try{
         const {data,error}=await s.client.from("info_page").select("data").eq("id",1).maybeSingle();
         if(error) throw error;
-        if(data&&data.data) return data.data;
+        if(data&&data.data) return normalize(data.data);
       }catch(e){console.warn("[CGB_INFO]",e.message)}
     }
     try{
       const raw=localStorage.getItem("cgb-info-local");
-      if(raw) return JSON.parse(raw);
+      if(raw) return normalize(JSON.parse(raw));
     }catch(e){}
-    return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    return normalize(null);
+  }
+
+  function saveLocal(payload){
+    try{localStorage.setItem("cgb-info-local",JSON.stringify(payload));return {ok:true,remote:false}}
+    catch(error){return {ok:false,remote:false,error:error.message||"Не удалось сохранить данные в браузере"}}
   }
 
   async function save(payload){
-    try{localStorage.setItem("cgb-info-local",JSON.stringify(payload))}catch(e){}
-    const s=window.VSRF_AUTH&&window.VSRF_AUTH.state;
+    const s=window.CGB_AUTH&&window.CGB_AUTH.state;
     if(s&&s.available&&s.client&&s.user){
       try{
         const {error}=await s.client.from("info_page").upsert({id:1,data:payload,updated_at:new Date().toISOString()});
-        if(error) return {ok:true,remote:false,error:error.message};
+        if(error) throw error;
+        try{localStorage.setItem("cgb-info-local",JSON.stringify(payload))}catch(_){}
         return {ok:true,remote:true};
-      }catch(e){return {ok:true,remote:false,error:e.message}}
+      }catch(error){
+        return {ok:false,remote:true,error:error.message||"Ошибка сохранения в Supabase"};
+      }
     }
-    return {ok:true,remote:false};
+    return saveLocal(payload);
   }
 
   function resetDefault(){

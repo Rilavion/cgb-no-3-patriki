@@ -1,40 +1,40 @@
-window.VSRF_NEWS=(function(){
+window.CGB_NEWS=(function(){
   const DEMO=[];
 
   const TAGS={
     news:{label:"Новость",cls:"tag-news"},
     announce:{label:"Объявление",cls:"tag-announce"},
     event:{label:"Мероприятие",cls:"tag-event"},
-    vaccine:{label:"Вакцинация",cls:"tag-training"},
-    equipment:{label:"Оборудование",cls:"tag-tech"},
-    staff:{label:"Кадры",cls:"tag-personnel"},
+    vaccine:{label:"Вакцинация",cls:"tag-vaccine"},
+    equipment:{label:"Оборудование",cls:"tag-equipment"},
+    staff:{label:"Кадры",cls:"tag-staff"},
     alert:{label:"Внимание",cls:"tag-alert"},
-    schedule:{label:"График",cls:"tag-order"}
+    schedule:{label:"График",cls:"tag-schedule"}
   };
 
   const DEPTS={
     general:{label:"Общее",cls:"dept-general"},
-    admin:{label:"Администрация",cls:"dept-hq"},
-    therapy:{label:"Терапия",cls:"dept-vp"},
-    surgery:{label:"Хирургия",cls:"dept-vk"},
-    cardiology:{label:"Кардиология",cls:"dept-sso"},
-    pediatrics:{label:"Педиатрия",cls:"dept-roio"},
-    diagnostics:{label:"Диагностика",cls:"dept-mch"},
-    emergency:{label:"Скорая помощь",cls:"dept-va"}
+    admin:{label:"Администрация",cls:"dept-administration"},
+    therapy:{label:"Терапия",cls:"dept-therapy"},
+    surgery:{label:"Хирургия",cls:"dept-surgery"},
+    cardiology:{label:"Кардиология",cls:"dept-cardiology"},
+    pediatrics:{label:"Педиатрия",cls:"dept-pediatrics"},
+    diagnostics:{label:"Диагностика",cls:"dept-diagnostics"},
+    emergency:{label:"Скорая помощь",cls:"dept-emergency"}
   };
 
   function waitReady(){
     return new Promise(resolve=>{
-      const s=window.VSRF_AUTH&&window.VSRF_AUTH.state;
+      const s=window.CGB_AUTH&&window.CGB_AUTH.state;
       if(!s||s.ready) return resolve();
-      const off=window.VSRF_AUTH.onChange(st=>{if(st.ready){off&&off();resolve()}});
+      const off=window.CGB_AUTH.onChange(st=>{if(st.ready){off&&off();resolve()}});
       setTimeout(()=>resolve(),1200);
     });
   }
 
   async function fetchNews(limit){
     await waitReady();
-    const s=window.VSRF_AUTH&&window.VSRF_AUTH.state;
+    const s=window.CGB_AUTH&&window.CGB_AUTH.state;
     if(s&&s.available&&s.client){
       try{
         let q=s.client.from("news").select("*").order("date",{ascending:false});
@@ -42,7 +42,7 @@ window.VSRF_NEWS=(function(){
         const {data,error}=await q;
         if(error) throw error;
         return data||[];
-      }catch(e){console.warn("[VSRF_NEWS]",e.message);return []}
+      }catch(e){console.warn("[CGB_NEWS]",e.message);return []}
     }
     return limit?DEMO.slice(0,limit):DEMO.slice();
   }

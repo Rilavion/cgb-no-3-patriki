@@ -1,195 +1,106 @@
-window.VSRF_NOTIFY=(function(){
-  const KEY_SEEN="vsrf-notify-seen";
-  const KEY_QUEUE="vsrf-notify-queue";
-  const KEY_MUTE="vsrf-notify-mute";
-  const POLL_MS=5*60000;
+window.CGB_NOTIFY=(function(){
+  "use strict";
+  const KEY_SEEN="cgb-notify-seen";
+  const KEY_QUEUE="cgb-notify-queue";
+  const KEY_MUTE="cgb-notify-mute";
+  let timer=null;
+  let checking=false;
 
-  function readSeen(){try{return JSON.parse(localStorage.getItem(KEY_SEEN)||"{}")}catch(e){return {}}}
-  function writeSeen(s){try{localStorage.setItem(KEY_SEEN,JSON.stringify(s))}catch(e){}}
-  function readQueue(){try{return JSON.parse(localStorage.getItem(KEY_QUEUE)||"[]")}catch(e){return []}}
-  function writeQueue(q){try{localStorage.setItem(KEY_QUEUE,JSON.stringify(q.slice(0,50)))}catch(e){}}
-  function isMuted(){return localStorage.getItem(KEY_MUTE)==="1"}
-  function setMuted(v){localStorage.setItem(KEY_MUTE,v?"1":"0")}
-
-  const SOURCES={
-    news:{table:"news",fields:"id,title,dept,tag,created_at",label:"Новость",href:"news.html",icon:"📰"},
-    vehicles:{table:"vehicles",fields:"id,title,tag,created_at",label:"Техника",href:"autopark.html",icon:"🚛"},
-    ustavy:{table:"ustavy",fields:"slug,title,updated_at",label:"Устав",href:"ustav.html",icon:"📜",pk:"slug",ts:"updated_at"},
-    lessons:{table:"train_lessons",fields:"id,title,created_at",label:"Урок",href:"training.html",icon:"🎓"}
-  };
-
-  async function poll(){
-    const auth=window.VSRF_AUTH;if(!auth||!auth.state||!auth.state.client) return;
-    const client=auth.state.client;
-    const seen=readSeen();
-    const news=[];
-    for(const k of Object.keys(SOURCES)){
-      const s=SOURCES[k];
-      const ts=s.ts||"created_at";
-      const pk=s.pk||"id";
-      try{
-        const {data}=await client.from(s.table).select(s.fields).order(ts,{ascending:false}).limit(5);
-        if(!data||!data.length) continue;
-        const seenList=seen[k]||[];
-        for(const row of data){
-          const id=String(row[pk]);
-          const stamp=row[ts]||"";
-          const key=id+"@"+stamp;
-          if(seenList.indexOf(key)===-1){
-            news.push({kind:k,label:s.label,icon:s.icon,href:s.href,title:row.title||id,key,ts:stamp,tag:row.tag||row.dept||""});
-          }
-        }
-      }catch(e){}
-    }
-    if(!news.length) return;
-    const firstRun=Object.keys(seen).length===0;
-    const nextSeen={...seen};
-    for(const k of Object.keys(SOURCES)){
-      const items=news.filter(n=>n.kind===k).map(n=>n.key);
-      const prev=seen[k]||[];
-      nextSeen[k]=Array.from(new Set([...items,...prev])).slice(0,30);
-    }
-    writeSeen(nextSeen);
-    if(firstRun) return;
-    const q=readQueue();
-    for(const n of news){
-      if(!q.find(x=>x.key===n.key&&x.kind===n.kind)) q.unshift({...n,unread:true,at:Date.now()});
-    }
-    writeQueue(q);
-    updateBadge();
-    if(!isMuted()){
-      for(const n of news.slice(0,3)) showToast(n);
-      if(window.VSRF_SOUND) window.VSRF_SOUND.play("notify");
-    }
-  }
+  function parse(key,fallback){try{return JSON.parse(localStorage.getItem(key)||"")||fallback}catch(_){return fallback}}
+  function save(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch(_){}}
+  function escapeHtml(value){return String(value==null?"":value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]))}
+  function isMuted(){try{return localStorage.getItem(KEY_MUTE)==="1"}catch(_){return false}}
+  function setMuted(value){try{localStorage.setItem(KEY_MUTE,value?"1":"0")}catch(_){}renderPanel()}
+  function queue(){return parse(KEY_QUEUE,[])}
+  function setQueue(items){save(KEY_QUEUE,items.slice(0,40));updateBadge();renderPanel()}
 
   function updateBadge(){
-    const q=readQueue();
-    const n=q.filter(x=>x.unread).length;
-    document.querySelectorAll("[data-notify-badge]").forEach(b=>{
-      b.textContent=n>0?(n>99?"99+":String(n)):"";
-      b.classList.toggle("visible",n>0);
+    const count=queue().filter(item=>item.unread).length;
+    document.querySelectorAll("[data-notify-badge]").forEach(badge=>{
+      badge.textContent=count>9?"9+":String(count||"");badge.classList.toggle("visible",count>0);
     });
   }
-
-  function showToast(n){
-    let holder=document.getElementById("vsrfToasts");
-    if(!holder){
-      holder=document.createElement("div");
-      holder.id="vsrfToasts";holder.className="vsrf-toasts";
-      document.body.appendChild(holder);
-    }
-    const el=document.createElement("div");
-    el.className="vsrf-toast";
-    el.innerHTML=`<div class="vsrf-toast-icon">${n.icon}</div>
-      <div class="vsrf-toast-body">
-        <div class="vsrf-toast-label">${n.label}${n.tag?" · "+esc(n.tag):""}</div>
-        <div class="vsrf-toast-title">${esc(n.title)}</div>
-      </div>
-      <button class="vsrf-toast-close" title="Закрыть">✕</button>`;
-    holder.appendChild(el);
-    requestAnimationFrame(()=>el.classList.add("visible"));
-    const close=()=>{el.classList.remove("visible");setTimeout(()=>el.remove(),350)};
-    el.querySelector(".vsrf-toast-close").addEventListener("click",e=>{e.stopPropagation();close()});
-    el.addEventListener("click",()=>{location.href=n.href});
-    setTimeout(close,6500);
+  function timeAgo(value){
+    const seconds=Math.max(0,Math.floor((Date.now()-new Date(value).getTime())/1000));
+    if(seconds<60) return "только что";if(seconds<3600) return Math.floor(seconds/60)+" мин назад";
+    if(seconds<86400) return Math.floor(seconds/3600)+" ч назад";
+    return new Date(value).toLocaleDateString("ru-RU");
   }
-  function esc(s){return String(s||"").replace(/[<>&"']/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;","'":"&#39;"}[c]))}
-
-  function markPageRead(){
-    const page=(location.pathname.split("/").pop()||"index.html").toLowerCase();
-    const map={"news.html":"news","autopark.html":"vehicles","ustav.html":"ustavy","training.html":"lessons"};
-    const kind=map[page];if(!kind) return;
-    const q=readQueue();let changed=false;
-    for(const x of q){if(x.kind===kind&&x.unread){x.unread=false;changed=true}}
-    if(changed){writeQueue(q);updateBadge()}
+  function showToast(item){
+    let holder=document.getElementById("cgbToasts");
+    if(!holder){holder=document.createElement("div");holder.id="cgbToasts";holder.className="cgb-toasts";document.body.appendChild(holder)}
+    const toast=document.createElement("a");toast.className="cgb-toast";toast.href=item.href;
+    toast.innerHTML=`<div class="cgb-toast-icon">✚</div><div class="cgb-toast-body"><div class="cgb-toast-label">Новая публикация</div><div class="cgb-toast-title">${escapeHtml(item.title)}</div></div><button class="cgb-toast-close" type="button" title="Закрыть">✕</button>`;
+    holder.appendChild(toast);
+    const close=()=>{toast.classList.add("closing");setTimeout(()=>toast.remove(),260)};
+    toast.querySelector(".cgb-toast-close").addEventListener("click",event=>{event.preventDefault();event.stopPropagation();close()});
+    setTimeout(close,7000);
+    if(!isMuted()&&window.CGB_SOUND) window.CGB_SOUND.play("notify");
   }
-  function markAllRead(){
-    const q=readQueue();q.forEach(x=>x.unread=false);writeQueue(q);updateBadge();
-  }
-  function list(){return readQueue()}
-  function clear(){writeQueue([]);updateBadge()}
 
-  function openPanel(){
-    let panel=document.getElementById("vsrfNotifyPanel");
-    if(panel){panel.classList.toggle("visible");if(panel.classList.contains("visible")) render();return}
-    panel=document.createElement("div");
-    panel.id="vsrfNotifyPanel";panel.className="vsrf-notify-panel";
-    document.body.appendChild(panel);
-    render();
-    requestAnimationFrame(()=>panel.classList.add("visible"));
-    document.addEventListener("click",closeOutside,true);
-    function closeOutside(e){
-      if(!panel.contains(e.target)&&!e.target.closest("[data-open-notify]")){
-        panel.classList.remove("visible");
-        document.removeEventListener("click",closeOutside,true);
+  function panel(){
+    let element=document.getElementById("cgbNotifyPanel");
+    if(element) return element;
+    element=document.createElement("aside");element.id="cgbNotifyPanel";element.className="cgb-notify-panel";
+    element.setAttribute("aria-label","Уведомления");document.body.appendChild(element);
+    element.addEventListener("click",event=>{
+      const action=event.target.closest("[data-act]");
+      if(action){
+        event.preventDefault();
+        if(action.dataset.act==="mute") setMuted(!isMuted());
+        if(action.dataset.act==="read") setQueue(queue().map(item=>({...item,unread:false})));
+        if(action.dataset.act==="clear") setQueue([]);
+        if(action.dataset.act==="close") element.classList.remove("active");
+        return;
       }
-    }
-    function render(){
-      const q=readQueue();
-      panel.innerHTML=`<div class="vsrf-np-head">
-        <span class="vsrf-np-title">Уведомления</span>
-        <div class="vsrf-np-actions">
-          <button class="vsrf-np-btn" data-act="mute" title="${isMuted()?"Включить звуки":"Выключить звуки"}">${isMuted()?"🔕":"🔔"}</button>
-          <button class="vsrf-np-btn" data-act="read" title="Прочитать всё">✓</button>
-          <button class="vsrf-np-btn" data-act="clear" title="Очистить">🗑</button>
-        </div>
-      </div>
-      <div class="vsrf-np-body">${q.length?q.map(n=>`
-        <a class="vsrf-np-item ${n.unread?"unread":""}" href="${n.href}">
-          <div class="vsrf-np-icon">${n.icon}</div>
-          <div class="vsrf-np-content">
-            <div class="vsrf-np-label">${n.label}${n.tag?" · "+esc(n.tag):""}</div>
-            <div class="vsrf-np-name">${esc(n.title)}</div>
-            <div class="vsrf-np-time">${timeAgo(n.at)}</div>
-          </div>
-        </a>`).join(""):`<div class="vsrf-np-empty">Пока новостей нет — всё тихо.</div>`}</div>`;
-      panel.querySelector('[data-act="mute"]').addEventListener("click",()=>{setMuted(!isMuted());render()});
-      panel.querySelector('[data-act="read"]').addEventListener("click",markAllRead);
-      panel.querySelector('[data-act="clear"]').addEventListener("click",()=>{clear();render()});
-    }
+      const link=event.target.closest(".cgb-np-item");
+      if(link){const id=link.dataset.id;setQueue(queue().map(item=>String(item.id)===id?({...item,unread:false}):item))}
+    });
+    return element;
   }
-  function timeAgo(ms){
-    if(!ms) return "";
-    const s=Math.floor((Date.now()-ms)/1000);
-    if(s<60) return "только что";
-    if(s<3600) return Math.floor(s/60)+" мин назад";
-    if(s<86400) return Math.floor(s/3600)+" ч назад";
-    return Math.floor(s/86400)+" дн назад";
+  function renderPanel(){
+    const element=document.getElementById("cgbNotifyPanel");if(!element) return;
+    const items=queue();
+    element.innerHTML=`<div class="cgb-np-head"><span class="cgb-np-title">Уведомления</span><div class="cgb-np-actions">
+      <button class="cgb-np-btn" data-act="mute" title="${isMuted()?"Включить звук":"Выключить звук"}">${isMuted()?"🔕":"🔔"}</button>
+      <button class="cgb-np-btn" data-act="read" title="Отметить прочитанными">✓</button>
+      <button class="cgb-np-btn" data-act="clear" title="Очистить">🗑</button>
+      <button class="cgb-np-btn" data-act="close" title="Закрыть">✕</button></div></div>
+      <div class="cgb-np-body">${items.length?items.map(item=>`<a class="cgb-np-item ${item.unread?"unread":""}" data-id="${escapeHtml(item.id)}" href="${escapeHtml(item.href)}">
+        <div class="cgb-np-icon">✚</div><div class="cgb-np-content"><div class="cgb-np-label">Новости больницы</div><div class="cgb-np-name">${escapeHtml(item.title)}</div><div class="cgb-np-time">${timeAgo(item.at)}</div></div></a>`).join(""):
+        '<div class="cgb-np-empty">Новых уведомлений пока нет.</div>'}</div>`;
   }
+  function togglePanel(){const element=panel();renderPanel();element.classList.toggle("active")}
 
-  function init(){
+  async function check(){
+    if(checking) return;checking=true;
+    try{
+      const auth=window.CGB_AUTH;
+      const client=auth&&auth.state&&auth.state.client;
+      if(!client) return;
+      const {data,error}=await client.from("news").select("id,title,date,created_at").order("created_at",{ascending:false}).limit(20);
+      if(error) return;
+      const rows=data||[];
+      let seen=parse(KEY_SEEN,null);
+      const ids=rows.map(row=>String(row.id));
+      if(!Array.isArray(seen)){save(KEY_SEEN,ids);return}
+      const fresh=rows.filter(row=>!seen.includes(String(row.id))).reverse();
+      if(fresh.length){
+        const existing=queue();
+        const additions=fresh.map(row=>({id:String(row.id),title:row.title||"Новая публикация",at:row.created_at||row.date||new Date().toISOString(),href:"news.html#news-"+encodeURIComponent(row.id),unread:true}));
+        setQueue(additions.reverse().concat(existing));fresh.forEach(row=>showToast(additions.find(item=>item.id===String(row.id))));
+      }
+      save(KEY_SEEN,Array.from(new Set(ids.concat(seen))).slice(0,200));
+    }finally{checking=false}
+  }
+  function start(){if(timer) return;check();timer=setInterval(check,60000)}
+
+  document.addEventListener("DOMContentLoaded",()=>{
+    document.querySelectorAll("[data-open-notify]").forEach(button=>button.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();togglePanel()}));
+    document.addEventListener("click",event=>{const element=document.getElementById("cgbNotifyPanel");if(element&&element.classList.contains("active")&&!element.contains(event.target)&&!event.target.closest("[data-open-notify]")) element.classList.remove("active")});
     updateBadge();
-    document.addEventListener("click",e=>{
-      const t=e.target.closest("[data-open-notify]");
-      if(t){e.preventDefault();openPanel()}
-    });
-    const auth=window.VSRF_AUTH;
-    if(auth&&auth.state&&auth.state.ready) startPoll();
-    else if(auth&&auth.onChange) auth.onChange(()=>{startPoll()});
-    markPageRead();
-  }
-  let started=false;
-  function startPoll(){
-    if(started) return;
-    const auth=window.VSRF_AUTH;
-    if(!auth||!auth.state||!auth.state.available) return;
-    started=true;
-    setTimeout(()=>{if(!document.hidden) poll()},8000);
-    let t=null;
-    function schedule(){
-      if(t) clearTimeout(t);
-      t=setTimeout(async()=>{
-        if(!document.hidden){try{await poll()}catch(e){}}
-        schedule();
-      },document.hidden?15*60000:POLL_MS);
-    }
-    schedule();
-    document.addEventListener("visibilitychange",()=>{
-      if(!document.hidden){try{poll()}catch(e){};schedule()}
-    });
-  }
+    if(window.CGB_AUTH) window.CGB_AUTH.onChange(state=>{if(state&&state.ready) start()});else start();
+  });
 
-  document.addEventListener("DOMContentLoaded",init);
-  return {poll,list,clear,markAllRead,updateBadge,openPanel,isMuted,setMuted};
+  return {check,start,updateBadge,togglePanel};
 })();
