@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body class="home-page-body">
 <canvas id="bgCanvas"></canvas>
@@ -24,11 +24,23 @@
         <span class="brand-name">ЦГБ №3 · Центральная Городская</span>
       </div>
     </a>
-        <nav class="nav" id="mainNav">
-      <a href="index.html" class="active">Главная</a>
-      <a href="info.html">Информация</a>
-      <a href="news.html">Новости</a>
-      <a href="faq.html">Вопросы и ответы</a>
+    <nav class="nav" id="mainNav" aria-label="Основная навигация">
+      <a href="index.html" data-page="home" class="active">
+        <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span>
+        <span class="nav-meta"><span class="nav-name">Главная</span><span class="nav-sub">Обзор и запись на приём</span></span>
+      </a>
+      <a href="info.html" data-page="info">
+        <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></span>
+        <span class="nav-meta"><span class="nav-name">Информация</span><span class="nav-sub">Отделения, услуги, порядок записи</span></span>
+      </a>
+      <a href="news.html" data-page="news">
+        <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></span>
+        <span class="nav-meta"><span class="nav-name">Новости</span><span class="nav-sub">События и объявления</span></span>
+      </a>
+      <a href="faq.html" data-page="faq">
+        <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
+        <span class="nav-meta"><span class="nav-name">Вопросы и ответы</span><span class="nav-sub">Справка для пациентов</span></span>
+      </a>
     </nav>
     <div class="header-actions">
       <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
@@ -74,7 +86,7 @@
 
         <div class="hero-v4-about">
           <div class="hero-v4-about-label">О больнице</div>
-          <p>ЦГБ №3 — многопрофильное лечебное учреждение с полным спектром стационарной и амбулаторной помощи. 12 отделений, 180+ специалистов, собственная лаборатория и служба скорой помощи.</p>
+          <p>ЦГБ №3 — многопрофильное лечебное учреждение с полным спектром стационарной и амбулаторной помощи.</p>
         </div>
 
         <div class="hero-v4-cta">
@@ -103,11 +115,16 @@
       </div>
 
       <div class="hero-v4-newsline" id="heroNewsline">
-        <span class="hero-v4-newsline-label">◉ Новости больницы</span>
-        <div class="hero-v4-newsline-track" id="heroNewsTrack" data-count="0">
-          <span class="hero-v4-newsline-hint">Публикаций пока нет · заходите позже</span>
+        <div class="hvn-head">
+          <span class="hvn-live" aria-hidden="true"></span>
+          <span class="hvn-head-title">Новости больницы</span>
+          <a class="hvn-all" href="news.html">Все новости
+            <svg viewBox="0 0 24 24"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+          </a>
         </div>
-        <a class="hero-v4-newsline-more" href="news.html">Все →</a>
+        <div class="hvn-track" id="heroNewsTrack" data-count="0">
+          <span class="hvn-hint">Загружаем публикации…</span>
+        </div>
       </div>
     </div>
   </section>
@@ -187,15 +204,18 @@
   </div>
 </div>
 
-<script src="supabase-loader.js?v=1"></script>
-<script src="config.js?v=1"></script>
-<script src="main.js?v=1"></script>
-<script src="holiday-engine.js?v=1"></script>
-<script src="sound-engine.js?v=1"></script>
-<script src="auth.js?v=1"></script>
-<script src="roles-engine.js?v=1"></script>
-<script src="search-engine.js?v=1"></script>
-<script src="notify-engine.js?v=1"></script>
+<script src="supabase-loader.js?v=2"></script>
+<script src="config.js?v=2"></script>
+<script src="main.js?v=2"></script>
+<script src="holiday-engine.js?v=2"></script>
+<script src="sound-engine.js?v=2"></script>
+<script src="auth.js?v=2"></script>
+<script src="roles-engine.js?v=2"></script>
+<script src="search-engine.js?v=2"></script>
+<script src="notify-engine.js?v=2"></script>
+<script src="news.js?v=2"></script>
+<script src="news-reader.js?v=2"></script>
+<script src="home-news.js?v=2"></script>
 <script>document.getElementById("year").textContent=new Date().getFullYear();</script>
 </body>
 </html>

@@ -26,40 +26,69 @@
     const nav=document.getElementById("mainNav");
     if(!burger||!nav) return;
 
+    const mq=window.matchMedia("(max-width:1099px)");
     const links=Array.from(nav.querySelectorAll("a"));
     const current=(location.pathname.split("/").pop()||"index.html").toLowerCase();
     links.forEach(link=>link.classList.toggle("active",(link.getAttribute("href")||"").split("#")[0].toLowerCase()===current));
 
+    /* Мебель мобильного drawer: шапка, прокручиваемая зона, подвал.
+       На десктопе скрывается стилями, ссылки остаются в шапке сайта. */
     const scroll=document.createElement("div");
     scroll.className="nav-scroll";
     const section=document.createElement("div");
     section.className="nav-section";
-    section.innerHTML='<div class="nav-section-title">Разделы сайта</div>';
+    const sectionTitle=document.createElement("div");
+    sectionTitle.className="nav-section-title";
+    sectionTitle.textContent="Разделы сайта";
     const linkList=document.createElement("div");
     linkList.className="nav-links";
     links.forEach(link=>linkList.appendChild(link));
-    section.appendChild(linkList);scroll.appendChild(section);
+    section.appendChild(sectionTitle);
+    section.appendChild(linkList);
+    scroll.appendChild(section);
 
     const header=document.createElement("div");
     header.className="nav-header";
     header.innerHTML='<div class="nav-header-brand"><img src="logo.png" alt=""><div><strong>ЦГБ №3</strong><span>Меню сайта</span></div></div><button class="nav-close" type="button" aria-label="Закрыть меню">✕</button>';
     const footer=document.createElement("div");
     footer.className="nav-footer";
-    footer.textContent="Центральная городская больница №3";
+    footer.innerHTML='<span class="nav-footer-name">Центральная городская больница №3</span><span class="nav-footer-note">Приёмное отделение · 24/7</span>';
     nav.replaceChildren(header,scroll,footer);
-    nav.setAttribute("aria-hidden","true");
-    nav.inert=true;
-    document.body.appendChild(nav);
 
     const backdrop=document.createElement("div");
     backdrop.className="nav-backdrop";
     document.body.appendChild(backdrop);
+
+    /* Якорь запоминает место навигации в шапке (десктоп).
+       В drawer-режиме nav переносится в <body>: у шапки есть backdrop-filter,
+       который делает её containing block для position:fixed,
+       из-за чего панель «липла» бы к размерам шапки. */
+    const anchor=document.createComment("cgb-nav-anchor");
+    nav.parentNode.insertBefore(anchor,nav);
+
+    const syncMode=()=>{
+      if(mq.matches){
+        if(nav.parentNode!==document.body) document.body.appendChild(nav);
+        const isOpen=nav.classList.contains("open");
+        nav.setAttribute("aria-hidden",isOpen?"false":"true");
+        nav.inert=!isOpen;
+      }else{
+        if(anchor.parentNode&&nav.parentNode!==anchor.parentNode){
+          anchor.parentNode.insertBefore(nav,anchor.nextSibling);
+        }
+        nav.classList.remove("open");backdrop.classList.remove("visible");burger.classList.remove("open");
+        nav.removeAttribute("aria-hidden");nav.inert=false;
+        burger.setAttribute("aria-expanded","false");burger.setAttribute("aria-label","Открыть меню");
+        document.body.style.overflow="";
+      }
+    };
     const open=()=>{
+      if(!mq.matches) return;
       nav.classList.add("open");backdrop.classList.add("visible");burger.classList.add("open");
       nav.setAttribute("aria-hidden","false");nav.inert=false;
       burger.setAttribute("aria-expanded","true");burger.setAttribute("aria-label","Закрыть меню");
       document.body.style.overflow="hidden";
-      const first=nav.querySelector("a");if(first) setTimeout(()=>first.focus(),120);
+      const first=nav.querySelector("a");if(first) setTimeout(()=>first.focus(),200);
     };
     const close=(restoreFocus=false)=>{
       if(!nav.classList.contains("open")) return;
@@ -74,6 +103,9 @@
     nav.querySelector(".nav-close").addEventListener("click",()=>close(true));
     nav.querySelectorAll("a").forEach(link=>link.addEventListener("click",()=>close(false)));
     document.addEventListener("keydown",event=>{if(event.key==="Escape") close(true)});
+    if(mq.addEventListener) mq.addEventListener("change",syncMode);
+    else if(mq.addListener) mq.addListener(syncMode);
+    syncMode();
   }
 
   function setupReveal(){
