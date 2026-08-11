@@ -25,18 +25,18 @@
         <span class="brand-name">ЦГБ №3 · Центральная Городская</span>
       </div>
     </a>
-        <nav class="nav" id="mainNav">
+            <nav class="nav" id="mainNav">
       <a href="index.html">Главная</a>
       <a href="info.html">Информация</a>
       <a href="departments.html">Отделения</a>
-      <a href="services.html">Услуги</a>
       <a href="doctors.html">Врачи</a>
+      <a href="services.html">Услуги</a>
+      <a href="appointment.html">Запись</a>
       <a href="ustav.html">Устав</a>
-      <a href="news.html">Новости</a>
+      <a href="news.html" class="active">Новости</a>
       <a href="contacts.html">Контакты</a>
-      <a href="appointment.html">Запись на приём</a>
       <a href="faq.html">FAQ</a>
-      <a href="lk.html">Личный кабинет</a>
+      <a href="lk.html" data-loggedin>Личный кабинет</a>
     </nav>
     <div class="header-actions">
       <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
@@ -87,61 +87,40 @@
         <h4>Настройки сайта</h4>
         <div class="footer-settings">
           <div class="footer-settings-row">
-            <span class="footer-settings-label">
-              <svg viewBox="0 0 24 24"><path d="M13 3l-1.5 6H15l-3.5 12v-8H9l1.5-10H13z"/></svg>
-              Анимации
-            </span>
+            <span class="footer-settings-label">Анимации</span>
             <label class="fs-switch"><input type="checkbox" id="fsAnim" checked><span class="fs-switch-track"><span class="fs-switch-thumb"></span></span></label>
           </div>
           <div>
-            <div class="footer-settings-label" style="margin-bottom:8px">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-              Фон
-            </div>
+            <div class="footer-settings-label" style="margin-bottom:8px">Фон</div>
             <div class="fs-modes" id="fsModes">
-              <button class="fs-mode" data-bg="grid" title="Сеть с частицами">
-                <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zm-10 10h6v6H4zm10 0h6v6h-6z"/></svg>
-                Сеть
-              </button>
-              <button class="fs-mode" data-bg="stars" title="Медицинские кресты">
-                <svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .8-5.2 4.7 1.5 7L12 17.3 5.7 21l1.5-7L2 9.3l7-.8z"/></svg>
-                Звёзды
-              </button>
-              <button class="fs-mode" data-bg="radar" title="Радар">
-                <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7V3z"/><circle cx="12" cy="12" r="1.5"/></svg>
-                Радар
-              </button>
+              <button class="fs-mode" data-bg="grid">Сеть</button>
+              <button class="fs-mode" data-bg="stars">Кресты</button>
+              <button class="fs-mode" data-bg="radar">Радар</button>
             </div>
           </div>
-          <div class="footer-settings-row fs-sound-row">
-            <span class="footer-settings-label">
-              <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
-              Звуки
-            </span>
-            <label class="fs-switch"><input type="checkbox" id="fsSound"><span class="fs-switch-track"><span class="fs-switch-thumb"></span></span></label>
-          </div>
-          <div class="fs-sound-vol"><span>тише</span><input type="range" id="fsSoundVol" min="0" max="1" step="0.05"><span id="fsSoundVolVal">35%</span></div>
           <div class="footer-note">Настройки сохраняются в браузере</div>
         </div>
       </div>
       <div class="footer-col">
         <h5>Разделы</h5>
-        <a href="index.html" data-page="index.html">Главная</a>
-        <a href="ustav.html" data-page="ustav.html">Уставы</a>
-        <a href="composition.html" data-page="composition.html">Состав</a>
-        <a href="news.html" data-page="news.html">Новости</a>
+        <a href="index.html">Главная</a>
+        <a href="info.html">Информация</a>
+        <a href="departments.html">Отделения</a>
+        <a href="doctors.html">Врачи</a>
+        <a href="news.html">Новости</a>
       </div>
       <div class="footer-col">
-        <h5>Ресурсы</h5>
-        <a href="autopark.html" data-page="autopark.html">Автопарк</a>
-        <a href="map.html" data-page="map.html">Карта</a>
-        <a href="faq.html" data-page="faq.html">FAQ</a>
-        <a href="lk.html" data-page="lk.html">Личный кабинет</a>
+        <h5>Пациентам</h5>
+        <a href="appointment.html">Запись на приём</a>
+        <a href="services.html">Услуги</a>
+        <a href="ustav.html">Устав</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="faq.html">FAQ</a>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© <span id="year"></span> · Центральная Городская Больница №3</span>
-      <span>ЦГБ №3 · </span>
+      <span>Спасаем жизни каждый день</span>
     </div>
   </div>
 </footer>

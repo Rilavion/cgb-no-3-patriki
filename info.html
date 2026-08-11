@@ -47,18 +47,18 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
         <span class="brand-name">ЦГБ №3 · Центральная Городская</span>
       </div>
     </a>
-        <nav class="nav" id="mainNav">
+            <nav class="nav" id="mainNav">
       <a href="index.html">Главная</a>
-      <a href="info.html">Информация</a>
+      <a href="info.html" class="active">Информация</a>
       <a href="departments.html">Отделения</a>
-      <a href="services.html">Услуги</a>
       <a href="doctors.html">Врачи</a>
+      <a href="services.html">Услуги</a>
+      <a href="appointment.html">Запись</a>
       <a href="ustav.html">Устав</a>
       <a href="news.html">Новости</a>
       <a href="contacts.html">Контакты</a>
-      <a href="appointment.html">Запись на приём</a>
       <a href="faq.html">FAQ</a>
-      <a href="lk.html">Личный кабинет</a>
+      <a href="lk.html" data-loggedin>Личный кабинет</a>
     </nav>
     <div class="header-actions">
       <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
@@ -136,28 +136,43 @@ body.vsrf-is-admin .info-admin-bar{display:flex !important}
   <div class="container">
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="brand-icon" style="width:44px;height:44px"><img src="https://lh7-us.googleusercontent.com/rirXWnCVAAskqtGbpb8KBbSUWJafqWOPSC8nR5Z4OjYMdAr3Vt6_DiF_Uw_S3XbeGLlN9m6Pfd_ET-E8LPjCKNruw-wWsyN8137M8mtS7IY9TsrGF3Iap15_bzfNUF8-305JxpiyZAp-yHpQZmLbBfg" alt=""></div>
-        <p style="color:var(--muted);font-size:13px;margin-top:12px">Центральная Городская Больница №3.</p>
+        <h4>Настройки сайта</h4>
+        <div class="footer-settings">
+          <div class="footer-settings-row">
+            <span class="footer-settings-label">Анимации</span>
+            <label class="fs-switch"><input type="checkbox" id="fsAnim" checked><span class="fs-switch-track"><span class="fs-switch-thumb"></span></span></label>
+          </div>
+          <div>
+            <div class="footer-settings-label" style="margin-bottom:8px">Фон</div>
+            <div class="fs-modes" id="fsModes">
+              <button class="fs-mode" data-bg="grid">Сеть</button>
+              <button class="fs-mode" data-bg="stars">Кресты</button>
+              <button class="fs-mode" data-bg="radar">Радар</button>
+            </div>
+          </div>
+          <div class="footer-note">Настройки сохраняются в браузере</div>
+        </div>
       </div>
       <div class="footer-col">
         <h5>Разделы</h5>
-        <a href="index.html" data-page="index.html">Главная</a>
-        <a href="info.html" data-page="info.html">Информация</a>
-        <a href="ustav.html" data-page="ustav.html">Уставы</a>
-        <a href="composition.html" data-page="composition.html">Состав</a>
-        <a href="news.html" data-page="news.html">Новости</a>
+        <a href="index.html">Главная</a>
+        <a href="info.html">Информация</a>
+        <a href="departments.html">Отделения</a>
+        <a href="doctors.html">Врачи</a>
+        <a href="news.html">Новости</a>
       </div>
       <div class="footer-col">
-        <h5>Ресурсы</h5>
-        <a href="autopark.html" data-page="autopark.html">Автопарк</a>
-        <a href="map.html" data-page="map.html">Карта</a>
-        <a href="faq.html" data-page="faq.html">FAQ</a>
-        <a href="lk.html" data-page="lk.html">Личный кабинет</a>
+        <h5>Пациентам</h5>
+        <a href="appointment.html">Запись на приём</a>
+        <a href="services.html">Услуги</a>
+        <a href="ustav.html">Устав</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="faq.html">FAQ</a>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© <span id="year"></span> · Центральная Городская Больница №3</span>
-      <span>ЦГБ №3 · </span>
+      <span>Спасаем жизни каждый день</span>
     </div>
   </div>
 </footer>
