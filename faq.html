@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo.png" type="image/png">
+<link rel="apple-touch-icon" href="logo.png">
+<title>Вопросы и ответы — ЦГБ №3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+<style>[data-admin]{display:none !important}body.faq-can-edit [data-admin]{display:initial !important}body.faq-can-edit .nav a[data-admin]{display:inline-flex !important}body.is-admin .nav a[data-admin]{display:inline-flex !important}</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<div class="bg-noise"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+        <a class="brand" href="index.html">
+      <div class="brand-icon"><img src="logo.png" alt="ЦГБ"></div>
+      <div class="brand-text">
+        <span class="brand-label">Министерство Здравоохранения</span>
+        <span class="brand-name">ЦГБ №3 · Центральная Городская</span>
+      </div>
+    </a>
+        <nav class="nav" id="mainNav">
+      <a href="index.html">Главная</a>
+      <a href="info.html">Информация</a>
+      <a href="departments.html">Отделения</a>
+      <a href="services.html">Услуги</a>
+      <a href="doctors.html">Врачи</a>
+      <a href="ustav.html">Устав</a>
+      <a href="news.html">Новости</a>
+      <a href="contacts.html">Контакты</a>
+      <a href="appointment.html">Запись на приём</a>
+      <a href="faq.html">FAQ</a>
+      <a href="lk.html">Личный кабинет</a>
+    </nav>
+    <div class="header-actions">
+      <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.49-1.49-5-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+        <span>Поиск</span>
+        <span class="kbd">Ctrl K</span>
+      </button>
+      <button class="icon-btn" data-open-notify title="Уведомления" style="position:relative">
+        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <span class="vsrf-notify-badge" data-notify-badge></span>
+      </button>
+      <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Сменить тему">
+        <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24"><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66l1.42-1.42M4.92 19.08l1.42-1.42m0-11.32L4.92 4.92m14.16 14.16l-1.42-1.42M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="login-btn" data-open-login>
+        <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/></svg>
+        <span>Войти</span>
+      </button>
+      <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="badge">Справочная</span>
+        <h2>Частые вопросы</h2>
+        <p>Ответы на самые частые вопросы пациентов и посетителей. Не нашли ответ — свяжитесь с регистратурой ЦГБ №3 или задайте вопрос через форму обратной связи.</p>
+      </div>
+
+      <div class="faq-toolbar reveal">
+        <div class="faq-search">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.49-1.49-5-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+          <input type="text" id="faqSearch" placeholder="Найти вопрос...">
+        </div>
+        <div class="faq-cats" id="faqCats"></div>
+        <div class="faq-admin-actions" data-admin>
+          <button class="btn btn-gold btn-sm" id="faqAdd">+ Добавить</button>
+          <button class="btn btn-ghost btn-sm" id="faqReset" title="Вернуть 8 стартовых вопросов">↺ Сброс</button>
+          <button class="btn btn-ghost btn-sm" id="faqClear" title="Удалить все вопросы">🗑 Всё</button>
+        </div>
+      </div>
+      <div class="faq-mode-hint" id="faqModeHint" data-admin></div>
+
+      <div class="faq-list" id="faqList"></div>
+      <div class="faq-empty" id="faqEmpty" style="display:none">Ничего не найдено. Попробуйте другой запрос.</div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="brand-icon" style="width:44px;height:44px"><img src="https://lh7-us.googleusercontent.com/rirXWnCVAAskqtGbpb8KBbSUWJafqWOPSC8nR5Z4OjYMdAr3Vt6_DiF_Uw_S3XbeGLlN9m6Pfd_ET-E8LPjCKNruw-wWsyN8137M8mtS7IY9TsrGF3Iap15_bzfNUF8-305JxpiyZAp-yHpQZmLbBfg" alt=""></div>
+        <p style="color:var(--muted);font-size:13px;margin-top:12px">Центральная Городская Больница №3.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Разделы</h5>
+        <a href="index.html" data-page="index.html">Главная</a>
+        <a href="ustav.html" data-page="ustav.html">Уставы</a>
+        <a href="composition.html" data-page="composition.html">Состав</a>
+        <a href="news.html" data-page="news.html">Новости</a>
+      </div>
+      <div class="footer-col">
+        <h5>Ресурсы</h5>
+        <a href="autopark.html" data-page="autopark.html">Автопарк</a>
+        <a href="map.html" data-page="map.html">Карта</a>
+        <a href="faq.html" data-page="faq.html">FAQ</a>
+        <a href="lk.html" data-page="lk.html">Личный кабинет</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> · Центральная Городская Больница №3</span>
+      <span>ЦГБ №3 · </span>
+    </div>
+  </div>
+</footer>
+
+<div class="fab-stack" id="fabStack">
+  <button class="fab" id="fabUp" title="Наверх">
+    <svg viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8z"/></svg>
+  </button>
+</div>
+
+<div class="search-modal" id="searchModal">
+  <div class="search-box">
+    <div class="search-input-wrap">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.49-1.49-5-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+      <input class="search-input" placeholder="Поиск по всему сайту..." spellcheck="false">
+      <button class="search-close-kbd">Esc</button>
+    </div>
+    <div class="search-results"></div>
+  </div>
+</div>
+
+<div class="modal-back" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" aria-label="Закрыть">✕</button>
+    <h3>Вход администратора</h3>
+    <div class="modal-sub">Доступ к управлению контентом</div>
+    <form>
+      <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
+      <div class="form-group"><label>Пароль</label><input type="password" name="password" required></div>
+      <button class="btn btn-gold" style="width:100%" type="submit">Войти</button>
+      <div class="form-msg"></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-back" id="faqModal">
+  <div class="modal">
+    <button class="modal-close" aria-label="Закрыть">✕</button>
+    <h3 id="faqModalTitle">Новый вопрос</h3>
+    <form id="faqForm">
+      <input type="hidden" name="id">
+      <div class="form-group"><label>Категория</label><input name="cat" required placeholder="Служба / Обучение / Документы..."></div>
+      <div class="form-group"><label>Вопрос</label><input name="q" required maxlength="200"></div>
+      <div class="form-group"><label>Ответ</label><textarea name="a" required rows="5" maxlength="2000"></textarea></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="faqDelete" style="display:none">Удалить</button>
+        <button type="submit" class="btn btn-gold">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="supabase-loader.js?v=1"></script>
+<script src="config.js?v=1"></script>
+<script src="main.js?v=1"></script>
+<script src="format-utils.js?v=1"></script>
+<script src="holiday-engine.js?v=1"></script>
+<script src="settings-panel.js?v=1"></script>
+<script src="sound-engine.js?v=1"></script>
+<script src="auth.js?v=1"></script>
+<script src="roles-engine.js?v=1"></script>
+<script src="faq-engine.js?v=1"></script>
+<script src="search-engine.js?v=1"></script>
+<script src="ds-cache.js?v=1"></script>
+<script src="notify-engine.js?v=1"></script>
+<script src="notify-live.js?v=1"></script>
+<script>
+document.getElementById("year").textContent=new Date().getFullYear();
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||"").replace(/[<>&"']/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;","'":"&#39;"}[c]));
+
+let ITEMS=[];
+let ACTIVE_CAT="all";
+let QUERY="";
+
+
+
+function render(){
+  const cats=Array.from(new Set(ITEMS.map(x=>x.cat).filter(Boolean)));
+  $("faqCats").innerHTML=[`<button class="faq-cat ${ACTIVE_CAT==="all"?"active":""}" data-cat="all">Все · ${ITEMS.length}</button>`]
+    .concat(cats.map(c=>`<button class="faq-cat ${ACTIVE_CAT===c?"active":""}" data-cat="${esc(c)}">${esc(c)} · ${ITEMS.filter(x=>x.cat===c).length}</button>`))
+    .join("");
+  $("faqCats").querySelectorAll("[data-cat]").forEach(b=>b.addEventListener("click",()=>{ACTIVE_CAT=b.dataset.cat;render()}));
+
+  const q=QUERY.trim().toLowerCase();
+  const filtered=ITEMS.filter(x=>{
+    if(ACTIVE_CAT!=="all"&&x.cat!==ACTIVE_CAT) return false;
+    if(!q) return true;
+    return (x.q+" "+x.a+" "+(x.cat||"")).toLowerCase().includes(q);
+  });
+
+  $("faqEmpty").style.display=filtered.length?"none":"block";
+  $("faqList").innerHTML=filtered.map(x=>`
+    <details class="faq-item" id="faq-${esc(x.id)}">
+      <summary class="faq-q">
+        <span class="faq-cat-badge">${esc(x.cat||"Общее")}</span>
+        <span class="faq-q-text">${esc(x.q)}</span>
+        <span class="faq-toggle-icon">+</span>
+      </summary>
+      <div class="faq-a">${esc(x.a).replace(/\n/g,"<br>")}</div>
+      <div class="faq-actions" data-admin>
+        <button class="btn btn-ghost btn-sm" data-edit="${esc(x.id)}">Редактировать</button>
+      </div>
+    </details>`).join("");
+  $("faqList").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openEdit(b.dataset.edit)}));
+  $("faqList").querySelectorAll(".faq-item").forEach(d=>{
+    d.addEventListener("toggle",()=>{if(d.open&&window.VSRF_SOUND) window.VSRF_SOUND.play("page")});
+  });
+}
+
+$("faqSearch").addEventListener("input",e=>{QUERY=e.target.value;render()});
+
+function openEdit(id){
+  const item=id?ITEMS.find(x=>x.id===id):null;
+  const modal=$("faqModal");
+  const form=$("faqForm");
+  form.reset();
+  form.id.value=item?item.id:VSRF_FAQ.makeId();
+  form.cat.value=item?item.cat:"";
+  form.q.value=item?item.q:"";
+  form.a.value=item?item.a:"";
+  $("faqModalTitle").textContent=item?"Редактировать вопрос":"Новый вопрос";
+  $("faqDelete").style.display=item?"inline-flex":"none";
+  $("faqDelete").onclick=async()=>{
+    if(!confirm("Удалить вопрос?")) return;
+    await VSRF_FAQ.remove(item.id);
+    modal.classList.remove("active");
+    ITEMS=await VSRF_FAQ.loadAll();render();
+    if(window.VSRF_SEARCH) window.VSRF_SEARCH.invalidate();
+  };
+  modal.classList.add("active");
+}
+$("faqModal").querySelector(".modal-close").addEventListener("click",()=>$("faqModal").classList.remove("active"));
+$("faqModal").addEventListener("click",e=>{if(e.target===$("faqModal")) $("faqModal").classList.remove("active")});
+$("faqForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const fd=new FormData(e.target);
+  const item={id:fd.get("id"),cat:fd.get("cat").trim(),q:fd.get("q").trim(),a:fd.get("a").trim(),sort:Date.now()};
+  await VSRF_FAQ.save(item);
+  $("faqModal").classList.remove("active");
+  ITEMS=await VSRF_FAQ.loadAll();render();
+  if(window.VSRF_SEARCH) window.VSRF_SEARCH.invalidate();
+  if(window.VSRF_SOUND) window.VSRF_SOUND.play("success");
+});
+$("faqAdd").addEventListener("click",()=>openEdit(null));
+$("faqReset").addEventListener("click",async()=>{
+  if(!confirm("Вернуть 8 стартовых вопросов? Ваши изменения (локальные) будут потеряны.")) return;
+  VSRF_FAQ.resetDefaults();
+  ITEMS=await VSRF_FAQ.loadAll();render();updateModeHint();
+  if(window.VSRF_SEARCH) window.VSRF_SEARCH.invalidate();
+});
+$("faqClear").addEventListener("click",async()=>{
+  if(!confirm("Удалить ВСЕ вопросы? Это действие нельзя отменить.")) return;
+  if(VSRF_FAQ.getMode()==="supabase"){
+    for(const it of ITEMS.slice()) await VSRF_FAQ.remove(it.id);
+  }else{
+    VSRF_FAQ.clearAll();
+  }
+  ITEMS=await VSRF_FAQ.loadAll();render();updateModeHint();
+  if(window.VSRF_SEARCH) window.VSRF_SEARCH.invalidate();
+});
+function updateModeHint(){
+  const el=$("faqModeHint");if(!el) return;
+  const m=VSRF_FAQ.getMode();
+  el.innerHTML=m==="supabase"
+    ? '<svg viewBox="0 0 24 24" width="14" height="14" style="vertical-align:-2px"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Хранение: Supabase (общее для всех)'
+    : '<svg viewBox="0 0 24 24" width="14" height="14" style="vertical-align:-2px"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg> Хранение: локально в браузере (только у вас)';
+}
+
+function applyFaqAdmin(){
+  const can=!!(window.VSRF_ROLES&&window.VSRF_ROLES.can("faq","edit"));
+  document.body.classList.toggle("faq-can-edit",can);
+}
+async function reboot(){
+  ITEMS=await VSRF_FAQ.loadAll();
+  render();
+  updateModeHint();
+  applyFaqAdmin();
+  const h=location.hash.slice(1);
+  if(h){setTimeout(()=>{const el=document.getElementById("faq-"+h);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("faq-item-open")}},300)}
+}
+if(window.VSRF_ROLES) window.VSRF_ROLES.onChange(applyFaqAdmin);
+if(window.VSRF_AUTH) window.VSRF_AUTH.onChange(reboot);
+else reboot();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
+</body>
+</html>
