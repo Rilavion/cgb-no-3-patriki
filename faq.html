@@ -28,15 +28,8 @@
             <nav class="nav" id="mainNav">
       <a href="index.html">Главная</a>
       <a href="info.html">Информация</a>
-      <a href="departments.html">Отделения</a>
-      <a href="doctors.html">Врачи</a>
-      <a href="services.html">Услуги</a>
-      <a href="appointment.html">Запись</a>
-      <a href="ustav.html">Устав</a>
       <a href="news.html">Новости</a>
-      <a href="contacts.html">Контакты</a>
-      <a href="faq.html" class="active">FAQ</a>
-      <a href="lk.html" data-loggedin>Личный кабинет</a>
+      <a href="faq.html" class="active">Вопросы и ответы</a>
     </nav>
     <div class="header-actions">
       <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
@@ -46,7 +39,7 @@
       </button>
       <button class="icon-btn" data-open-notify title="Уведомления" style="position:relative">
         <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-        <span class="vsrf-notify-badge" data-notify-badge></span>
+        <span class="cgb-notify-badge" data-notify-badge></span>
       </button>
       <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Сменить тему">
         <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -56,7 +49,7 @@
         <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/></svg>
         <span>Войти</span>
       </button>
-      <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+      <button class="burger" id="burger" type="button" aria-label="Открыть меню" aria-controls="mainNav" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
@@ -78,7 +71,7 @@
         <div class="faq-cats" id="faqCats"></div>
         <div class="faq-admin-actions" data-admin>
           <button class="btn btn-gold btn-sm" id="faqAdd">+ Добавить</button>
-          <button class="btn btn-ghost btn-sm" id="faqReset" title="Вернуть 8 стартовых вопросов">↺ Сброс</button>
+          <button class="btn btn-ghost btn-sm" id="faqReset" title="Очистить локальную копию">↺ Сброс</button>
           <button class="btn btn-ghost btn-sm" id="faqClear" title="Удалить все вопросы">🗑 Всё</button>
         </div>
       </div>
@@ -104,8 +97,8 @@
             <div class="footer-settings-label" style="margin-bottom:8px">Фон</div>
             <div class="fs-modes" id="fsModes">
               <button class="fs-mode" data-bg="grid">Сеть</button>
-              <button class="fs-mode" data-bg="stars">Кресты</button>
-              <button class="fs-mode" data-bg="radar">Радар</button>
+              <button class="fs-mode" data-bg="dots">Точки</button>
+              <button class="fs-mode" data-bg="waves">Волны</button>
             </div>
           </div>
           <div class="footer-note">Настройки сохраняются в браузере</div>
@@ -114,18 +107,15 @@
       <div class="footer-col">
         <h5>Разделы</h5>
         <a href="index.html">Главная</a>
-        <a href="info.html">Информация</a>
-        <a href="departments.html">Отделения</a>
-        <a href="doctors.html">Врачи</a>
+        <a href="info.html">О больнице</a>
         <a href="news.html">Новости</a>
       </div>
       <div class="footer-col">
         <h5>Пациентам</h5>
-        <a href="appointment.html">Запись на приём</a>
-        <a href="services.html">Услуги</a>
-        <a href="ustav.html">Устав</a>
-        <a href="contacts.html">Контакты</a>
-        <a href="faq.html">FAQ</a>
+        <a href="info.html#functions">Направления помощи</a>
+        <a href="info.html#forms">Виды помощи</a>
+        <a href="info.html#steps">Как записаться</a>
+        <a href="faq.html">Вопросы и ответы</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -172,13 +162,14 @@
     <h3 id="faqModalTitle">Новый вопрос</h3>
     <form id="faqForm">
       <input type="hidden" name="id">
-      <div class="form-group"><label>Категория</label><input name="cat" required placeholder="Служба / Обучение / Документы..."></div>
+      <div class="form-group"><label>Категория</label><input name="cat" required placeholder="Приём / Документы / Услуги..."></div>
       <div class="form-group"><label>Вопрос</label><input name="q" required maxlength="200"></div>
       <div class="form-group"><label>Ответ</label><textarea name="a" required rows="5" maxlength="2000"></textarea></div>
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" id="faqDelete" style="display:none">Удалить</button>
         <button type="submit" class="btn btn-gold">Сохранить</button>
       </div>
+      <div class="form-msg" id="faqFormMsg" role="status"></div>
     </form>
   </div>
 </div>
@@ -186,17 +177,13 @@
 <script src="supabase-loader.js?v=1"></script>
 <script src="config.js?v=1"></script>
 <script src="main.js?v=1"></script>
-<script src="format-utils.js?v=1"></script>
 <script src="holiday-engine.js?v=1"></script>
-<script src="settings-panel.js?v=1"></script>
 <script src="sound-engine.js?v=1"></script>
 <script src="auth.js?v=1"></script>
 <script src="roles-engine.js?v=1"></script>
 <script src="faq-engine.js?v=1"></script>
 <script src="search-engine.js?v=1"></script>
-<script src="ds-cache.js?v=1"></script>
 <script src="notify-engine.js?v=1"></script>
-<script src="notify-live.js?v=1"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -237,18 +224,25 @@ function render(){
     </details>`).join("");
   $("faqList").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openEdit(b.dataset.edit)}));
   $("faqList").querySelectorAll(".faq-item").forEach(d=>{
-    d.addEventListener("toggle",()=>{if(d.open&&window.VSRF_SOUND) window.VSRF_SOUND.play("page")});
+    d.addEventListener("toggle",()=>{if(d.open&&window.CGB_SOUND) window.CGB_SOUND.play("page")});
   });
 }
 
 $("faqSearch").addEventListener("input",e=>{QUERY=e.target.value;render()});
 
+function setFaqFormMsg(text,type=""){
+  const el=$("faqFormMsg");
+  el.className="form-msg"+(type?" "+type:"");
+  el.textContent=text||"";
+}
+
 function openEdit(id){
-  const item=id?ITEMS.find(x=>x.id===id):null;
+  const item=id?ITEMS.find(x=>String(x.id)===String(id)):null;
   const modal=$("faqModal");
   const form=$("faqForm");
   form.reset();
-  form.id.value=item?item.id:VSRF_FAQ.makeId();
+  setFaqFormMsg("");
+  form.id.value=item?item.id:CGB_FAQ.makeId();
   form.cat.value=item?item.cat:"";
   form.q.value=item?item.q:"";
   form.a.value=item?item.a:"";
@@ -256,10 +250,12 @@ function openEdit(id){
   $("faqDelete").style.display=item?"inline-flex":"none";
   $("faqDelete").onclick=async()=>{
     if(!confirm("Удалить вопрос?")) return;
-    await VSRF_FAQ.remove(item.id);
+    setFaqFormMsg("Удаление...","info");
+    const result=await CGB_FAQ.remove(item.id);
+    if(!result.ok){setFaqFormMsg(result.error||"Не удалось удалить вопрос","error");return}
     modal.classList.remove("active");
-    ITEMS=await VSRF_FAQ.loadAll();render();
-    if(window.VSRF_SEARCH) window.VSRF_SEARCH.invalidate();
+    ITEMS=await CGB_FAQ.loadAll();render();
+    if(window.CGB_SEARCH) window.CGB_SEARCH.invalidate();
   };
   modal.classList.add("active");
 }
@@ -269,53 +265,62 @@ $("faqForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const fd=new FormData(e.target);
   const item={id:fd.get("id"),cat:fd.get("cat").trim(),q:fd.get("q").trim(),a:fd.get("a").trim(),sort:Date.now()};
-  await VSRF_FAQ.save(item);
+  setFaqFormMsg("Сохранение...","info");
+  const result=await CGB_FAQ.save(item);
+  if(!result.ok){setFaqFormMsg(result.error||"Не удалось сохранить вопрос","error");return}
   $("faqModal").classList.remove("active");
-  ITEMS=await VSRF_FAQ.loadAll();render();
-  if(window.VSRF_SEARCH) window.VSRF_SEARCH.invalidate();
-  if(window.VSRF_SOUND) window.VSRF_SOUND.play("success");
+  ITEMS=await CGB_FAQ.loadAll();render();
+  if(window.CGB_SEARCH) window.CGB_SEARCH.invalidate();
+  if(window.CGB_SOUND) window.CGB_SOUND.play("success");
 });
 $("faqAdd").addEventListener("click",()=>openEdit(null));
 $("faqReset").addEventListener("click",async()=>{
-  if(!confirm("Вернуть 8 стартовых вопросов? Ваши изменения (локальные) будут потеряны.")) return;
-  VSRF_FAQ.resetDefaults();
-  ITEMS=await VSRF_FAQ.loadAll();render();updateModeHint();
-  if(window.VSRF_SEARCH) window.VSRF_SEARCH.invalidate();
+  if(CGB_FAQ.getMode()==="supabase"){alert("Сброс локальной копии недоступен, пока используется Supabase.");return}
+  if(!confirm("Очистить локальную копию вопросов? Это действие нельзя отменить.")) return;
+  const result=CGB_FAQ.resetDefaults();
+  if(!result.ok){alert(result.error||"Не удалось очистить локальную копию");return}
+  ITEMS=await CGB_FAQ.loadAll();render();updateModeHint();
+  if(window.CGB_SEARCH) window.CGB_SEARCH.invalidate();
 });
 $("faqClear").addEventListener("click",async()=>{
-  if(!confirm("Удалить ВСЕ вопросы? Это действие нельзя отменить.")) return;
-  if(VSRF_FAQ.getMode()==="supabase"){
-    for(const it of ITEMS.slice()) await VSRF_FAQ.remove(it.id);
+  if(!confirm("Удалить все вопросы? Это действие нельзя отменить.")) return;
+  let failure=null;
+  if(CGB_FAQ.getMode()==="supabase"){
+    for(const item of ITEMS.slice()){
+      const result=await CGB_FAQ.remove(item.id);
+      if(!result.ok){failure=result;break}
+    }
   }else{
-    VSRF_FAQ.clearAll();
+    const result=CGB_FAQ.clearAll();
+    if(!result.ok) failure=result;
   }
-  ITEMS=await VSRF_FAQ.loadAll();render();updateModeHint();
-  if(window.VSRF_SEARCH) window.VSRF_SEARCH.invalidate();
+  if(failure){alert(failure.error||"Не удалось удалить все вопросы");return}
+  ITEMS=await CGB_FAQ.loadAll();render();updateModeHint();
+  if(window.CGB_SEARCH) window.CGB_SEARCH.invalidate();
 });
 function updateModeHint(){
   const el=$("faqModeHint");if(!el) return;
-  const m=VSRF_FAQ.getMode();
+  const m=CGB_FAQ.getMode();
   el.innerHTML=m==="supabase"
     ? '<svg viewBox="0 0 24 24" width="14" height="14" style="vertical-align:-2px"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Хранение: Supabase (общее для всех)'
     : '<svg viewBox="0 0 24 24" width="14" height="14" style="vertical-align:-2px"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z"/></svg> Хранение: локально в браузере (только у вас)';
 }
 
 function applyFaqAdmin(){
-  const can=!!(window.VSRF_ROLES&&window.VSRF_ROLES.can("faq","edit"));
+  const can=!!(window.CGB_ROLES&&window.CGB_ROLES.can("faq","edit"));
   document.body.classList.toggle("faq-can-edit",can);
 }
 async function reboot(){
-  ITEMS=await VSRF_FAQ.loadAll();
+  ITEMS=await CGB_FAQ.loadAll();
   render();
   updateModeHint();
   applyFaqAdmin();
   const h=location.hash.slice(1);
   if(h){setTimeout(()=>{const el=document.getElementById("faq-"+h);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("faq-item-open")}},300)}
 }
-if(window.VSRF_ROLES) window.VSRF_ROLES.onChange(applyFaqAdmin);
-if(window.VSRF_AUTH) window.VSRF_AUTH.onChange(reboot);
+if(window.CGB_ROLES) window.CGB_ROLES.onChange(applyFaqAdmin);
+if(window.CGB_AUTH) window.CGB_AUTH.onChange(reboot);
 else reboot();
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
 </body>
 </html>

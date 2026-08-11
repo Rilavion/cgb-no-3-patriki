@@ -1,11 +1,15 @@
-window.VSRF_AUTH=(function(){
+window.CGB_AUTH=(function(){
   const state={client:null,user:null,ready:false,available:false};
   const listeners=[];
+  let initPromise=null;
 
   function emit(){listeners.forEach(fn=>{try{fn(state)}catch(e){}})}
   function onChange(fn){listeners.push(fn);fn(state);return()=>{const i=listeners.indexOf(fn);if(i>=0) listeners.splice(i,1)}}
 
-  async function init(){
+  function init(){
+    if(state.available&&state.client&&state.ready) return Promise.resolve(state);
+    if(initPromise) return initPromise;
+    initPromise=(async()=>{
     const cfg=window.SUPABASE_CONFIG;
     if(!cfg||!cfg.url||!cfg.anonKey||!window.supabase){
       state.available=false;state.ready=true;emit();
@@ -25,18 +29,20 @@ window.VSRF_AUTH=(function(){
       state.available=false;state.ready=true;emit();
     }
     wireButtons();updateUI();
+    })().finally(()=>{initPromise=null});
+    return initPromise;
   }
 
   function wireButtons(){
     document.querySelectorAll("[data-open-login]").forEach(b=>{
-      if(b.__vsrfWired) return;b.__vsrfWired=1;
+      if(b.__cgbWired) return;b.__cgbWired=1;
       b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();
         if(state.user) return signOut();
         openModal();
       });
     });
     document.querySelectorAll(".login-btn").forEach(b=>{
-      if(b.__vsrfWired) return;b.__vsrfWired=1;
+      if(b.__cgbWired) return;b.__cgbWired=1;
       b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();
         if(state.user) return signOut();
         openModal();
@@ -96,7 +102,7 @@ window.VSRF_AUTH=(function(){
     if(window.supabase||!document.querySelector('script[src*="supabase-loader"]')){
       init();
     }else{
-      window.addEventListener("vsrf-supabase-loaded",()=>init(),{once:true});
+      window.addEventListener("cgb-supabase-loaded",()=>init(),{once:true});
       setTimeout(()=>{if(!state.ready) init()},4000);
     }
   }

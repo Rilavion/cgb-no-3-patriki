@@ -28,15 +28,8 @@
             <nav class="nav" id="mainNav">
       <a href="index.html">Главная</a>
       <a href="info.html">Информация</a>
-      <a href="departments.html">Отделения</a>
-      <a href="doctors.html">Врачи</a>
-      <a href="services.html">Услуги</a>
-      <a href="appointment.html">Запись</a>
-      <a href="ustav.html">Устав</a>
       <a href="news.html" class="active">Новости</a>
-      <a href="contacts.html">Контакты</a>
-      <a href="faq.html">FAQ</a>
-      <a href="lk.html" data-loggedin>Личный кабинет</a>
+      <a href="faq.html">Вопросы и ответы</a>
     </nav>
     <div class="header-actions">
       <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
@@ -46,7 +39,7 @@
       </button>
       <button class="icon-btn" data-open-notify title="Уведомления" style="position:relative">
         <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-        <span class="vsrf-notify-badge" data-notify-badge></span>
+        <span class="cgb-notify-badge" data-notify-badge></span>
       </button>
       <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Сменить тему">
         <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -56,7 +49,7 @@
         <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/></svg>
         <span>Войти</span>
       </button>
-      <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+      <button class="burger" id="burger" type="button" aria-label="Открыть меню" aria-controls="mainNav" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
@@ -66,9 +59,9 @@
     <div class="container">
       <div class="section-head reveal" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
         <div>
-          <span class="badge">Оперативная сводка</span>
-          <h2>Новости части</h2>
-          <p>Актуальные события, приказы и объявления .</p>
+          <span class="badge">Новости больницы</span>
+          <h2>Новости и объявления</h2>
+          <p>Актуальные события, полезные материалы и объявления.</p>
         </div>
         <button class="btn btn-gold" id="addNewsBtn" data-perm="news:create,news:edit" style="display:none">＋ Добавить новость</button>
       </div>
@@ -94,8 +87,8 @@
             <div class="footer-settings-label" style="margin-bottom:8px">Фон</div>
             <div class="fs-modes" id="fsModes">
               <button class="fs-mode" data-bg="grid">Сеть</button>
-              <button class="fs-mode" data-bg="stars">Кресты</button>
-              <button class="fs-mode" data-bg="radar">Радар</button>
+              <button class="fs-mode" data-bg="dots">Точки</button>
+              <button class="fs-mode" data-bg="waves">Волны</button>
             </div>
           </div>
           <div class="footer-note">Настройки сохраняются в браузере</div>
@@ -104,18 +97,15 @@
       <div class="footer-col">
         <h5>Разделы</h5>
         <a href="index.html">Главная</a>
-        <a href="info.html">Информация</a>
-        <a href="departments.html">Отделения</a>
-        <a href="doctors.html">Врачи</a>
+        <a href="info.html">О больнице</a>
         <a href="news.html">Новости</a>
       </div>
       <div class="footer-col">
         <h5>Пациентам</h5>
-        <a href="appointment.html">Запись на приём</a>
-        <a href="services.html">Услуги</a>
-        <a href="ustav.html">Устав</a>
-        <a href="contacts.html">Контакты</a>
-        <a href="faq.html">FAQ</a>
+        <a href="info.html#functions">Направления помощи</a>
+        <a href="info.html#forms">Виды помощи</a>
+        <a href="info.html#steps">Как записаться</a>
+        <a href="faq.html">Вопросы и ответы</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -185,16 +175,11 @@
 <script src="supabase-loader.js?v=1"></script>
 <script src="config.js?v=1"></script>
 <script src="main.js?v=1"></script>
-<script src="format-utils.js?v=1"></script>
 <script src="holiday-engine.js?v=1"></script>
-<script src="settings-panel.js?v=1"></script>
 <script src="sound-engine.js?v=1"></script>
 <script src="faq-engine.js?v=1"></script>
 <script src="search-engine.js?v=1"></script>
-<script src="ds-cache.js?v=1"></script>
 <script src="notify-engine.js?v=1"></script>
-<script src="notify-live.js?v=1"></script>
-
 <script src="auth.js?v=1"></script>
 <script src="roles-engine.js?v=1"></script>
 <script src="news.js?v=1"></script>
@@ -215,13 +200,13 @@ let LOADED=[];
 let currentNews=null;
 
 function fmt(d){try{return new Date(d).toLocaleDateString("ru-RU",{timeZone:"Europe/Moscow",day:"numeric",month:"long",year:"numeric"})}catch(e){return d}}
-function esc(s){return VSRF_NEWS.esc(s)}
+function esc(s){return CGB_NEWS.esc(s)}
 
 function heroHtml(n){
-  const heroImg=VSRF_NEWS.firstImage(n);
+  const heroImg=CGB_NEWS.firstImage(n);
   const img=heroImg?`<img src="${esc(heroImg)}" alt="${esc(n.title)}" loading="lazy">`:"";
-  const t=VSRF_NEWS.tagInfo(n.tag);
-  const d=VSRF_NEWS.deptInfo(n.dept);
+  const t=CGB_NEWS.tagInfo(n.tag);
+  const d=CGB_NEWS.deptInfo(n.dept);
   return `<div class="news-hero" data-news-id="${n.id}">
     <div class="news-hero-thumb">${img}
       <div class="news-thumb-badges" style="top:20px;left:20px">
@@ -240,14 +225,14 @@ function heroHtml(n){
 }
 
 function cardHtml(n){
-  return VSRF_NEWS.cardHtml(n);
+  return CGB_NEWS.cardHtml(n);
 }
 
 function itemHtml(n){
-  const heroImg=VSRF_NEWS.firstImage(n);
+  const heroImg=CGB_NEWS.firstImage(n);
   const img=heroImg?`<img src="${esc(heroImg)}" alt="${esc(n.title)}" loading="lazy">`:"";
-  const t=VSRF_NEWS.tagInfo(n.tag);
-  const d=VSRF_NEWS.deptInfo(n.dept);
+  const t=CGB_NEWS.tagInfo(n.tag);
+  const d=CGB_NEWS.deptInfo(n.dept);
   return `<article class="news-item" data-news-id="${n.id}">
     <div class="news-thumb">${img}
       <div class="news-thumb-badges">
@@ -269,25 +254,27 @@ function itemHtml(n){
 function openNews(id){
   const n=LOADED.find(x=>String(x.id)===String(id));if(!n) return;
   currentNews=n;
-  const canEdit=window.VSRF_ROLES&&window.VSRF_ROLES.can("news","edit");
-  const canDelete=window.VSRF_ROLES&&window.VSRF_ROLES.can("news","delete");
-  VSRF_NEWS_READER.open(n,{
+  const canEdit=window.CGB_ROLES&&window.CGB_ROLES.can("news","edit");
+  const canDelete=window.CGB_ROLES&&window.CGB_ROLES.can("news","delete");
+  CGB_NEWS_READER.open(n,{
     admin:canEdit||canDelete,
     canEdit,canDelete,
     onEdit:(item)=>{if(canEdit) openEdit(item)},
     onDelete:async(item)=>{
       if(!canDelete) return;
-      const s=window.VSRF_AUTH.state;
+      const s=window.CGB_AUTH.state;
       if(!s.available||!s.client){alert("Supabase не настроен");return}
       if(!confirm("Удалить новость «"+item.title+"»?")) return;
       try{
-        await s.client.from("news").delete().eq("id",item.id);
-        VSRF_NEWS_READER.close();load();
-      }catch(e){alert(e.message||"Ошибка")}
+        const {error}=await s.client.from("news").delete().eq("id",item.id);
+        if(error) throw error;
+        CGB_NEWS_READER.close();
+        await load();
+      }catch(error){alert(error.message||"Ошибка удаления")}
     }
   });
 }
-function closeNews(){VSRF_NEWS_READER.close()}
+function closeNews(){CGB_NEWS_READER.close()}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&editNewsModal.classList.contains("active")) editNewsModal.classList.remove("active")});
 
 function renderSkeleton(){
@@ -314,9 +301,9 @@ function renderSkeleton(){
 }
 
 async function load(){
-  const canCreate=window.VSRF_ROLES&&(window.VSRF_ROLES.can("news","create")||window.VSRF_ROLES.can("news","edit"));
+  const canCreate=window.CGB_ROLES&&(window.CGB_ROLES.can("news","create")||window.CGB_ROLES.can("news","edit"));
   renderSkeleton();
-  LOADED=await VSRF_NEWS.fetchNews();
+  LOADED=await CGB_NEWS.fetchNews();
   if(!LOADED.length){
     heroSlot.innerHTML="";grid.innerHTML="";
     listEl.innerHTML=`<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM5 8h5v2H5zm14 8H5v-2h14zm0-4h-7v-2h7z"/></svg><h3>Пока нет публикаций</h3><p>Как только появятся новости — они будут отображены здесь.</p></div>`;
@@ -339,23 +326,23 @@ async function load(){
   document.querySelectorAll(".admin-only").forEach(el=>el.style.display=canCreate?"":"none");
 }
 
-if(window.VSRF_ROLES) window.VSRF_ROLES.onChange(()=>load());
-if(window.VSRF_AUTH) window.VSRF_AUTH.onChange(()=>load());
+if(window.CGB_ROLES) window.CGB_ROLES.onChange(()=>load());
+if(window.CGB_AUTH) window.CGB_AUTH.onChange(()=>load());
 
-document.getElementById("tagSelect").innerHTML=VSRF_NEWS.tagsList().map(t=>`<option value="${t.key}">${t.label}</option>`).join("");
-document.getElementById("deptSelect").innerHTML=VSRF_NEWS.deptsList().map(t=>`<option value="${t.key}">${t.label}</option>`).join("");
-VSRF_SELECT.enhance(document.getElementById("tagSelect"));
-VSRF_SELECT.enhance(document.getElementById("deptSelect"));
+document.getElementById("tagSelect").innerHTML=CGB_NEWS.tagsList().map(t=>`<option value="${t.key}">${t.label}</option>`).join("");
+document.getElementById("deptSelect").innerHTML=CGB_NEWS.deptsList().map(t=>`<option value="${t.key}">${t.label}</option>`).join("");
+CGB_SELECT.enhance(document.getElementById("tagSelect"));
+CGB_SELECT.enhance(document.getElementById("deptSelect"));
 
 let draftHandle=null;
 addBtn.addEventListener("click",()=>{
   openEdit();
-  if(window.VSRF_DRAFT&&!draftHandle){
-    draftHandle=VSRF_DRAFT.attach(newsForm,"news-new");
-    VSRF_DRAFT.offerRestore("news-new",data=>{
+  if(window.CGB_DRAFT&&!draftHandle){
+    draftHandle=CGB_DRAFT.attach(newsForm,"news-new");
+    CGB_DRAFT.offerRestore("news-new",data=>{
       Object.keys(data||{}).forEach(k=>{const el=newsForm.elements[k];if(el&&el.type!=="file") el.value=data[k]});
-      if(newsForm.tag) newsForm.tag.dispatchEvent(new Event("__vsrf_refresh"));
-      if(newsForm.dept) newsForm.dept.dispatchEvent(new Event("__vsrf_refresh"));
+      if(newsForm.tag) newsForm.tag.dispatchEvent(new Event("__cgb_refresh"));
+      if(newsForm.dept) newsForm.dept.dispatchEvent(new Event("__cgb_refresh"));
     });
   }
 });
@@ -381,8 +368,8 @@ function openEdit(item){
     newsForm.tag.value="news";
     newsForm.dept.value="general";
   }
-  newsForm.tag.dispatchEvent(new Event("__vsrf_refresh"));
-  newsForm.dept.dispatchEvent(new Event("__vsrf_refresh"));
+  newsForm.tag.dispatchEvent(new Event("__cgb_refresh"));
+  newsForm.dept.dispatchEvent(new Event("__cgb_refresh"));
   const msg=editNewsModal.querySelector(".form-msg");msg.className="form-msg";msg.textContent="";
   editNewsModal.classList.add("active");
 }
@@ -392,7 +379,7 @@ editNewsModal.querySelector(".modal-close").addEventListener("click",()=>editNew
 newsForm.addEventListener("submit",async e=>{
   e.preventDefault();
   const msg=editNewsModal.querySelector(".form-msg");
-  const s=window.VSRF_AUTH.state;
+  const s=window.CGB_AUTH.state;
   if(!s.available||!s.client){
     msg.className="form-msg info";msg.textContent="Редактирование недоступно — настройте Supabase.";return;
   }
@@ -417,35 +404,13 @@ newsForm.addEventListener("submit",async e=>{
       if(error) throw error;
     }
     msg.className="form-msg success";msg.textContent="Готово";
-    if(window.VSRF_DRAFT) VSRF_DRAFT.clear("news-new");
+    if(window.CGB_DRAFT) CGB_DRAFT.clear("news-new");
     setTimeout(()=>{editNewsModal.classList.remove("active");load()},500);
   }catch(err){msg.className="form-msg error";msg.textContent=err.message||"Ошибка сохранения"}
 });
 
 load();
 
-(function initBgSettings(){
-  function apply(){
-    if(!window.VSRF_BG) return;
-    const anim=document.getElementById("fsAnim");
-    const modes=document.querySelectorAll(".fs-mode");
-    const en=window.VSRF_BG.isEnabled();
-    const cur=window.VSRF_BG.getMode();
-    if(anim) anim.checked=en;
-    modes.forEach(m=>{m.classList.toggle("active",m.dataset.bg===cur);m.disabled=!en});
-  }
-  function bind(){
-    const anim=document.getElementById("fsAnim");
-    const modes=document.querySelectorAll(".fs-mode");
-    if(!anim) return;
-    anim.addEventListener("change",()=>{window.VSRF_BG&&window.VSRF_BG.setEnabled(anim.checked);apply()});
-    modes.forEach(m=>m.addEventListener("click",()=>{
-      if(!window.VSRF_BG||!window.VSRF_BG.isEnabled()) return;
-      window.VSRF_BG.setMode(m.dataset.bg);apply();
-    }));
-  }
-  if(window.VSRF_BG){bind();apply()}else document.addEventListener("vsrf-bg-ready",()=>{bind();apply()});
-})();
 
 if(location.hash&&location.hash.indexOf("#news-")===0){
   const wantId=location.hash.slice(6);
@@ -460,15 +425,14 @@ if(location.hash&&location.hash.indexOf("#news-")===0){
   const s=document.getElementById("fsSound");
   const v=document.getElementById("fsSoundVol");
   const vv=document.getElementById("fsSoundVolVal");
-  if(!s||!window.VSRF_SOUND) return;
-  s.checked=VSRF_SOUND.isEnabled();
-  v.value=VSRF_SOUND.getVolume();
-  vv.textContent=Math.round(VSRF_SOUND.getVolume()*100)+"%";
-  s.addEventListener("change",()=>VSRF_SOUND.setEnabled(s.checked));
-  v.addEventListener("input",()=>{VSRF_SOUND.setVolume(v.value);vv.textContent=Math.round(v.value*100)+"%"});
+  if(!s||!window.CGB_SOUND) return;
+  s.checked=CGB_SOUND.isEnabled();
+  v.value=CGB_SOUND.getVolume();
+  vv.textContent=Math.round(CGB_SOUND.getVolume()*100)+"%";
+  s.addEventListener("change",()=>CGB_SOUND.setEnabled(s.checked));
+  v.addEventListener("input",()=>{CGB_SOUND.setVolume(v.value);vv.textContent=Math.round(v.value*100)+"%"});
 })();
 
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-window.VSRF_NEWS_READER=(function(){
+window.CGB_NEWS_READER=(function(){
   var reader,progressBar,contentEl,mainEl,thumbsEl,counterEl,btnPrev,btnNext;
   var lb,lbImg,lbCounter,lbBtnPrev,lbBtnNext;
   var current=null,currentImgs=[],idx=0,lbIdx=0;
@@ -79,7 +79,7 @@ window.VSRF_NEWS_READER=(function(){
     build();
     current=n;
     opts=opts||{};
-    var T=window.VSRF_NEWS;
+    var T=window.CGB_NEWS;
     var tag=T&&T.tagInfo?T.tagInfo(n.tag):{label:"Новость",cls:"tag-news"};
     var dept=T&&T.deptInfo?T.deptInfo(n.dept):{label:"Общее",cls:"dept-general"};
     currentImgs=T&&T.allImages?T.allImages(n):(n.image?[n.image]:[]);
@@ -100,7 +100,8 @@ window.VSRF_NEWS_READER=(function(){
       </div>`;
     }
 
-    var edit=opts.admin?`<button class="btn btn-ghost btn-sm" data-reader-edit>✎ Редактировать</button><button class="btn btn-ghost btn-sm btn-danger" data-reader-del>Удалить</button>`:"";
+    var edit=(opts.canEdit?`<button class="btn btn-ghost btn-sm" data-reader-edit>✎ Редактировать</button>`:"")+
+      (opts.canDelete?`<button class="btn btn-ghost btn-sm btn-danger" data-reader-del>Удалить</button>`:"");
 
     contentEl.innerHTML=`
       <div class="news-reader-header">
@@ -112,23 +113,21 @@ window.VSRF_NEWS_READER=(function(){
         <div class="news-reader-meta">
           <span class="news-reader-meta-item"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>${fmt(n.date)}</span>
           <span class="news-reader-meta-sep"></span>
-          <span class="news-reader-meta-item"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>1-я МСБр · в/ч №12132</span>
+          <span class="news-reader-meta-item"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>Редакция ЦГБ №3</span>
           ${currentImgs.length?`<span class="news-reader-meta-sep"></span><span class="news-reader-meta-item"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>${currentImgs.length} фото</span>`:""}
         </div>
       </div>
       ${galleryHtml}
       <article class="news-reader-body">${autoFormat(n.body||n.excerpt||"")}</article>
-      <div class="news-reader-footer">Материал войсковой части · ${fmt(n.date)}</div>
+      <div class="news-reader-footer">Материал Центральной городской больницы №3 · ${fmt(n.date)}</div>
     `;
 
     var actions=reader.querySelector(".news-reader-actions");
     actions.innerHTML=edit;
-    if(opts.admin){
-      var eb=actions.querySelector("[data-reader-edit]");
-      var db=actions.querySelector("[data-reader-del]");
-      if(eb&&opts.onEdit) eb.addEventListener("click",()=>{close();opts.onEdit(n)});
-      if(db&&opts.onDelete) db.addEventListener("click",()=>opts.onDelete(n));
-    }
+    var eb=actions.querySelector("[data-reader-edit]");
+    var db=actions.querySelector("[data-reader-del]");
+    if(eb&&opts.onEdit) eb.addEventListener("click",()=>{close();opts.onEdit(n)});
+    if(db&&opts.onDelete) db.addEventListener("click",()=>opts.onDelete(n));
 
     mainEl=contentEl.querySelector(".news-gallery-main");
     thumbsEl=contentEl.querySelector(".news-gallery-thumbs");

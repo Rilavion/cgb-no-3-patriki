@@ -27,15 +27,8 @@
         <nav class="nav" id="mainNav">
       <a href="index.html" class="active">Главная</a>
       <a href="info.html">Информация</a>
-      <a href="departments.html">Отделения</a>
-      <a href="doctors.html">Врачи</a>
-      <a href="services.html">Услуги</a>
-      <a href="appointment.html">Запись</a>
-      <a href="ustav.html">Устав</a>
       <a href="news.html">Новости</a>
-      <a href="contacts.html">Контакты</a>
-      <a href="faq.html">FAQ</a>
-      <a href="lk.html" data-loggedin>Личный кабинет</a>
+      <a href="faq.html">Вопросы и ответы</a>
     </nav>
     <div class="header-actions">
       <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
@@ -51,7 +44,7 @@
         <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/></svg>
         <span>Войти</span>
       </button>
-      <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+      <button class="burger" id="burger" type="button" aria-label="Открыть меню" aria-controls="mainNav" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
@@ -76,7 +69,7 @@
           <span class="hero-v4-badge-star">✚</span>
         </div>
         <p class="hero-v4-lead">
-          На страже вашего здоровья с 1974 года. Современная медицина, опытные врачи, круглосуточная помощь. <b>Забота. Профессионализм. Жизнь.</b>
+          Заботимся о вашем здоровье с 1974 года. Современная медицина, опытные врачи, круглосуточная помощь. <b>Забота. Профессионализм. Жизнь.</b>
         </p>
 
         <div class="hero-v4-about">
@@ -85,8 +78,8 @@
         </div>
 
         <div class="hero-v4-cta">
-          <a class="btn btn-gold" href="appointment.html">Записаться</a>
-          <a class="btn btn-ghost" href="departments.html">Отделения</a>
+          <a class="btn btn-gold" href="info.html#steps">Записаться</a>
+          <a class="btn btn-ghost" href="info.html#functions">Отделения</a>
           <a class="btn btn-ghost" href="news.html">Новости →</a>
         </div>
       </div>
@@ -103,7 +96,7 @@
         </div>
         <div class="hero-v4-emblem-3d">
           <div class="hero-v4-emblem-inner">
-            <img src="logo.png" alt="Эмблема ЦГБ №3">
+            <img src="logo.png" alt="Логотип ЦГБ №3">
             <span class="hero-v4-emblem-shine"></span>
           </div>
         </div>
@@ -134,8 +127,8 @@
             <div class="footer-settings-label" style="margin-bottom:8px">Фон</div>
             <div class="fs-modes" id="fsModes">
               <button class="fs-mode" data-bg="grid">Сеть</button>
-              <button class="fs-mode" data-bg="stars">Кресты</button>
-              <button class="fs-mode" data-bg="radar">Радар</button>
+              <button class="fs-mode" data-bg="dots">Точки</button>
+              <button class="fs-mode" data-bg="waves">Волны</button>
             </div>
           </div>
           <div class="footer-note">Настройки сохраняются в браузере</div>
@@ -144,18 +137,15 @@
       <div class="footer-col">
         <h5>Разделы</h5>
         <a href="index.html">Главная</a>
-        <a href="info.html">Информация</a>
-        <a href="departments.html">Отделения</a>
-        <a href="doctors.html">Врачи</a>
+        <a href="info.html">О больнице</a>
         <a href="news.html">Новости</a>
       </div>
       <div class="footer-col">
         <h5>Пациентам</h5>
-        <a href="appointment.html">Запись на приём</a>
-        <a href="services.html">Услуги</a>
-        <a href="ustav.html">Устав</a>
-        <a href="contacts.html">Контакты</a>
-        <a href="faq.html">FAQ</a>
+        <a href="info.html#functions">Направления помощи</a>
+        <a href="info.html#forms">Виды помощи</a>
+        <a href="info.html#steps">Как записаться</a>
+        <a href="faq.html">Вопросы и ответы</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -200,17 +190,12 @@
 <script src="supabase-loader.js?v=1"></script>
 <script src="config.js?v=1"></script>
 <script src="main.js?v=1"></script>
-<script src="format-utils.js?v=1"></script>
 <script src="holiday-engine.js?v=1"></script>
-<script src="settings-panel.js?v=1"></script>
 <script src="sound-engine.js?v=1"></script>
 <script src="auth.js?v=1"></script>
 <script src="roles-engine.js?v=1"></script>
 <script src="search-engine.js?v=1"></script>
-<script src="ds-cache.js?v=1"></script>
 <script src="notify-engine.js?v=1"></script>
-<script src="notify-live.js?v=1"></script>
 <script>document.getElementById("year").textContent=new Date().getFullYear();</script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
 </body>
 </html>
