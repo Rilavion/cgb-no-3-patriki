@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru" class="home-page-html">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="logo.png" type="image/png">
+<link rel="apple-touch-icon" href="logo.png">
+<title>ЦГБ №3 · Центральная Городская Больница №3 · Главная</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body class="home-page-body">
+<canvas id="bgCanvas"></canvas>
+<div class="bg-noise"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <div class="brand-icon"><img src="logo.png" alt="ЦГБ"></div>
+      <div class="brand-text">
+        <span class="brand-label">Министерство Здравоохранения</span>
+        <span class="brand-name">ЦГБ №3 · Центральная Городская</span>
+      </div>
+    </a>
+    <nav class="nav" id="mainNav">
+      <a href="index.html" class="active">Главная</a>
+      <a href="about.html">О больнице</a>
+      <a href="departments.html">Отделения</a>
+      <a href="services.html">Услуги</a>
+      <a href="doctors.html">Врачи</a>
+      <a href="ustav.html">Устав</a>
+      <a href="news.html">Новости</a>
+      <a href="contacts.html">Контакты</a>
+      <a href="appointment.html">Запись на приём</a>
+      <a href="faq.html">FAQ</a>
+      <a href="lk.html">Личный кабинет</a>
+    </nav>
+    <div class="header-actions">
+      <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.49-1.49-5-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+        <span>Поиск</span>
+        <span class="kbd">Ctrl K</span>
+      </button>
+      <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Сменить тему">
+        <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24"><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.66-5.66l1.42-1.42M4.92 19.08l1.42-1.42m0-11.32L4.92 4.92m14.16 14.16l-1.42-1.42M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="login-btn" data-open-login>
+        <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/></svg>
+        <span>Войти</span>
+      </button>
+      <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main class="home-onepage">
+  <section class="hero-v4" id="heroV4">
+    <div class="hero-v4-photo" style="background-image:url('fon.png')"></div>
+    <div class="hero-v4-veil"></div>
+    <div class="hero-v4-vignette"></div>
+    <canvas class="hero-v4-particles" id="heroParticles"></canvas>
+
+    <div class="container hero-v4-inner">
+      <div class="hero-v4-content">
+        <div class="hero-v4-kicker">Государственное учреждение здравоохранения</div>
+        <h1 class="hero-v4-title">
+          <span>Центральная Городская</span>
+          <span class="hero-v4-title-accent">Больница №3</span>
+        </h1>
+        <div class="hero-v4-badge">
+          <span class="hero-v4-badge-star">✚</span>
+          <span>Работаем 24/7</span>
+          <span class="hero-v4-badge-star">✚</span>
+        </div>
+        <p class="hero-v4-lead">
+          На страже вашего здоровья с 1974 года. Современная медицина, опытные врачи, круглосуточная помощь. <b>Забота. Профессионализм. Жизнь.</b>
+        </p>
+
+        <div class="hero-v4-about">
+          <div class="hero-v4-about-label">О больнице</div>
+          <p>ЦГБ №3 — многопрофильное лечебное учреждение с полным спектром стационарной и амбулаторной помощи. 12 отделений, 180+ специалистов, собственная лаборатория и служба скорой помощи.</p>
+        </div>
+
+        <div class="hero-v4-cta">
+          <a class="btn btn-gold" href="appointment.html">Записаться</a>
+          <a class="btn btn-ghost" href="departments.html">Отделения</a>
+          <a class="btn btn-ghost" href="news.html">Новости →</a>
+        </div>
+      </div>
+
+      <div class="hero-v4-emblem" id="heroEmblem">
+        <div class="hero-v4-emblem-glow"></div>
+        <div class="hero-v4-emblem-ring"></div>
+        <div class="hero-v4-emblem-ring hero-v4-emblem-ring-2"></div>
+        <div class="hero-v4-emblem-star" aria-hidden="true">
+          <svg viewBox="0 0 200 200"><polygon points="100,10 122,74 190,74 135,114 156,180 100,140 44,180 65,114 10,74 78,74" fill="none" stroke="#5bc0d1" stroke-width="1" opacity=".55"/></svg>
+        </div>
+        <div class="hero-v4-emblem-3d">
+          <div class="hero-v4-emblem-inner">
+            <img src="logo.png" alt="Эмблема ЦГБ №3">
+            <span class="hero-v4-emblem-shine"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-v4-newsline" id="heroNewsline">
+        <span class="hero-v4-newsline-label">◉ Оперативная сводка</span>
+        <div class="hero-v4-newsline-track" id="heroNewsTrack">
+          <span class="hero-v4-newsline-hint">Загрузка сводки...</span>
+        </div>
+        <a class="hero-v4-newsline-more" href="news.html">Все →</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h4>Настройки сайта</h4>
+        <div class="footer-settings">
+          <div class="footer-settings-row">
+            <span class="footer-settings-label">
+              <svg viewBox="0 0 24 24"><path d="M13 3l-1.5 6H15l-3.5 12v-8H9l1.5-10H13z"/></svg>
+              Анимации
+            </span>
+            <label class="fs-switch"><input type="checkbox" id="fsAnim" checked><span class="fs-switch-track"><span class="fs-switch-thumb"></span></span></label>
+          </div>
+          <div>
+            <div class="footer-settings-label" style="margin-bottom:8px">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+              Фон
+            </div>
+            <div class="fs-modes" id="fsModes">
+              <button class="fs-mode" data-bg="grid" title="Сеть с частицами">
+                <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zm-10 10h6v6H4zm10 0h6v6h-6z"/></svg>
+                Сеть
+              </button>
+              <button class="fs-mode" data-bg="stars" title="Медицинские кресты">
+                <svg viewBox="0 0 24 24"><path d="M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z"/></svg>
+                Кресты
+              </button>
+              <button class="fs-mode" data-bg="radar" title="Радар">
+                <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7V3z"/><circle cx="12" cy="12" r="1.5"/></svg>
+                Радар
+              </button>
+            </div>
+          </div>
+          <div class="footer-note">Настройки сохраняются в браузере</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Разделы</h5>
+        <a href="index.html">Главная</a>
+        <a href="about.html">О больнице</a>
+        <a href="departments.html">Отделения</a>
+        <a href="doctors.html">Врачи</a>
+        <a href="news.html">Новости</a>
+      </div>
+      <div class="footer-col">
+        <h5>Пациентам</h5>
+        <a href="appointment.html">Запись на приём</a>
+        <a href="services.html">Услуги</a>
+        <a href="ustav.html">Устав</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="faq.html">FAQ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> · Центральная Городская Больница №3</span>
+      <span>Спасаем жизни каждый день</span>
+    </div>
+  </div>
+</footer>
+
+<div class="fab-stack" id="fabStack">
+  <button class="fab" id="fabUp" title="Наверх">
+    <svg viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8z"/></svg>
+    <span class="fab-hint">Наверх</span>
+  </button>
+</div>
+
+<div class="search-modal" id="searchModal">
+  <div class="search-box">
+    <div class="search-input-wrap">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.49-1.49-5-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+      <input class="search-input" placeholder="Поиск по разделам..." spellcheck="false">
+      <button class="search-close-kbd">Esc</button>
+    </div>
+    <div class="search-results"></div>
+  </div>
+</div>
+
+<div class="modal-back" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" aria-label="Закрыть">✕</button>
+    <h3>Вход в личный кабинет</h3>
+    <div class="modal-sub">Пациенты и сотрудники</div>
+    <form>
+      <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
+      <div class="form-group"><label>Пароль</label><input type="password" name="password" required></div>
+      <button class="btn btn-gold" style="width:100%" type="submit">Войти</button>
+      <div class="form-msg"></div>
+    </form>
+  </div>
+</div>
+
+<script src="main.js?v=1"></script>
+<script>
+document.getElementById("year").textContent=new Date().getFullYear();
+
+const NEWS=[
+  {title:"Новое отделение УЗИ", body:"Открыто современное отделение ультразвуковой диагностики с оборудованием экспертного класса.", date:new Date()},
+  {title:"Вакцинация от гриппа", body:"С 1 октября начинается бесплатная вакцинация от сезонного гриппа для всех прикреплённых.", date:new Date(Date.now()-86400000)},
+  {title:"День донора крови", body:"15 октября в больнице пройдёт акция по сбору донорской крови. Приглашаем всех желающих.", date:new Date(Date.now()-3*86400000)},
+  {title:"Новые специалисты", body:"К нам присоединились три врача высшей категории: кардиолог, невролог и эндокринолог.", date:new Date(Date.now()-5*86400000)}
+];
+
+function fmtDate(d){try{return new Date(d).toLocaleDateString("ru-RU",{timeZone:"Europe/Moscow",day:"2-digit",month:"2-digit"})}catch(e){return""}}
+function esc(s){return String(s||"").replace(/[<>&"']/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;","'":"&#39;"}[c]))}
+
+(function loadNewsline(){
+  const track=document.getElementById("heroNewsTrack");
+  if(!track) return;
+  const PLACEHOLDER='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%230d1a29" width="100" height="100"/><path d="M42 25h16v25h25v16H58v25H42V66H17V50h25z" fill="%235bc0d1" opacity="0.7"/></svg>';
+  const show=NEWS.slice(0,4);
+  track.dataset.count=String(show.length);
+  track.innerHTML=show.map(n=>{
+    const title=esc(n.title||"Без заголовка");
+    const body=esc((n.body||"").slice(0,120));
+    return `<button class="hero-v4-news-card" title="${title}">
+      <span class="hero-v4-news-thumb"><img src="${PLACEHOLDER}" alt=""></span>
+      <span class="hero-v4-news-body">
+        <span class="hero-v4-news-date">${fmtDate(n.date)}</span>
+        <span class="hero-v4-news-title">${title}</span>
+        <span class="hero-v4-news-excerpt">${body}</span>
+      </span>
+    </button>`;
+  }).join("");
+})();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2961d95981f9dac',t:'MTc4NjQzOTUxNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
+</body>
+</html>
