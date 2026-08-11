@@ -87,7 +87,7 @@ window.CGB_SOUND=(function(){
       if(t.closest("[data-sound='page']")){play("page");return}
       if(t.closest(".btn-primary,.hero-cta,.btn-cta")){play("click");return}
       if(t.closest("a.nav-link,.topbar a,.footer a")){play("page");return}
-      if(t.closest("button,.btn,a.card,.card,.news-card,.faq-item,.fs-mode")){play("tap");return}
+      if(t.closest("button,.btn,a.card,.card,.news-card,.vehicle-card,.doc-item,.ustav-card,.hf-preset,.hf-fx-btn,.hf-icon-btn,.fs-mode")){play("tap");return}
     },true);
     document.addEventListener("submit",()=>play("success"),true);
   });

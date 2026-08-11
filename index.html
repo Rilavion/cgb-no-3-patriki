@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body class="home-page-body">
 <canvas id="bgCanvas"></canvas>
@@ -24,23 +24,38 @@
         <span class="brand-name">ЦГБ №3 · Центральная Городская</span>
       </div>
     </a>
-    <nav class="nav" id="mainNav" aria-label="Основная навигация">
-      <a href="index.html" data-page="home" class="active">
-        <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span>
-        <span class="nav-meta"><span class="nav-name">Главная</span><span class="nav-sub">Обзор и запись на приём</span></span>
-      </a>
-      <a href="info.html" data-page="info">
-        <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></span>
-        <span class="nav-meta"><span class="nav-name">Информация</span><span class="nav-sub">Отделения, услуги, порядок записи</span></span>
-      </a>
-      <a href="news.html" data-page="news">
-        <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></span>
-        <span class="nav-meta"><span class="nav-name">Новости</span><span class="nav-sub">События и объявления</span></span>
-      </a>
-      <a href="faq.html" data-page="faq">
-        <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
-        <span class="nav-meta"><span class="nav-name">Вопросы и ответы</span><span class="nav-sub">Справка для пациентов</span></span>
-      </a>
+    <nav class="nav" id="mainNav">
+      <a href="index.html" data-page="index.html" data-transition>Главная</a>
+      <a href="info.html" data-page="info.html" data-transition>Информация</a>
+      <a href="ustav.html" data-page="ustav.html" data-transition>Уставы</a>
+      <a href="learn.html" data-page="learn.html" data-transition>Учебные материалы</a>
+      <a href="tests.html" data-page="tests.html" data-transition data-loggedin>Тестирование</a>
+      <a href="composition.html" data-page="composition.html" data-transition>Состав</a>
+      <a href="docs.html" data-page="docs.html" data-transition data-perm="docs:view">Документы</a>
+      <a href="news.html" data-page="news.html" data-transition>Новости</a>
+      <a href="autopark.html" data-page="autopark.html" data-transition>Автопарк</a>
+      <a href="map.html" data-page="map.html" data-transition>Карта</a>
+      <a href="faq.html" data-page="faq.html" data-transition>FAQ</a>
+      <a href="complaints.html" data-page="complaints.html" data-transition>Жалобы</a>
+      <a href="supply.html" data-page="supply.html" data-transition data-perm="supply:view">Поставки</a>
+      <a href="apps.html" data-page="apps.html" data-transition data-perm="apps:view">Заявления</a>
+      <a href="vp.html" data-page="vp.html" data-transition data-perm="vp:view">Проверки АБ</a>
+      <a href="complaints-review.html" data-page="complaints-review.html" data-transition data-perm="complaints:review,complaints:view">Рассмотрение жалоб</a>
+      <a href="complaints-stats.html" data-page="complaints-stats.html" data-transition data-perm="complaints:review,complaints:view">Статистика жалоб</a>
+      <a href="leave.html" data-page="leave.html" data-transition data-loggedin>Отгул</a>
+      <a href="vacation-ic.html" data-page="vacation-ic.html" data-transition data-loggedin>Отпуск IC</a>
+      <a href="vacation-ooc.html" data-page="vacation-ooc.html" data-transition data-loggedin>Отпуск OOC</a>
+      <a href="dismissal.html" data-page="dismissal.html" data-transition data-loggedin>Увольнение</a>
+      <a href="promotion.html" data-page="promotion.html" data-transition data-loggedin>Повышение</a>
+      <a href="restoration.html" data-page="restoration.html" data-transition>Восстановление в ВС РФ</a>
+      <a href="requests-review.html" data-page="requests-review.html" data-transition data-perm="requests:review,requests:view">Рассмотрение заявок</a>
+      <a href="requests-stats.html" data-page="requests-stats.html" data-transition data-perm="requests:review,requests:view">Статистика заявок</a>
+      <a href="payroll.html" data-page="payroll.html" data-transition data-perm="payroll:view">Реестр премирования</a>
+      <a href="report.html" data-page="report.html" data-transition>Еженедельный отчёт</a>
+      <a href="report-settings.html" data-page="report-settings.html" data-transition data-perm="report:settings">Настройки отчётов</a>
+      <a href="vp-request.html" data-page="vp-request.html" data-transition data-perm="vp_request:submit">Запрос на наказание</a>
+      <a href="vp-request-settings.html" data-page="vp-request-settings.html" data-transition data-perm="vp_request:settings">Настройки запросов АБ</a>
+      <a href="lk.html" data-page="lk.html" data-transition>Личный кабинет</a>
     </nav>
     <div class="header-actions">
       <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
@@ -204,18 +219,18 @@
   </div>
 </div>
 
-<script src="supabase-loader.js?v=3"></script>
-<script src="config.js?v=3"></script>
-<script src="main.js?v=3"></script>
-<script src="holiday-engine.js?v=3"></script>
-<script src="sound-engine.js?v=3"></script>
-<script src="auth.js?v=3"></script>
-<script src="roles-engine.js?v=3"></script>
-<script src="search-engine.js?v=3"></script>
-<script src="notify-engine.js?v=3"></script>
-<script src="news.js?v=3"></script>
-<script src="news-reader.js?v=3"></script>
-<script src="home-news.js?v=3"></script>
+<script src="supabase-loader.js?v=4"></script>
+<script src="config.js?v=4"></script>
+<script src="main.js?v=4"></script>
+<script src="holiday-engine.js?v=4"></script>
+<script src="sound-engine.js?v=4"></script>
+<script src="auth.js?v=4"></script>
+<script src="roles-engine.js?v=4"></script>
+<script src="search-engine.js?v=4"></script>
+<script src="notify-engine.js?v=4"></script>
+<script src="news.js?v=4"></script>
+<script src="news-reader.js?v=4"></script>
+<script src="home-news.js?v=4"></script>
 <script>document.getElementById("year").textContent=new Date().getFullYear();</script>
 </body>
 </html>

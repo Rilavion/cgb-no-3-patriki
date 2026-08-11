@@ -1,91 +1,200 @@
 window.CGB_ROLES=(function(){
-  "use strict";
-  let myRole="user";
-  let myRoleDefinition=null;
-  let displayName="";
+  let myRole=null;
+  let myPermissions={};
+  let myCustomRole=null;
   const listeners=[];
 
-  const FALLBACK_PERMISSIONS={
-    admin:{"*":{"*":true}},
-    staff:{news:{create:true,edit:true},faq:{edit:true},info:{edit:false}},
-    user:{}
-  };
+  function waitReady(timeoutMs){
+    return new Promise(resolve=>{
+      const deadline=Date.now()+(timeoutMs||5000);
+      function check(){
+        const s=window.CGB_AUTH&&window.CGB_AUTH.state;
+        if(s&&s.ready){resolve(s);return true}
+        return false;
+      }
+      if(check()) return;
+      const t=setInterval(()=>{
+        if(check()){clearInterval(t);return}
+        if(Date.now()>deadline){clearInterval(t);resolve(window.CGB_AUTH&&window.CGB_AUTH.state||null)}
+      },80);
+      if(window.CGB_AUTH&&window.CGB_AUTH.onChange){
+        window.CGB_AUTH.onChange(st=>{if(st&&st.ready){clearInterval(t);resolve(st)}});
+      }
+    });
+  }
 
-  function emit(){listeners.slice().forEach(listener=>{try{listener({role:myRole,roleDefinition:myRoleDefinition,displayName})}catch(_){}})}
-  function onChange(listener){listeners.push(listener);listener({role:myRole,roleDefinition:myRoleDefinition,displayName});return()=>{const index=listeners.indexOf(listener);if(index>=0) listeners.splice(index,1)}}
-  function authState(){return window.CGB_AUTH&&window.CGB_AUTH.state}
-  function permissions(){return myRoleDefinition&&myRoleDefinition.permissions||FALLBACK_PERMISSIONS[myRole]||{}}
+  async function loadMyRole(){
+    await waitReady(5000);
+    const s=window.CGB_AUTH&&window.CGB_AUTH.state;
+    if(!s||!s.user||!s.client){
+      myRole=null;
+      console.log("[CGB_ROLES] Нет клиента/пользователя. auth.state =",s);
+      emit();apply();return null;
+    }
+    console.log("[CGB_ROLES] Загружаем роль для user_id =",s.user.id,"email =",s.user.email);
+    try{
+      const {data,error}=await s.client.from("user_roles").select("role,display_name,custom_role_id").eq("user_id",s.user.id).maybeSingle();
+      if(error){
+        console.error("[CGB_ROLES] Ошибка запроса:",error.message,error);
+        myRole=null;myPermissions={};myCustomRole=null;
+      }else{
+        myRole=data?data.role:null;
+        const displayName=data?data.display_name:null;
+        if(displayName) try{localStorage.setItem("cgb-my-display-name",displayName)}catch(e){}
+        if(data&&data.custom_role_id){
+          try{
+            const {data:cr}=await s.client.from("custom_roles").select("*").eq("id",data.custom_role_id).maybeSingle();
+            if(cr){myCustomRole=cr;myPermissions=cr.permissions||{}}
+          }catch(e){}
+        } else if(myRole){
+          try{
+            const {data:cr}=await s.client.from("custom_roles").select("*").eq("key",myRole).maybeSingle();
+            if(cr){myCustomRole=cr;myPermissions=cr.permissions||{}}
+          }catch(e){}
+        } else {myCustomRole=null;myPermissions={}}
+        console.log("[CGB_ROLES] ✓ Роль:",myRole,"custom:",myCustomRole&&myCustomRole.name);
+      }
+    }catch(e){
+      console.error("[CGB_ROLES] Исключение:",e.message);
+      myRole=null;myPermissions={};myCustomRole=null;
+    }
+    emit();
+    apply();
+    return myRole;
+  }
 
+  function apply(){
+    document.body.classList.toggle("cgb-is-admin",myRole==="admin");
+    document.body.classList.toggle("cgb-is-ss",myRole==="ss");
+    document.body.classList.toggle("cgb-is-staff",myRole==="admin"||myRole==="ss");
+    const s=window.CGB_AUTH&&window.CGB_AUTH.state;
+    document.body.classList.toggle("cgb-is-logged",!!(s&&s.user));
+    applyPermGates();
+  }
+
+  function applyPermGates(){
+    document.querySelectorAll("[data-perm]").forEach(el=>{
+      const raw=el.getAttribute("data-perm");
+      if(!raw){el.style.display="";return}
+      const parts=raw.split(",").map(p=>p.trim()).filter(Boolean);
+      let allowed=false;
+      for(const p of parts){
+        const [sec,act]=p.split(":").map(x=>x.trim());
+        if(!sec) continue;
+        if(can(sec,act||"view")){allowed=true;break}
+      }
+      if(!allowed){
+        el.style.setProperty("display","none","important");
+        el.setAttribute("aria-hidden","true");
+      } else {
+        el.style.removeProperty("display");
+        el.removeAttribute("aria-hidden");
+      }
+    });
+  }
+
+  function getMyRole(){return myRole}
+  function getMyCustomRole(){return myCustomRole}
+  function getMyPermissions(){return myPermissions}
+  function isAdmin(){return myRole==="admin"}
+  function isSS(){return myRole==="ss"}
+  function isStaff(){return myRole==="admin"||myRole==="ss"}
   function can(section,action){
     if(myRole==="admin") return true;
-    const value=permissions();
-    return Boolean(value&&(
-      value[section]&&(value[section][action]===true||value[section]["*"]===true)||
-      value["*"]&&(value["*"][action]===true||value["*"]["*"]===true)
-    ));
-  }
-  function applyPermGates(){
-    document.body.classList.toggle("cgb-is-admin",myRole==="admin");
-    document.body.classList.toggle("cgb-is-staff",myRole==="admin"||myRole==="staff");
-    const state=authState();
-    document.body.classList.toggle("cgb-is-logged",Boolean(state&&state.user));
-    document.querySelectorAll("[data-admin]").forEach(element=>{element.style.display=myRole==="admin"?"":"none"});
-    document.querySelectorAll("[data-loggedin]").forEach(element=>{element.style.display=state&&state.user?"":"none"});
-    document.querySelectorAll("[data-perm]").forEach(element=>{
-      const allowed=String(element.dataset.perm||"").split(",").some(rule=>{
-        const [section,action]=rule.trim().split(":");return section&&action&&can(section,action);
-      });
-      element.style.display=allowed?"":"none";
-    });
+    const sec=myPermissions[section];
+    if(!sec) return false;
+    if(action==null) return !!sec.view;
+    return !!sec[action];
   }
 
-  async function waitReady(timeout=5000){
-    const state=authState();if(state&&state.ready) return state;
-    return new Promise(resolve=>{
-      let finished=false;
-      const finish=value=>{if(finished) return;finished=true;resolve(value)};
-      let off=()=>{};
-      if(window.CGB_AUTH) off=window.CGB_AUTH.onChange(next=>{if(next&&next.ready){off();finish(next)}});
-      setTimeout(()=>finish(authState()),timeout);
-    });
-  }
-  async function loadMyRole(){
-    const state=await waitReady();
-    myRole="user";myRoleDefinition=null;displayName="";
-    if(!state||!state.client||!state.user){applyPermGates();emit();return myRole}
-    try{
-      const {data,error}=await state.client.from("user_roles").select("role,display_name").eq("user_id",state.user.id).maybeSingle();
-      if(error) throw error;
-      if(data){myRole=data.role||"user";displayName=data.display_name||""}
-      const {data:definition,error:definitionError}=await state.client.from("custom_roles").select("key,name,permissions,sort").eq("key",myRole).maybeSingle();
-      if(!definitionError&&definition) myRoleDefinition=definition;
-    }catch(error){console.warn("[CGB_ROLES] Не удалось загрузить роль:",error.message)}
-    applyPermGates();emit();return myRole;
-  }
-
-  async function listUsers(){
-    const state=authState();if(!state||!state.client||!can("staff","view")) return [];
-    const {data,error}=await state.client.from("user_roles").select("user_id,role,display_name,created_at,updated_at").order("created_at",{ascending:true});
-    if(error){console.warn("[CGB_ROLES] Не удалось получить список пользователей:",error.message);return []}
+  async function listCustomRoles(){
+    const s=window.CGB_AUTH.state;
+    if(!s||!s.client) return [];
+    const {data}=await s.client.from("custom_roles").select("*").order("sort",{ascending:true});
     return data||[];
   }
-  async function listRoleDefinitions(){
-    const state=authState();if(!state||!state.client) return [];
-    const {data,error}=await state.client.from("custom_roles").select("key,name,permissions,sort").order("sort",{ascending:true});
-    if(error) return [];return data||[];
-  }
-  async function setRole(userId,role,name){
-    const state=authState();if(!state||!state.client) return {ok:false,error:"Supabase недоступен"};
-    const {error}=await state.client.rpc("staff_upsert_role",{p_user_id:userId,p_role:role,p_display_name:name||null});
-    return error?{ok:false,error:error.message}:{ok:true};
+  function onChange(fn){listeners.push(fn);fn(myRole);return()=>{const i=listeners.indexOf(fn);if(i>=0) listeners.splice(i,1)}}
+  function emit(){listeners.forEach(fn=>{try{fn(myRole)}catch(e){}})}
+
+  // ==== Управление ролями (только для админа) ====
+  async function listAllRoles(){
+    const s=window.CGB_AUTH.state;
+    if(!s.client) return [];
+    const {data,error}=await s.client.from("user_roles").select("*").order("created_at",{ascending:false});
+    if(error){console.warn("[CGB_ROLES] list:",error.message);return []}
+    return data||[];
   }
 
-  document.addEventListener("DOMContentLoaded",applyPermGates);
-  if(window.CGB_AUTH) window.CGB_AUTH.onChange(state=>{if(state&&state.ready) loadMyRole();else applyPermGates()});
-  else setTimeout(loadMyRole,0);
+  async function setRole(userId,role,displayName,customRoleId){
+    const s=window.CGB_AUTH.state;
+    if(!s.client) return {ok:false,error:"no client"};
+    try{
+      const {error}=await s.client.rpc("staff_upsert_role",{
+        p_user_id:userId,
+        p_role:role,
+        p_display_name:displayName||null,
+        p_custom_role_id:customRoleId||null
+      });
+      if(!error) return {ok:true};
+      return {ok:false,error:error.message};
+    }catch(e){return {ok:false,error:e.message}}
+  }
 
-  return {
-    onChange,can,applyPermGates,loadMyRole,listUsers,listRoleDefinitions,setRole,
-    get role(){return myRole},get roleDefinition(){return myRoleDefinition},get displayName(){return displayName}
-  };
+  async function removeUser(userId){
+    const s=window.CGB_AUTH.state;
+    if(!s.client) return {ok:false,error:"no client"};
+    const {error}=await s.client.from("user_roles").delete().eq("user_id",userId);
+    if(error) return {ok:false,error:error.message};
+    return {ok:true};
+  }
+
+  // ==== Создание нового пользователя ====
+  // Через обычный signUp — новому юзеру приходит confirm-email, потом админ ему проставляет роль.
+  // Второй вариант — админ вручную знает user_id (из auth.users) и вызывает setRole.
+  async function inviteAndSetRole(email,password,role,displayName,customRoleId){
+    const s=window.CGB_AUTH.state;
+    if(!s.client) return {ok:false,error:"no client"};
+    const cfg=window.SUPABASE_CONFIG;
+    if(!cfg||!cfg.url||!cfg.anonKey||!window.supabase) return {ok:false,error:"no config"};
+    let tempClient;
+    try{
+      tempClient=window.supabase.createClient(cfg.url,cfg.anonKey,{
+        auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:"cgb-invite-tmp-"+Date.now()}
+      });
+    }catch(e){return {ok:false,error:"Не удалось создать временный клиент: "+e.message}}
+    try{
+      const {data,error}=await tempClient.auth.signUp({email,password,options:{data:{display_name:displayName||""}}});
+      if(error){
+        const m=(error.message||"").toLowerCase();
+        if(m.includes("rate limit")||m.includes("email rate")||error.status===429){
+          return {ok:false,code:"rate_limit",error:"Supabase ограничил отправку писем подтверждения (лимит ~4/час на встроенном SMTP). Решения: 1) Dashboard → Auth → Providers → Email → выключить «Confirm email» (рекомендуется для внутреннего сайта); 2) Подождать ~1 час; 3) Настроить свой SMTP в Auth → SMTP Settings."};
+        }
+        if(m.includes("already registered")||m.includes("user already")){
+          return {ok:false,code:"exists",error:"Пользователь с таким email уже существует. Найди его в списке ниже и назначь роль вручную."};
+        }
+        return {ok:false,error:error.message};
+      }
+      const uid=data&&data.user?data.user.id:null;
+      try{await tempClient.auth.signOut()}catch(e){}
+      if(!uid) return {ok:true,warning:"Пользователь создан, но user_id не получен (возможно требуется подтверждение email). Проставь роль вручную после его первого входа."};
+      await new Promise(res=>setTimeout(res,300));
+      const r=await setRole(uid,role,displayName,customRoleId);
+      if(!r.ok) return {ok:false,error:"Юзер создан в auth.users (uid: "+uid+"), но не удалось создать запись в user_roles: "+r.error+". Убедись что выполнил SQL RPC-ADMIN-UPSERT-ROLE-V84.sql и что ты залогинен как admin."};
+      return {ok:true,user_id:uid};
+    }catch(e){
+      try{await tempClient.auth.signOut()}catch(_){}
+      return {ok:false,error:e.message};
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded",()=>{
+    if(window.CGB_AUTH&&window.CGB_AUTH.onChange){
+      window.CGB_AUTH.onChange(st=>{if(st&&st.ready) loadMyRole()});
+    }
+    setTimeout(loadMyRole,300);
+  });
+
+  return {loadMyRole,getMyRole,getMyCustomRole,getMyPermissions,can,isAdmin,isSS,isStaff,onChange,
+          listAllRoles,setRole,removeUser,inviteAndSetRole,apply,applyPermGates,
+          listCustomRoles};
 })();
