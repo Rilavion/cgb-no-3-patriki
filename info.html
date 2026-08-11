@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 body.cgb-is-admin .nav a[data-admin]{display:inline-flex !important}
@@ -69,10 +69,6 @@ body.cgb-is-admin .info-admin-bar{display:flex !important}
       <button class="search-btn" data-open-search title="Поиск (Ctrl+K)">
         <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.49-1.49-5-5zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
         <span>Поиск</span><span class="kbd">Ctrl K</span>
-      </button>
-      <button class="icon-btn" data-open-notify title="Уведомления" style="position:relative">
-        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-        <span class="cgb-notify-badge" data-notify-badge></span>
       </button>
       <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Сменить тему">
         <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -290,17 +286,17 @@ body.cgb-is-admin .info-admin-bar{display:flex !important}
   </div>
 </div>
 
-<script src="supabase-loader.js?v=2"></script>
-<script src="config.js?v=2"></script>
-<script src="auth.js?v=2"></script>
-<script src="roles-engine.js?v=2"></script>
-<script src="info-engine.js?v=2"></script>
-<script src="main.js?v=2"></script>
-<script src="holiday-engine.js?v=2"></script>
-<script src="sound-engine.js?v=2"></script>
-<script src="faq-engine.js?v=2"></script>
-<script src="search-engine.js?v=2"></script>
-<script src="notify-engine.js?v=2"></script>
+<script src="supabase-loader.js?v=3"></script>
+<script src="config.js?v=3"></script>
+<script src="auth.js?v=3"></script>
+<script src="roles-engine.js?v=3"></script>
+<script src="info-engine.js?v=3"></script>
+<script src="main.js?v=3"></script>
+<script src="holiday-engine.js?v=3"></script>
+<script src="sound-engine.js?v=3"></script>
+<script src="faq-engine.js?v=3"></script>
+<script src="search-engine.js?v=3"></script>
+<script src="notify-engine.js?v=3"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);

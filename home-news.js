@@ -4,7 +4,10 @@
 window.CGB_HOME_NEWS=(function(){
   "use strict";
 
-  const MAX_ITEMS=4;
+  /* Показываем не больше трёх последних: лента всегда делит ширину
+     поровну между карточками (1 — на всю строку, 2 — пополам, 3 — по третям),
+     более старые публикации остаются на странице news.html. */
+  const MAX_ITEMS=3;
 
   function track(){return document.getElementById("heroNewsTrack")}
 
@@ -19,13 +22,23 @@ window.CGB_HOME_NEWS=(function(){
     const tag=N&&N.tagInfo?N.tagInfo(n.tag):{label:"Новость",cls:"tag-news"};
     const dept=N&&N.deptInfo?N.deptInfo(n.dept):{label:"Общее",cls:"dept-general"};
     const date=N&&N.fmt?N.fmt(n.date):String(n.date||"");
-    const title=N&&N.esc?N.esc(n.title):String(n.title||"");
-    return '<button type="button" class="hvn-card" data-news-id="'+(N.esc(String(n.id)))+'">'
+    const esc=N&&N.esc?N.esc:function(s){return String(s==null?"":s)};
+    const title=esc(n.title);
+    const excerpt=n.excerpt?'<span class="hvn-card-excerpt">'+esc(n.excerpt)+'</span>':"";
+    const img=N&&N.firstImage?N.firstImage(n):(n.image||"");
+    const media=img
+      ?'<span class="hvn-card-media"><img src="'+esc(img)+'" alt="" loading="lazy"></span>'
+      :"";
+    return '<button type="button" class="hvn-card" data-news-id="'+esc(String(n.id))+'">'
+      +media
+      +'<span class="hvn-card-main">'
       +'<span class="hvn-card-top"><span class="hvn-tag '+tag.cls+'">'+tag.label+'</span>'
       +'<span class="hvn-dept">'+dept.label+'</span></span>'
       +'<span class="hvn-card-title">'+title+'</span>'
+      +excerpt
       +'<span class="hvn-card-foot"><span class="hvn-date">'+date+'</span>'
       +'<span class="hvn-arrow" aria-hidden="true">→</span></span>'
+      +'</span>'
       +'</button>';
   }
 
