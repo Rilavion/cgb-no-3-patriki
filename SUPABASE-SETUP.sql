@@ -5,6 +5,10 @@
 --
 --  Уже существующие таблицы (faq, info_page, news, user_roles,
 --  custom_roles) НЕ пересоздаются — создаются только недостающие.
+--
+--  ВНИМАНИЕ: при запуске Supabase покажет «Potential issues detected»
+--  (из-за команд drop policy/revoke). Это нормально — жми «Run without RLS»:
+--  RLS и политики доступа настраиваются в блоке 3 этого же скрипта.
 -- =====================================================================
 
 create extension if not exists pgcrypto;
@@ -35,6 +39,19 @@ create table if not exists public.custom_roles (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Спасательные колонки (если таблицы уже созданы раньше с другим набором полей)
+alter table public.user_roles add column if not exists display_name text;
+alter table public.user_roles add column if not exists custom_role_id uuid;
+alter table public.user_roles add column if not exists updated_at timestamptz not null default now();
+alter table public.custom_roles add column if not exists key text;
+alter table public.custom_roles add column if not exists base_role text;   -- admin / ss / user
+alter table public.custom_roles add column if not exists name text;
+alter table public.custom_roles add column if not exists description text;
+alter table public.custom_roles add column if not exists color text;
+alter table public.custom_roles add column if not exists permissions jsonb not null default '{}'::jsonb;
+alter table public.custom_roles add column if not exists default_perms jsonb not null default '{}'::jsonb;
+alter table public.custom_roles add column if not exists sort integer not null default 0;
 
 -- ---------- Контентные страницы ----------
 create table if not exists public.news (
@@ -750,7 +767,9 @@ create table if not exists public.raids_events (
 -- 2. RPC-ФУНКЦИИ (вызываются сайтом)
 -- =====================================================================
 
--- 2.1 Назначение роли пользователю (со страницы «Роли», только для админа)
+-- 2.1 Назначение роли пользователю (со страницы «Личный кабинет»).
+-- Разрешено: админам; а также ЛЮБОМУ авторизованному, пока в базе
+-- нет ни одного админа (первичная настройка проекта).
 create or replace function public.staff_upsert_role(
   p_user_id uuid, p_role text, p_display_name text default null, p_custom_role_id uuid default null
 ) returns void
@@ -759,9 +778,8 @@ begin
   if auth.uid() is null then
     raise exception 'not authenticated';
   end if;
-  if auth.uid() <> p_user_id and not exists (
-    select 1 from public.user_roles ur where ur.user_id = auth.uid() and ur.role = 'admin'
-  ) then
+  if not exists (select 1 from public.user_roles ur where ur.user_id = auth.uid() and ur.role = 'admin')
+     and exists (select 1 from public.user_roles where role = 'admin') then
     raise exception 'only admin can assign roles';
   end if;
   insert into public.user_roles (user_id, role, display_name, custom_role_id, updated_at)
@@ -949,7 +967,15 @@ begin
     from public.payroll_drafts d where d.id = p_id;
 end $$;
 
+-- 2.0 Проверка «вызывающий — админ» (security definer — не рекурсирует в RLS)
+create or replace function public.is_admin()
+returns boolean
+language sql security definer stable set search_path = public as $$
+  select exists(select 1 from public.user_roles where user_id = auth.uid() and role = 'admin');
+$$;
+
 -- Права на выполнение RPC
+grant execute on function public.is_admin() to anon, authenticated;
 grant execute on function public.staff_upsert_role(uuid, text, text, uuid) to authenticated;
 grant execute on function public.get_complaint_form() to anon, authenticated;
 grant execute on function public.submit_complaint(jsonb, text, text, text, text, text, text, text) to anon, authenticated;
@@ -976,9 +1002,11 @@ grant usage, select on all sequences in schema public to anon, authenticated;
 alter default privileges in schema public grant select on tables to anon;
 alter default privileges in schema public grant select, insert, update, delete on tables to authenticated;
 
--- user_roles: читают только авторизованные, пишут только через RPC
+-- user_roles: читают только авторизованные, назначение — через RPC,
+-- удаление роли (кнопка 🗑 в ЛК) — админам напрямую
 revoke select on public.user_roles from anon;
-revoke insert, update, delete on public.user_roles from authenticated;
+revoke insert, update on public.user_roles from authenticated;
+grant delete on public.user_roles to authenticated;
 
 -- custom_roles: читают авторизованные; запись — только админам (через политику)
 revoke select on public.custom_roles from anon;
@@ -990,6 +1018,10 @@ drop policy if exists ur_select on public.user_roles;
 create policy ur_select on public.user_roles
   for select to authenticated using (true);
 
+drop policy if exists ur_admin_delete on public.user_roles;
+create policy ur_admin_delete on public.user_roles
+  for delete to authenticated using (public.is_admin());
+
 drop policy if exists cr_select on public.custom_roles;
 create policy cr_select on public.custom_roles
   for select to authenticated using (true);
@@ -997,8 +1029,8 @@ create policy cr_select on public.custom_roles
 drop policy if exists cr_admin_write on public.custom_roles;
 create policy cr_admin_write on public.custom_roles
   for all to authenticated
-  using (exists (select 1 from public.user_roles ur where ur.user_id = auth.uid() and ur.role = 'admin'))
-  with check (exists (select 1 from public.user_roles ur where ur.user_id = auth.uid() and ur.role = 'admin'));
+  using (public.is_admin())
+  with check (public.is_admin());
 
 -- Остальные таблицы: чтение всем, запись авторизованным
 do $$
@@ -1033,6 +1065,15 @@ begin
   alter publication supabase_realtime add table public.ds_sync_requests;
 exception when duplicate_object then null;
 end $$;
+
+-- =====================================================================
+-- 5. ПЕРВЫЙ АДМИНИСТРАТОР (раскомментируй и подставь свой UUID)
+--    UUID смотри: Authentication → Users → твой email → колонка UID.
+--    Без этого шага служебные разделы на сайте будут скрыты!
+-- =====================================================================
+-- insert into public.user_roles (user_id, role, display_name)
+-- values ('00000000-0000-0000-0000-000000000000', 'admin', 'Главный врач')
+-- on conflict (user_id) do update set role = 'admin';
 
 -- =====================================================================
 -- ГОТОВО. Проверка: в Table Editor должны появиться все таблицы выше.

@@ -61,13 +61,18 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 
 const SECTIONS=[
   {key:"apps",label:"📥 Заявления",actions:["view","edit","delete"]},
+  {key:"complaints",label:"⚠ Жалобы",actions:["view","review","form_edit","settings"]},
+  {key:"requests",label:"📮 Заявки",actions:["view","review","settings"]},
+  {key:"vp_request",label:"⚖ Запросы наказаний",actions:["submit","review","settings"]},
   {key:"vp",label:"🛡 Проверки АБ",actions:["view","edit","delete","settings"]},
   {key:"vp_archive",label:"📊 Архив проверок АБ",actions:["view","edit","delete","send","settings"]},
+  {key:"report",label:"🗓 Отчёты",actions:["view","submit","settings"]},
+  {key:"payroll",label:"💰 Реестр премирования",actions:["view","edit","settings"]},
   {key:"tests",label:"📝 Тесты",actions:["view","edit","delete","create","stats"]},
   {key:"supply",label:"📦 Поставки",actions:["view","stats","admin","replace"]},
   {key:"messages",label:"💬 Отправка сообщений",actions:["send"]},
   {key:"docs",label:"📄 Документы",actions:["view"]},
-  {key:"lk",label:"🔒 Личный кабинет",actions:["users","roles"]},
+  {key:"lk",label:"🔒 Личный кабинет",actions:["users","roles","settings"]},
   {key:"info",label:"ℹ Информация",actions:["edit"]},
   {key:"ustav",label:"📜 Уставы",actions:["edit"]},
   {key:"composition",label:"👥 Состав",actions:["edit"]},
@@ -77,7 +82,7 @@ const SECTIONS=[
   {key:"learn",label:"🎓 Учебные материалы",actions:["view","edit"]},
   {key:"news",label:"📰 Новости",actions:["view","create","edit","delete"]},
 ];
-const ACTION_LABELS={view:"Просмотр",edit:"Редакт.",delete:"Удаление",settings:"Настройки",send:"Отправка",create:"Создание",stats:"Статистика",admin:"Админ",replace:"Замена",users:"Юзеры",roles:"Роли"};
+const ACTION_LABELS={view:"Просмотр",edit:"Редакт.",delete:"Удаление",settings:"Настройки",send:"Отправка",create:"Создание",stats:"Статистика",admin:"Админ",replace:"Замена",users:"Юзеры",roles:"Роли",review:"Рассмотр.",form_edit:"Форма",submit:"Подача"};
 
 async function boot(){
   const box=$("rlList");

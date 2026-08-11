@@ -73,7 +73,7 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
       <a href="vacation-ooc.html" data-page="vacation-ooc.html" data-transition data-loggedin>Отпуск OOC</a>
       <a href="dismissal.html" data-page="dismissal.html" data-transition data-loggedin>Увольнение</a>
       <a href="promotion.html" data-page="promotion.html" data-transition data-loggedin>Повышение</a>
-      <a href="restoration.html" data-page="restoration.html" data-transition>Восстановление в ВС РФ</a>
+      <a href="restoration.html" data-page="restoration.html" data-transition>Восстановление в ЦГБ №3</a>
       <a href="requests-review.html" data-page="requests-review.html" data-transition data-perm="requests:review,requests:view">Рассмотрение заявок</a>
       <a href="requests-stats.html" data-page="requests-stats.html" data-transition data-perm="requests:review,requests:view">Статистика заявок</a>
       <a href="payroll.html" data-page="payroll.html" data-transition data-perm="payroll:view">Реестр премирования</a>
@@ -195,11 +195,11 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
                   <div class="hf-row">
                     <div class="hf-field">
                       <span class="hf-field-label">Основной цвет</span>
-                      <div class="hf-color-row"><input type="color" id="hfCustomColor" value="#cda85a"><span class="hf-color-code" id="hfCustomColorCode">#CDA85A</span></div>
+                      <div class="hf-color-row"><input type="color" id="hfCustomColor" value="#37b3a0"><span class="hf-color-code" id="hfCustomColorCode">#37B3A0</span></div>
                     </div>
                     <div class="hf-field">
                       <span class="hf-field-label">Второй цвет</span>
-                      <div class="hf-color-row"><input type="color" id="hfCustomColor2" value="#f0d89b"><span class="hf-color-code" id="hfCustomColor2Code">#F0D89B</span></div>
+                      <div class="hf-color-row"><input type="color" id="hfCustomColor2" value="#8fe0d0"><span class="hf-color-code" id="hfCustomColor2Code">#8FE0D0</span></div>
                     </div>
                   </div>
                   <div class="hf-field">
@@ -223,7 +223,7 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
 
               <div class="hf-panel">
                 <div class="hf-panel-title">Свой текст баннера</div>
-                <input class="hf-input" id="hfBanner" placeholder="25 АПРЕЛЯ — ДЕНЬ ТАНКИСТА" maxlength="80">
+                <input class="hf-input" id="hfBanner" placeholder="ТРЕТЬЕ ВОСКРЕСЕНЬЕ ИЮНЯ — ДЕНЬ МЕДИЦИНСКОГО РАБОТНИКА" maxlength="80">
                 <div class="hf-hint">Оставьте пустым — используется стандартный текст выбранной темы. Отображается на всех страницах сайта. При открытии сайта — красивое приветствие на весь экран.</div>
                 <div class="hf-banner-toggle">
                   <span>Показывать баннер сверху</span>
@@ -428,6 +428,7 @@ async function boot(){
 const NOTIFY_EVENTS=[
   {key:"apps.new",label:"📋 Новые заявления",perm:["apps","view"]},
   {key:"complaints.new",label:"⚠ Новые жалобы",perm:["complaints","review"]},
+  {key:"vp_request.new",label:"⚖ Запросы от АБ (на наказание)",perm:["vp_request","review"]},
   {key:"requests.leave.new",label:"🕒 Заявки на отгулы",perm:["requests","review"]},
   {key:"requests.vacation_ic.new",label:"🏖 Заявки на отпуск IC",perm:["requests","review"]},
   {key:"requests.vacation_ooc.new",label:"💤 Заявки на отпуск OOC",perm:["requests","review"]},
@@ -574,12 +575,12 @@ function renderHolidayUI(){
   const custom=$("hfCustom");
   custom.classList.toggle("visible",cfg.preset==="custom");
   const cc=cfg.custom||{};
-  $("hfCustomColor").value=cc.color||"#cda85a";
-  $("hfCustomColorCode").textContent=(cc.color||"#cda85a").toUpperCase();
-  $("hfCustomColor2").value=cc.color2||"#f0d89b";
-  $("hfCustomColor2Code").textContent=(cc.color2||"#f0d89b").toUpperCase();
+  $("hfCustomColor").value=cc.color||"#37b3a0";
+  $("hfCustomColorCode").textContent=(cc.color||"#37b3a0").toUpperCase();
+  $("hfCustomColor2").value=cc.color2||"#8fe0d0";
+  $("hfCustomColor2Code").textContent=(cc.color2||"#8fe0d0").toUpperCase();
   $("hfCustomLabel").value=cc.label||"";
-  custom.style.setProperty("--hf-color",cc.color||"#cda85a");
+  custom.style.setProperty("--hf-color",cc.color||"#37b3a0");
   $("hfPreviewIcon").textContent=cc.icon||"✦";
   $("hfPreviewText").textContent=(cfg.customBanner||cc.label||"МОЙ ПРАЗДНИК").toUpperCase();
 

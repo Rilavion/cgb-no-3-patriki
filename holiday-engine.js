@@ -1,19 +1,18 @@
 window.CGB_HOLIDAY=(function(){
   const PRESETS={
-    none:{label:"Обычная",cls:"",banner:"",color:"#cda85a",color2:"#f0d89b",icon:"—",fx:"none"},
-    general:{label:"Общий праздник",cls:"holiday-general",color:"#f0c25a",color2:"#fff2c0",icon:"✦",banner:"ПРАЗДНИЧНЫЙ ДЕНЬ",fx:"sparks"},
-    victory:{label:"9 Мая · День Победы",cls:"holiday-victory",color:"#e04a4a",color2:"#ffb37a",icon:"★",banner:"9 МАЯ · ДЕНЬ ПОБЕДЫ",fx:"sparks"},
-    defender:{label:"23 Февраля · День защитника",cls:"holiday-defender",color:"#4fb977",color2:"#c8e6a0",icon:"⚔",banner:"23 ФЕВРАЛЯ · ДЕНЬ ЗАЩИТНИКА ОТЕЧЕСТВА",fx:"confetti"},
-    russia_day:{label:"12 Июня · День России",cls:"holiday-russia",color:"#4b6dc9",color2:"#e04a4a",icon:"◈",banner:"12 ИЮНЯ · ДЕНЬ РОССИИ",fx:"confetti"},
-    tanker:{label:"День танкиста",cls:"holiday-tanker",color:"#b5a34a",color2:"#e5d68a",icon:"◈",banner:"ДЕНЬ ТАНКИСТА",fx:"sparks"},
+    none:{label:"Обычная",cls:"",banner:"",color:"#37b3a0",color2:"#8fe0d0",icon:"—",fx:"none"},
     new_year:{label:"Новый год",cls:"holiday-newyear",color:"#f0d060",color2:"#ffffff",icon:"❆",banner:"С НОВЫМ ГОДОМ!",fx:"snow"},
-    unit_day:{label:"День части",cls:"holiday-unit",color:"#e0a24a",color2:"#f4c890",icon:"⚜",banner:"ДЕНЬ ВОИНСКОЙ ЧАСТИ",fx:"confetti"},
-    custom:{label:"Свой праздник",cls:"holiday-custom",color:"#cda85a",color2:"#f0d89b",icon:"✦",banner:"МОЙ ПРАЗДНИК",fx:"sparks"}
+    defender:{label:"23 Февраля",cls:"holiday-defender",color:"#4fb977",color2:"#c8e6a0",icon:"🎖",banner:"23 ФЕВРАЛЯ · ДЕНЬ ЗАЩИТНИКА ОТЕЧЕСТВА",fx:"confetti"},
+    march8:{label:"8 Марта",cls:"holiday-march8",color:"#f08fb5",color2:"#ffd3e3",icon:"🌷",banner:"8 МАРТА · МЕЖДУНАРОДНЫЙ ЖЕНСКИЙ ДЕНЬ",fx:"hearts"},
+    victory:{label:"9 Мая · День Победы",cls:"holiday-victory",color:"#e04a4a",color2:"#ffb37a",icon:"★",banner:"9 МАЯ · ДЕНЬ ПОБЕДЫ",fx:"sparks"},
+    medic_day:{label:"День медработника",cls:"holiday-medic",color:"#37b3a0",color2:"#8fe0d0",icon:"⚕",banner:"ДЕНЬ МЕДИЦИНСКОГО РАБОТНИКА · 3-Е ВОСКРЕСЕНЬЕ ИЮНЯ",fx:"confetti"},
+    hospital_day:{label:"День больницы",cls:"holiday-hospital",color:"#4a8ea5",color2:"#a8d5e2",icon:"🏥",banner:"ДЕНЬ РОЖДЕНИЯ ЦГБ №3",fx:"fireworks"},
+    custom:{label:"Свой праздник",cls:"holiday-custom",color:"#37b3a0",color2:"#8fe0d0",icon:"✦",banner:"МОЙ ПРАЗДНИК",fx:"sparks"}
   };
 
   const FX_LABELS={none:"Без эффекта",confetti:"Конфетти",snow:"Снег",rain:"Дождь",sparks:"Искры",leaves:"Листья",hearts:"Сердца",fireworks:"Салют"};
 
-  const DEFAULT_CFG={preset:"none",customBanner:"",showBanner:true,custom:{color:"#cda85a",color2:"#f0d89b",icon:"✦",fx:"sparks",label:"Мой праздник"}};
+  const DEFAULT_CFG={preset:"none",customBanner:"",showBanner:true,custom:{color:"#37b3a0",color2:"#8fe0d0",icon:"✦",fx:"sparks",label:"Мой праздник"}};
 
   function readCfg(){
     try{
