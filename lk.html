@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=10">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 body.cgb-is-admin .nav a[data-admin],body.cgb-is-admin .footer-col a[data-admin]{display:inline-flex !important}
@@ -358,22 +358,22 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
   </div>
 </div>
 
-<script src="supabase-loader.js?v=8"></script>
-<script src="config.js?v=8"></script>
-<script src="main.js?v=8"></script>
-<script src="format-utils.js?v=8"></script>
-<script src="auth.js?v=8"></script>
-<script src="roles-engine.js?v=8"></script>
-<script src="holiday-engine.js?v=8"></script>
-<script src="settings-panel.js?v=8"></script>
-<script src="sound-engine.js?v=8"></script>
-<script src="faq-engine.js?v=8"></script>
-<script src="search-engine.js?v=8"></script>
-<script src="ds-cache.js?v=8"></script>
-<script src="notify-engine.js?v=8"></script>
-<script src="notify-live.js?v=8"></script>
+<script src="supabase-loader.js?v=10"></script>
+<script src="config.js?v=10"></script>
+<script src="main.js?v=10"></script>
+<script src="format-utils.js?v=10"></script>
+<script src="auth.js?v=10"></script>
+<script src="roles-engine.js?v=10"></script>
+<script src="holiday-engine.js?v=10"></script>
+<script src="settings-panel.js?v=10"></script>
+<script src="sound-engine.js?v=10"></script>
+<script src="faq-engine.js?v=10"></script>
+<script src="search-engine.js?v=10"></script>
+<script src="ds-cache.js?v=10"></script>
+<script src="notify-engine.js?v=10"></script>
+<script src="notify-live.js?v=10"></script>
 
-<script src="lk-engine.js?v=8"></script>
+<script src="lk-engine.js?v=10"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -730,14 +730,12 @@ if(rolesBtn){
         if(sa!==sb) return sa-sb;
         return (a.sort||100)-(b.sort||100);
       });
-      roleSel.innerHTML=sorted.map(cr=>{
+      roleSel.innerHTML='<option value="" selected>— выберите роль —</option>'+sorted.map(cr=>{
         const desc=cr.description?" — "+cr.description:"";
         const name=(cr.name||cr.key).replace(/</g,"&lt;");
         const d=desc.replace(/</g,"&lt;");
-        return `<option value="${cr.id}" data-base="${cr.base_role}" data-key="${cr.key}">${name}${d}</option>`;
+        return `<option value="${cr.id}" data-base="${cr.base_role||''}" data-key="${cr.key}">${name}${d}</option>`;
       }).join("");
-      const ssOpt=sorted.find(cr=>cr.key==="ss");
-      if(ssOpt) roleSel.value=ssOpt.id;
     }catch(e){roleSel.innerHTML='<option value="">Ошибка загрузки ролей</option>'}
   }
   rolesBtn.addEventListener("click",async()=>{
@@ -776,7 +774,8 @@ if(rolesBtn){
       return;
     }
     msg.className="form-msg success";
-    msg.textContent="✓ Создано. "+(r.warning||"");
+    const rn=r.saved&&(r.saved.custom_role_name||r.saved.custom_role_key||r.saved.role);
+    msg.textContent="✓ Создано. "+(rn?("Выдана роль: «"+rn+"». "):"")+(r.warning||"");
     setTimeout(()=>{createModal.classList.remove("active");e.target.reset();loadRolesList()},1400);
   });
 }

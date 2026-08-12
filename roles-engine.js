@@ -129,13 +129,17 @@ window.CGB_ROLES=(function(){
     const s=window.CGB_AUTH.state;
     if(!s.client) return {ok:false,error:"no client"};
     try{
-      const {error}=await s.client.rpc("staff_upsert_role",{
+      const {data,error}=await s.client.rpc("staff_upsert_role",{
         p_user_id:userId,
         p_role:role,
         p_display_name:displayName||null,
         p_custom_role_id:customRoleId||null
       });
-      if(!error) return {ok:true};
+      if(!error) return {ok:true,saved:(data&&typeof data==="object")?data:null};
+      // старая версия RPC (returns void) — data придёт null, тоже считаем успехом
+      if(String(error.message||"").includes("does not exist")||String(error.message||"").includes("staff_upsert_role")){
+        return {ok:false,error:error.message+" — выполни заново весь SUPABASE-FIX.sql (блок 9 создаёт/обновляет RPC)."};
+      }
       return {ok:false,error:error.message};
     }catch(e){return {ok:false,error:e.message}}
   }
@@ -179,8 +183,12 @@ window.CGB_ROLES=(function(){
       if(!uid) return {ok:true,warning:"Пользователь создан, но user_id не получен (возможно требуется подтверждение email). Проставь роль вручную после его первого входа."};
       await new Promise(res=>setTimeout(res,300));
       const r=await setRole(uid,role,displayName,customRoleId);
-      if(!r.ok) return {ok:false,error:"Юзер создан в auth.users (uid: "+uid+"), но не удалось создать запись в user_roles: "+r.error+". Убедись что выполнил SQL RPC-ADMIN-UPSERT-ROLE-V84.sql и что ты залогинен как admin."};
-      return {ok:true,user_id:uid};
+      if(!r.ok && String(r.error||"").indexOf("violates")>=0){
+        // ретрай с устаревшей RPC: role мог уйти null = понятная подсказка
+        r={ok:false,error:r.error+" — выполни заново весь SUPABASE-FIX.sql (блоки 1 и 9): "+(r.error||"")};
+      }
+      if(!r.ok) return {ok:false,error:"Юзер создан в auth.users (uid: "+uid+"), но не удалось создать запись в user_roles: "+r.error+". Выполни заново весь SUPABASE-FIX.sql (там чинится RPC staff_upsert_role и снимается старый check-констрейнт ролей) и проверь, что ты залогинен как admin."};
+      return {ok:true,user_id:uid,saved:r.saved||null};
     }catch(e){
       try{await tempClient.auth.signOut()}catch(_){}
       return {ok:false,error:e.message};

@@ -7699,3 +7699,12 @@ html::-webkit-scrollbar-thumb:hover{background:rgba(74,142,165,.65);background-c
 [data-theme="light"] html::-webkit-scrollbar-track{background:rgba(226,232,235,.7)}
 [data-theme="light"] html::-webkit-scrollbar-thumb{background:rgba(58,125,107,.4);border:2px solid transparent;background-clip:content-box;border-radius:6px}
 [data-theme="light"] html::-webkit-scrollbar-thumb:hover{background:rgba(58,125,107,.6);background-clip:content-box}
+
+/* ══ Полноэкранные служебные окна (архивы/настройки/управление) ══ */
+.modal.modal-xl,.modal.modal-xxl{
+  width:calc(100vw - 16px);max-width:none;
+  height:calc(100vh - 16px);max-height:calc(100vh - 16px);
+}
+@media(max-width:720px){
+  .modal.modal-xl,.modal.modal-xxl{width:100vw;height:100vh;max-height:100vh;border-radius:0}
+}
