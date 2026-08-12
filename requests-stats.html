@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
@@ -50,6 +50,7 @@
       <a href="dismissal.html" data-page="dismissal.html" data-transition data-loggedin>Увольнение</a>
       <a href="promotion.html" data-page="promotion.html" data-transition data-loggedin>Повышение</a>
       <a href="restoration.html" data-page="restoration.html" data-transition>Восстановление в ЦГБ №3</a>
+      <a href="appointment.html" data-page="appointment.html" data-transition>Запись к врачу</a>
       <a href="requests-review.html" data-page="requests-review.html" data-transition data-perm="requests:review,requests:view">Рассмотрение заявок</a>
       <a href="requests-stats.html" data-page="requests-stats.html" data-transition data-perm="requests:review,requests:view">Статистика заявок</a>
       <a href="payroll.html" data-page="payroll.html" data-transition data-perm="payroll:view">Реестр премирования</a>
@@ -97,6 +98,7 @@
               <option value="dismissal">⛔ Увольнение</option>
               <option value="promotion">⭐ Повышение</option>
               <option value="restoration">🔄 Восстановление</option>
+              <option value="appointment">🩺 Запись к врачу</option>
             </select>
           </div>
           <div class="stats-filter"><label>Статус</label>
@@ -142,25 +144,27 @@
   <div class="stats-png-canvas" id="rsPngCanvas" aria-hidden="true"></div>
 </main>
 
-<script src="supabase-loader.js?v=11"></script>
-<script src="config.js?v=11"></script>
-<script src="auth.js?v=11"></script>
-<script src="roles-engine.js?v=11"></script>
-<script src="main.js?v=11"></script>
-<script src="format-utils.js?v=11"></script>
-<script src="holiday-engine.js?v=11"></script>
-<script src="settings-panel.js?v=11"></script>
-<script src="sound-engine.js?v=11"></script>
-<script src="search-engine.js?v=11"></script>
-<script src="ds-cache.js?v=11"></script>
-<script src="notify-engine.js?v=11"></script>
-<script src="notify-live.js?v=11"></script>
+<footer class="footer"><div class="container"><div class="footer-bottom"><span>© <script>document.write(new Date().getFullYear())</script> · ЦГБ №3 · Центральная Городская</span><span class="footer-note">🐞 Нашли баг? Обратитесь: <b>@rilavion</b></span></div></div></footer>
+
+<script src="supabase-loader.js?v=12"></script>
+<script src="config.js?v=12"></script>
+<script src="auth.js?v=12"></script>
+<script src="roles-engine.js?v=12"></script>
+<script src="main.js?v=12"></script>
+<script src="format-utils.js?v=12"></script>
+<script src="holiday-engine.js?v=12"></script>
+<script src="settings-panel.js?v=12"></script>
+<script src="sound-engine.js?v=12"></script>
+<script src="search-engine.js?v=12"></script>
+<script src="ds-cache.js?v=12"></script>
+<script src="notify-engine.js?v=12"></script>
+<script src="notify-live.js?v=12"></script>
 <script src="html2canvas.min.js?v=4"></script>
-<script src="png-export-utils.js?v=11"></script>
-<script src="stats-utils.js?v=11"></script>
+<script src="png-export-utils.js?v=12"></script>
+<script src="stats-utils.js?v=12"></script>
 <script>
-const KIND_LABELS={leave:"Отгул",vacation_ic:"Отпуск IC",vacation_ooc:"Отпуск OOC",dismissal:"Увольнение",promotion:"Повышение",restoration:"Восстановление"};
-const KIND_ICON={leave:"🕒",vacation_ic:"🏖",vacation_ooc:"💤",dismissal:"⛔",promotion:"⭐",restoration:"🔄"};
+const KIND_LABELS={leave:"Отгул",vacation_ic:"Отпуск IC",vacation_ooc:"Отпуск OOC",dismissal:"Увольнение",promotion:"Повышение",restoration:"Восстановление",appointment:"Запись к врачу"};
+const KIND_ICON={leave:"🕒",vacation_ic:"🏖",vacation_ooc:"💤",dismissal:"⛔",promotion:"⭐",restoration:"🔄",appointment:"🩺"};
 const STATUS_LABELS={pending:"На рассмотрении",approved:"Одобрено",rejected:"Отклонено",withdrawn:"Отозвано",canceled:"Отозвано",cancelled:"Отозвано"};
 const STATUS_ICON={pending:"⏳",approved:"✅",rejected:"❌",withdrawn:"↩️",canceled:"↩️",cancelled:"↩️"};
 

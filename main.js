@@ -167,7 +167,7 @@
         a.removeAttribute("data-staff");
       });
 
-      const publicPages=["index.html","info.html","services.html","meds.html","ustav.html","learn.html","composition.html","news.html","autopark.html","map.html","faq.html","complaints.html"];
+      const publicPages=["index.html","info.html","services.html","meds.html","ustav.html","learn.html","composition.html","news.html","autopark.html","map.html","faq.html","complaints.html","appointment.html"];
       const loggedInPages=["tests.html","leave.html","vacation-ic.html","vacation-ooc.html","dismissal.html","promotion.html","restoration.html","report.html","vp-request.html"];
       const staffPages=["apps.html","apps-stats.html","vp.html","complaints-review.html","complaints-stats.html","requests-review.html","requests-stats.html","requests-settings.html","payroll.html","supply.html","supply-stats.html","docs.html","lk.html","report-settings.html","vp-request-settings.html"];
       const alwaysVisibleForLogged=["lk.html"];
@@ -371,6 +371,21 @@
 
     if(window.CGB_SEARCH){
       window.CGB_SEARCH.build().then(d=>{DATASET=d;if(modal.classList.contains("active")) render(input.value)}).catch(()=>{});
+      // вход/выход или смена ролей — пересобрать выдачу (закрытые разделы могли открыться/скрыться)
+      const hookAuth=()=>{
+        if(window.CGB_AUTH&&window.CGB_AUTH.onChange){window.CGB_AUTH.onChange(()=>{if(modal.classList.contains("active")) render(input.value)});return true}
+        return false;
+      };
+      const hookRoles=()=>{
+        if(window.CGB_ROLES&&window.CGB_ROLES.onChange){window.CGB_ROLES.onChange(()=>{if(modal.classList.contains("active")) render(input.value)});return true}
+        return false;
+      };
+      let hookedA=hookAuth(),hookedR=hookRoles(),hookTries=0;
+        const hookTimer=setInterval(()=>{
+          if(!hookedA) hookedA=hookAuth();
+          if(!hookedR) hookedR=hookRoles();
+          if((hookedA&&hookedR)||++hookTries>40) clearInterval(hookTimer);
+        },250);
     }
 
     const iconFor=g=>({
@@ -400,7 +415,9 @@
         const hay=(d.title+" "+(d.hint||"")+" "+(d.kw||"")).toLowerCase();
         return words.every(w=>hay.includes(w));
       };
-      const list=words.length?DATASET.filter(match).slice(0,120):DATASET;
+      // скрываем закрытые разделы: без входа/прав они не показываются в выдаче
+      const canSee=d=>!(window.CGB_SEARCH&&window.CGB_SEARCH.allowed)||window.CGB_SEARCH.allowed(d);
+      const list=(words.length?DATASET.filter(match):DATASET).filter(canSee).slice(0,120);
       visible=list;selectedIdx=0;
       if(!list.length){
         results.innerHTML=`<div class="search-empty">Ничего не найдено по запросу «${q}»</div>`;

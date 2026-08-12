@@ -7,7 +7,8 @@ window.CGB_REQUESTS=(function(){
     vacation_ooc:{label:"Отпуск (OOC)",icon:"💤",color:"#a2d8ff"},
     dismissal:{label:"Увольнение",icon:"⛔",color:"#e97a7a"},
     promotion:{label:"Повышение",icon:"⭐",color:"#a5f3fc"},
-    restoration:{label:"Восстановление",icon:"🔄",color:"#7ac3f0"}
+    restoration:{label:"Восстановление",icon:"🔄",color:"#7ac3f0"},
+    appointment:{label:"Запись к врачу",icon:"🩺",color:"#34d399"}
   };
 
   async function getForm(kind){

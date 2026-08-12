@@ -8,7 +8,7 @@
 <title>Настройки форм заявок</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 <canvas id="bgCanvas"></canvas><div class="bg-noise"></div>
@@ -91,21 +91,21 @@
 <div class="modal-back" id="loginModal"><div class="modal"><button class="modal-close" aria-label="Закрыть">✕</button><h3>Вход</h3>
   <form><div class="form-group"><label>Email</label><input type="email" name="email" required></div><div class="form-group"><label>Пароль</label><input type="password" name="password" required></div><button class="btn btn-gold" style="width:100%" type="submit">Войти</button><div class="form-msg"></div></form></div></div>
 
-<footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span></div></div></footer>
+<footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span><span class="footer-note">🐞 Нашли баг? Обратитесь: <b>@rilavion</b></span></div></div></footer>
 
-<script src="supabase-loader.js?v=11"></script>
-<script src="config.js?v=11"></script>
-<script src="main.js?v=11"></script>
-<script src="search-engine.js?v=11"></script>
-<script src="auth.js?v=11"></script>
-<script src="roles-engine.js?v=11"></script>
-<script src="requests-engine.js?v=11"></script>
+<script src="supabase-loader.js?v=12"></script>
+<script src="config.js?v=12"></script>
+<script src="main.js?v=12"></script>
+<script src="search-engine.js?v=12"></script>
+<script src="auth.js?v=12"></script>
+<script src="roles-engine.js?v=12"></script>
+<script src="requests-engine.js?v=12"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-const KINDS=["leave","vacation_ic","vacation_ooc","dismissal","promotion","restoration"];
+const KINDS=["leave","vacation_ic","vacation_ooc","dismissal","promotion","restoration","appointment"];
 let SETTINGS=null, FORMS={}, CHANNELS=[], ROLES=[];
 let PROMO_RANKS=[], PROMO_FIELDS={};
 let PROMO_DEPTS=[], PROMO_DEPT_FIELDS={};

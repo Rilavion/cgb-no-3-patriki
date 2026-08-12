@@ -7708,3 +7708,22 @@ html::-webkit-scrollbar-thumb:hover{background:rgba(74,142,165,.65);background-c
 @media(max-width:720px){
   .modal.modal-xl,.modal.modal-xxl{width:100vw;height:100vh;max-height:100vh;border-radius:0}
 }
+
+/* ══ Итерация №7: фиксы экспорта PNG и подвала ══ */
+
+/* PNG-экспорт состава «только карточки (без фона)» — по-настоящему прозрачный фон.
+   Правило идёт ПОСЛЕ обеих копий базового .exp-canvas, иначе поздняя копия
+   перебивает прозрачность градиентом. */
+.exp-canvas.exp-canvas-transparent{
+  background:transparent !important;border:none !important;box-shadow:none !important;
+  padding:20px !important;width:auto !important;min-width:1200px;border-radius:0 !important;
+}
+.exp-canvas.exp-canvas-transparent .hier{background:transparent !important}
+.exp-canvas.exp-canvas-transparent .hier-staff,.exp-canvas.exp-canvas-transparent .hier-subs-list,
+.exp-canvas.exp-canvas-transparent .hier-sub-section,.exp-canvas.exp-canvas-transparent .hier-grid,
+.exp-canvas.exp-canvas-transparent .hier-subs-title,.exp-canvas.exp-canvas-transparent .hier-staff-title{background:transparent !important}
+.exp-canvas.exp-canvas-transparent .hier-grid-cell.filled,.exp-canvas.exp-canvas-transparent .hier-grid-cell.hollow{background:transparent !important;border-color:transparent !important}
+
+/* Подпись «Нашли баг?» в подвале всех страниц */
+.footer-note{color:var(--muted);font-size:12px;letter-spacing:.02em}
+.footer-note b{color:var(--gold-b);font-weight:600}

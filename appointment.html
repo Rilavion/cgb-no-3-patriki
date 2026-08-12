@@ -52,7 +52,6 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
       <a href="dismissal.html" data-page="dismissal.html" data-transition data-loggedin>Увольнение</a>
       <a href="promotion.html" data-page="promotion.html" data-transition data-loggedin>Повышение</a>
       <a href="restoration.html" data-page="restoration.html" data-transition>Восстановление в ЦГБ №3</a>
-      <a href="appointment.html" data-page="appointment.html" data-transition>Запись к врачу</a>
       <a href="requests-review.html" data-page="requests-review.html" data-transition data-perm="requests:review,requests:view">Рассмотрение заявок</a>
       <a href="requests-stats.html" data-page="requests-stats.html" data-transition data-perm="requests:review,requests:view">Статистика заявок</a>
       <a href="payroll.html" data-page="payroll.html" data-transition data-perm="payroll:view">Реестр премирования</a>
@@ -130,7 +129,7 @@ document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-const PAGE_MAP={"leave.html":"leave","vacation-ic.html":"vacation_ic","vacation-ooc.html":"vacation_ooc","dismissal.html":"dismissal","promotion.html":"promotion","restoration.html":"restoration"};
+const PAGE_MAP={"leave.html":"leave","vacation-ic.html":"vacation_ic","vacation-ooc.html":"vacation_ooc","dismissal.html":"dismissal","promotion.html":"promotion","restoration.html":"restoration","appointment.html":"appointment"};
 const currentFile=(location.pathname.split("/").pop()||"leave.html").toLowerCase();
 const KIND=PAGE_MAP[currentFile]||"leave";
 
@@ -196,6 +195,15 @@ const DEFAULT_FIELDS={
     {key:"ready_reattest",label:"Готов пройти переаттестацию",type:"checkbox",required:true,group:"Согласие"},
     {key:"rules_ack",label:"Ознакомлен(а) с правилами восстановления (за подделку — наказание)",type:"checkbox",required:true,group:"Согласие"},
     {key:"comment",label:"Дополнительный комментарий",type:"textarea",required:false,placeholder:"Опционально",group:"Согласие"}
+  ],
+  appointment:[
+    {key:"submitter_fio",label:"ФИО пациента",type:"text",required:true,placeholder:"Иванов Иван",group:"Пациент"},
+    {key:"submitter_discord",label:"Discord (@тег или ID)",type:"text",required:true,placeholder:"@user или 1234567890...",group:"Пациент"},
+    {key:"appt_dept",label:"Отделение",type:"select",required:true,options:["Приёмное отделение","Терапевтическое отделение","Хирургическое отделение","Педиатрическое отделение","Стоматология","Иное (указать в причине)"],group:"Запись"},
+    {key:"doctor",label:"Конкретный врач (необязательно)",type:"text",required:false,placeholder:"ФИО врача",group:"Запись"},
+    {key:"appt_date",label:"Желаемая дата приёма",type:"date",required:true,group:"Время приёма"},
+    {key:"appt_time",label:"Желаемое время (МСК)",type:"time",required:true,group:"Время приёма"},
+    {key:"reason",label:"Причина обращения / жалобы",type:"textarea",required:true,placeholder:"Что беспокоит, как давно, какие симптомы",group:"Обращение"}
   ]
 };
 
@@ -205,7 +213,8 @@ const KIND_TITLES={
   vacation_ooc:"Отпуск OOC (NonRP)",
   dismissal:"Увольнение из ЦГБ №3",
   promotion:"Заявка на повышение",
-  restoration:"Восстановление в ЦГБ №3"
+  restoration:"Восстановление в ЦГБ №3",
+  appointment:"Запись к врачу"
 };
 const KIND_SUBS={
   leave:"Не более 60 минут (можно разбить 2×30). Фельдшер и выше.",
@@ -213,7 +222,8 @@ const KIND_SUBS={
   vacation_ooc:"Отпуск по личным причинам (работа/учёба/жизнь).",
   dismissal:"Заявление на выход из состава больницы. Требуется одобрение администрации.",
   promotion:"Заявка с прикреплением подтверждений (экзамен, статистика поставок и т.д.).",
-  restoration:"Восстановление в штат ЦГБ №3 по медицинской книжке или служебному удостоверению."
+  restoration:"Восстановление в штат ЦГБ №3 по медицинской книжке или служебному удостоверению.",
+  appointment:"Общедоступная запись на приём. Выберите отделение и удобное время — сотрудник свяжется с вами в Discord для подтверждения записи."
 };
 
 let FORM=null, SETTINGS=null;
