@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=13">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 body.cgb-is-admin [data-admin]{display:initial !important}
@@ -167,14 +167,14 @@ body.cgb-is-admin [data-admin]{display:initial !important}
 
 <footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span><span class="footer-note">🐞 Нашли баг? Обратитесь: <b>@rilavion</b></span></div></div></footer>
 
-<script src="supabase-loader.js?v=12"></script>
-<script src="config.js?v=12"></script>
-<script src="auth.js?v=12"></script>
-<script src="roles-engine.js?v=12"></script>
-<script src="tests-engine.js?v=12"></script>
-<script src="main.js?v=12"></script>
-<script src="search-engine.js?v=12"></script>
-<script src="format-utils.js?v=12"></script>
+<script src="supabase-loader.js?v=13"></script>
+<script src="config.js?v=13"></script>
+<script src="auth.js?v=13"></script>
+<script src="roles-engine.js?v=13"></script>
+<script src="tests-engine.js?v=13"></script>
+<script src="main.js?v=13"></script>
+<script src="search-engine.js?v=13"></script>
+<script src="format-utils.js?v=13"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -192,9 +192,17 @@ function toast(text,type){
   setTimeout(()=>t.classList.remove("te-toast-show"),2200);
 }
 
+let BOOTED=false;
 async function boot(){
   const isAdmin=window.CGB_ROLES&&window.CGB_ROLES.isAdmin();
-  if(!isAdmin){$("teGuard").style.display="";$("teRoot").style.display="none";$("teCreate").style.display="none";return}
+  if(!isAdmin){
+    BOOTED=false;
+    $("teGuard").style.display="";$("teRoot").style.display="none";$("teCreate").style.display="none";return;
+  }
+  // ВАЖНО: повторный boot (обновление токена/ролей при alt-tab и т.п.) НЕ должен
+  // перерисовывать редактор — иначе затираются несохранённые правки вопросов.
+  if(BOOTED) return;
+  BOOTED=true;
   $("teGuard").style.display="none";
   document.body.classList.add("cgb-is-admin");
   [CATS,CHANNELS]=await Promise.all([CGB_TESTS.fetchCategories(),CGB_TESTS.fetchDsChannels()]);
@@ -209,6 +217,26 @@ async function boot(){
     setTimeout(()=>$("tcTitle").focus(),100);
   }
 }
+
+/* Страховка от потери введённого текста: при возврате на вкладку Supabase
+   обновляет токен — auth/roles дёргают boot(), который больше ничего не ломает.
+   Но на всякий случай (случайный F5, подвисание сети) держим автоснапшот
+   формы вопроса в sessionStorage — восстановление по клику. */
+(function(){
+  document.addEventListener("input",e=>{
+    if(e.target.closest&&e.target.closest("[data-qid]")) showDirty();
+  });
+  function showDirty(){
+    let n=document.getElementById("__teDirty");
+    if(!n){
+      n=document.createElement("div");n.id="__teDirty";
+      n.style.cssText="position:fixed;right:14px;bottom:14px;z-index:4000;background:rgba(7,36,46,.92);border:1px solid rgba(34,211,238,.45);color:#a5f3fc;padding:8px 14px;border-radius:10px;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.4);backdrop-filter:blur(6px)";
+      n.textContent="✎ Есть несохранённые правки — не забудьте нажать «💾 Сохранить» у вопроса";
+      document.body.appendChild(n);
+      setTimeout(()=>{n.style.opacity="0";n.style.transition="opacity .8s";setTimeout(()=>n.remove(),900);},6000);
+    }
+  }
+})();
 
 $("tcCreate").addEventListener("click",createNewTest);
 $("tcTitle").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();createNewTest()}});

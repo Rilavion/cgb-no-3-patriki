@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=13">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}[data-staff]{display:none !important}
 body.cgb-is-admin .nav a[data-admin]{display:inline-flex !important}
@@ -109,21 +109,21 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
 
 <footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span><span class="footer-note">🐞 Нашли баг? Обратитесь: <b>@rilavion</b></span></div></div></footer>
 
-<script src="supabase-loader.js?v=12"></script>
-<script src="config.js?v=12"></script>
-<script src="ds-autocomplete.js?v=12"></script>
-<script src="main.js?v=12"></script>
-<script src="format-utils.js?v=12"></script>
-<script src="holiday-engine.js?v=12"></script>
-<script src="settings-panel.js?v=12"></script>
-<script src="sound-engine.js?v=12"></script>
-<script src="auth.js?v=12"></script>
-<script src="roles-engine.js?v=12"></script>
-<script src="search-engine.js?v=12"></script>
-<script src="ds-cache.js?v=12"></script>
-<script src="notify-engine.js?v=12"></script>
-<script src="notify-live.js?v=12"></script>
-<script src="requests-engine.js?v=12"></script>
+<script src="supabase-loader.js?v=13"></script>
+<script src="config.js?v=13"></script>
+<script src="ds-autocomplete.js?v=13"></script>
+<script src="main.js?v=13"></script>
+<script src="format-utils.js?v=13"></script>
+<script src="holiday-engine.js?v=13"></script>
+<script src="settings-panel.js?v=13"></script>
+<script src="sound-engine.js?v=13"></script>
+<script src="auth.js?v=13"></script>
+<script src="roles-engine.js?v=13"></script>
+<script src="search-engine.js?v=13"></script>
+<script src="ds-cache.js?v=13"></script>
+<script src="notify-engine.js?v=13"></script>
+<script src="notify-live.js?v=13"></script>
+<script src="requests-engine.js?v=13"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -197,13 +197,13 @@ const DEFAULT_FIELDS={
     {key:"comment",label:"Дополнительный комментарий",type:"textarea",required:false,placeholder:"Опционально",group:"Согласие"}
   ],
   appointment:[
-    {key:"submitter_fio",label:"ФИО пациента",type:"text",required:true,placeholder:"Иванов Иван",group:"Пациент"},
-    {key:"submitter_discord",label:"Discord (@тег или ID)",type:"text",required:true,placeholder:"@user или 1234567890...",group:"Пациент"},
-    {key:"appt_dept",label:"Отделение",type:"select",required:true,options:["Приёмное отделение","Терапевтическое отделение","Хирургическое отделение","Педиатрическое отделение","Стоматология","Иное (указать в причине)"],group:"Запись"},
-    {key:"doctor",label:"Конкретный врач (необязательно)",type:"text",required:false,placeholder:"ФИО врача",group:"Запись"},
-    {key:"appt_date",label:"Желаемая дата приёма",type:"date",required:true,group:"Время приёма"},
-    {key:"appt_time",label:"Желаемое время (МСК)",type:"time",required:true,group:"Время приёма"},
-    {key:"reason",label:"Причина обращения / жалобы",type:"textarea",required:true,placeholder:"Что беспокоит, как давно, какие симптомы",group:"Обращение"}
+    {key:"submitter_fio",label:"Имя Фамилия",type:"text",required:true,placeholder:"Иван Иванов",group:"Пациент"},
+    {key:"submitter_static",label:"Статистический ID",type:"text",required:true,placeholder:"123-456",group:"Пациент"},
+    {key:"address",label:"Место жительства (район, улица, дом)",type:"text",required:true,placeholder:"Пример: Западный район, ул. Мира, д. 14, кв. 8",group:"Пациент"},
+    {key:"phone",label:"Контактный номер (если доступен)",type:"text",required:false,placeholder:"700-000-000",group:"Пациент"},
+    {key:"submitter_discord",label:"Discord (если есть)",type:"text",required:false,placeholder:"@user",group:"Пациент"},
+    {key:"reason",label:"Описание жалобы / состояния",type:"textarea",required:true,placeholder:"Кратко и по существу: что беспокоит, как давно",group:"Обращение"},
+    {key:"urgency",label:"Характер жалобы и степень срочности",type:"select",required:true,options:["Плановый осмотр / консультация — не срочно","Беспокоит несколько дней — желательно на этой неделе","Сильные боли — требуется помощь сегодня","Тяжёлое состояние — нужна скорая помощь"],group:"Обращение"}
   ]
 };
 
@@ -223,7 +223,7 @@ const KIND_SUBS={
   dismissal:"Заявление на выход из состава больницы. Требуется одобрение администрации.",
   promotion:"Заявка с прикреплением подтверждений (экзамен, статистика поставок и т.д.).",
   restoration:"Восстановление в штат ЦГБ №3 по медицинской книжке или служебному удостоверению.",
-  appointment:"Общедоступная запись на приём. Выберите отделение и удобное время — сотрудник свяжется с вами в Discord для подтверждения записи."
+  appointment:"Общедоступная запись на приём в ЦГБ №3. Укажите данные пациента и характер обращения — сотрудник свяжется с вами для подтверждения времени приёма."
 };
 
 let FORM=null, SETTINGS=null;
@@ -483,7 +483,13 @@ async function onSubmit(e){
   const stat=values.submitter_static||"";
   const discord=values.submitter_discord||"";
 
-  if(!discord){msg.className="form-msg error";msg.textContent="Discord обязателен для связи и пинга в канале.";return}
+  if(KIND==="appointment"){
+    // пациент — не сотрудник: Discord необязателен, но нужен хоть один контакт
+    const phone=(values.phone||"").trim();
+    if(!phone&&!discord){msg.className="form-msg error";msg.textContent="Укажите контактный номер или Discord — иначе мы не сможем подтвердить запись.";return}
+  }else{
+    if(!discord){msg.className="form-msg error";msg.textContent="Discord обязателен для связи и пинга в канале.";return}
+  }
   if(KIND==="promotion"){
     const target=values.target_rank;
     const deptName=values.department||"";

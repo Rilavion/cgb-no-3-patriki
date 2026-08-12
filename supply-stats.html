@@ -8,7 +8,7 @@
 <title>Статистика поставок</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=13">
 <style id="cgb-admin-guard">[data-admin]{display:none !important}[data-staff]{display:none !important}body.cgb-is-admin [data-admin]{display:initial !important}body.cgb-is-staff [data-staff]{display:initial !important}</style>
 </head>
 <body>
@@ -66,7 +66,7 @@
           </div>
           <div class="ss-toolbar-r">
             <span class="vp-map-hint" id="ssRescanStatus"></span>
-            <button class="btn btn-ghost btn-sm" id="ssCopy">📋 Скопировать статистику</button>
+            <button class="btn btn-gold btn-sm" id="ssCopy">🖼 Скопировать статистику (PNG)</button>
             <button class="btn btn-ghost btn-sm" id="ssRescan">↻ Пересканировать эмодзи</button>
             <button class="btn btn-ghost btn-sm" id="ssClear" data-admin>🗑 Очистить период</button>
           </div>
@@ -180,14 +180,16 @@
 
 <footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span><span class="footer-note">🐞 Нашли баг? Обратитесь: <b>@rilavion</b></span></div></div></footer>
 
-<script src="supabase-loader.js?v=12"></script>
-<script src="config.js?v=12"></script>
-<script src="auth.js?v=12"></script>
-<script src="roles-engine.js?v=12"></script>
-<script src="supply-engine.js?v=12"></script>
-<script src="main.js?v=12"></script>
-<script src="search-engine.js?v=12"></script>
-<script src="format-utils.js?v=12"></script>
+<script src="supabase-loader.js?v=13"></script>
+<script src="config.js?v=13"></script>
+<script src="auth.js?v=13"></script>
+<script src="roles-engine.js?v=13"></script>
+<script src="supply-engine.js?v=13"></script>
+<script src="html2canvas.min.js?v=4"></script>
+<script src="stats-utils.js?v=13"></script>
+<script src="main.js?v=13"></script>
+<script src="search-engine.js?v=13"></script>
+<script src="format-utils.js?v=13"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -399,58 +401,50 @@ $("ssClear").addEventListener("click",async()=>{
   await load();
 });
 
-/* ---- Копирование статистики в буфер обмена (Discord-ready текст) ---- */
-function buildStatsText(){
-  const st=LAST_STATS;if(!st) return "";
+/* ---- Копирование статистики как PNG-карточка (как на других статистиках) ---- */
+function buildStatsPngData(){
+  const st=LAST_STATS;if(!st) return null;
   const c=st.counts;
   const perSel=$("ssPeriod");
   const perLabel=perSel.options[perSel.selectedIndex].textContent.trim();
   const {from,to}=getPeriod();
-  const today=new Date().toLocaleString("ru-RU",{timeZone:"Europe/Moscow",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
-  const lines=[];
-  lines.push("📦 СТАТИСТИКА ПОСТАВОК · ЦГБ №3");
-  lines.push("🗓 Период: "+perLabel+(from||to?" ("+(from?isoDate(from):"…")+(to?" — "+isoDate(to):"")+")":""));
-  lines.push("");
-  lines.push("Всего заявок: "+st.total);
-  lines.push("✅ Успешно: "+c.ok+" ("+st.pct+"%)");
-  lines.push("❌ Отказались: "+c.fail+" · 📵 Не вышли на связь: "+c.offline+" · 🚫 Не довезли: "+c.undelivered);
-  lines.push("⚠ Спорные: "+c.dispute+" · 🔄 Замены: "+c.replaced+" · ➖ Без реакции: "+c.none);
-  const orgs=Object.entries(st.orgCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  if(orgs.length){
-    lines.push("");
-    lines.push("🏢 Топ организаций:");
-    orgs.forEach((e,i)=>lines.push((i+1)+". "+e[0]+" — "+e[1]));
-  }
-  const kinds=Object.entries(st.kindCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  if(kinds.length){
-    lines.push("");
-    lines.push("📦 Топ типов поставок:");
-    kinds.forEach((e,i)=>lines.push((i+1)+". "+e[0]+" — "+e[1]));
-  }
-  lines.push("");
-  lines.push("— сформировано "+today+" МСК · rilavion.github.io/cgb-no-3-patriki");
-  return lines.join("\n");
-}
-async function copyTextFallback(text){
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    await navigator.clipboard.writeText(text);return true;
-  }
-  const ta=document.createElement("textarea");
-  ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
-  document.body.appendChild(ta);ta.select();
-  let ok=false;
-  try{ok=document.execCommand("copy")}catch(e){}
-  ta.remove();return ok;
+  const subtitle="ЦГБ №3 · "+perLabel+(from||to?" ("+(from?isoDate(from):"…")+(to?" — "+isoDate(to):"")+")":"");
+  const sections=[];
+  const pct=window.CGB_STATS?CGB_STATS.pct(c.ok,st.total):st.pct+"%";
+  sections.push({cards:[
+    ["Всего заявок",st.total,""],
+    ["✅ Успешно · "+pct,c.ok,"ok"],
+    ["⚠ Спорные+замены",c.dispute+c.replaced,"pend"],
+    ["Отказы/несост.",c.fail+c.offline+c.undelivered,"err"],
+    ["➖ Без реакции",c.none,"info"]
+  ]});
+  const statusRows=[
+    ["✅ Успешно",c.ok],["❌ Отказались",c.fail],["📵 Не вышли на связь",c.offline],
+    ["🚫 Не довезли",c.undelivered],["⚠ Спорные",c.dispute],["🔄 Замены",c.replaced],["➖ Без реакции",c.none]
+  ].filter(r=>r[1]>0).map(r=>[r[0],String(r[1])]);
+  if(statusRows.length) sections.push({title:"По статусам",rows:statusRows});
+  const orgs=Object.entries(st.orgCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(orgs.length) sections.push({title:"🏢 Топ организаций",bars:orgs});
+  const kinds=Object.entries(st.kindCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(kinds.length) sections.push({title:"📦 Топ типов поставок",bars:kinds});
+  return {title:"Статистика поставок",subtitle,sections};
 }
 $("ssCopy").addEventListener("click",async()=>{
   const st=$("ssRescanStatus");
-  const text=buildStatsText();
-  if(!text){st.textContent="Нет данных для копирования";setTimeout(()=>{st.textContent=""},2500);return}
-  try{
-    const ok=await copyTextFallback(text);
-    st.textContent=ok?"✓ Статистика в буфере обмена":"Не удалось скопировать";
-  }catch(e){st.textContent="Не удалось: "+e.message}
-  setTimeout(()=>{st.textContent=""},3500);
+  const data=buildStatsPngData();
+  if(!data){st.textContent="Нет данных для копирования";setTimeout(()=>{st.textContent=""},2500);return}
+  if(!window.CGB_STATS||!window.html2canvas){st.textContent="Модуль статистики не загружен — обнови страницу (Ctrl+Shift+R)";setTimeout(()=>{st.textContent=""},4000);return}
+  st.textContent="⏳ Готовим PNG…";
+  const fname="ЦГБ3_Поставки_"+new Date().toISOString().slice(0,10)+".png";
+  const r=await CGB_STATS.copyPNG(null,fname,2,data);
+  if(r.ok){
+    st.textContent="✓ PNG в буфере обмена (Ctrl+V в Discord)";
+  }else{
+    // буфер для картинок недоступен (HTTP/старьё) — скачиваем файлом
+    const d=await CGB_STATS.downloadPNG(null,fname,2,data);
+    st.textContent=d.ok?"✓ Буфер недоступен — PNG скачан":"✗ Ошибка: "+(r.error||d.error||"");
+  }
+  setTimeout(()=>{st.textContent=""},4500);
 });
 
 let CUR=null;

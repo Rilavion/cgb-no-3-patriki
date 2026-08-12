@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=13">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 body.cgb-is-admin .nav a[data-admin],body.cgb-is-admin .footer-col a[data-admin]{display:inline-flex !important}
@@ -255,23 +255,23 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
 </div>
 
 <script src="html2canvas.min.js?v=4"></script>
-<script src="supabase-loader.js?v=12"></script>
-<script src="config.js?v=12"></script>
-<script src="main.js?v=12"></script>
-<script src="format-utils.js?v=12"></script>
-<script src="holiday-engine.js?v=12"></script>
-<script src="settings-panel.js?v=12"></script>
-<script src="sound-engine.js?v=12"></script>
-<script src="faq-engine.js?v=12"></script>
-<script src="search-engine.js?v=12"></script>
-<script src="ds-cache.js?v=12"></script>
-<script src="notify-engine.js?v=12"></script>
-<script src="notify-live.js?v=12"></script>
-<script src="auth.js?v=12"></script>
-<script src="roles-engine.js?v=12"></script>
-<script src="select-enhance.js?v=12"></script>
-<script src="image-compress.js?v=12"></script>
-<script src="composition-engine.js?v=12"></script>
+<script src="supabase-loader.js?v=13"></script>
+<script src="config.js?v=13"></script>
+<script src="main.js?v=13"></script>
+<script src="format-utils.js?v=13"></script>
+<script src="holiday-engine.js?v=13"></script>
+<script src="settings-panel.js?v=13"></script>
+<script src="sound-engine.js?v=13"></script>
+<script src="faq-engine.js?v=13"></script>
+<script src="search-engine.js?v=13"></script>
+<script src="ds-cache.js?v=13"></script>
+<script src="notify-engine.js?v=13"></script>
+<script src="notify-live.js?v=13"></script>
+<script src="auth.js?v=13"></script>
+<script src="roles-engine.js?v=13"></script>
+<script src="select-enhance.js?v=13"></script>
+<script src="image-compress.js?v=13"></script>
+<script src="composition-engine.js?v=13"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 
@@ -745,17 +745,22 @@ async function expRender(){
   const scale=parseFloat($("expScale").value)||3;
   const node=document.getElementById("expCanvas");
   if(!node) return null;
-  // Число колонок сетки штаба — как на живой странице, чтобы расстановка
-  // людей в PNG совпадала с тем, что видит пользователь (а не «всегда 4»).
-  let staffCols=4;
+  // Сетка штаба — точно как на живой странице (px-треки + центрирование),
+  // чтобы PNG совпадал с тем, что видит пользователь. С minmax(0,1fr)
+  // последний ряд «прилипал» влево — треки растягивались на всю ширину.
+  let staffCols=4,staffTpl=null,staffGap="22px";
   try{
     const live=document.querySelector("#hier .hier-staff-grid");
     if(live){
-      const tpl=getComputedStyle(live).gridTemplateColumns;
+      const cs=getComputedStyle(live);
+      const tpl=cs.gridTemplateColumns;
+      if(tpl&&tpl!=="none") staffTpl=tpl;
+      if(cs.gap&&cs.gap!=="normal") staffGap=cs.gap;
       const n=(tpl||"").split(" ").filter(Boolean).length;
       if(n>0) staffCols=n;
     }
   }catch(e){}
+  const staffColsCss=staffTpl||("repeat("+staffCols+",minmax(0,280px))");
   node.querySelectorAll("canvas,svg,iframe").forEach(el=>{
     const r=el.getBoundingClientRect();
     if(!r.width||!r.height) el.remove();
@@ -861,9 +866,10 @@ async function expRender(){
           }
           #expCanvas .hier-staff-grid{
             display:grid !important;
-            grid-template-columns:repeat(${staffCols},minmax(0,1fr)) !important;
-            gap:16px !important;
+            grid-template-columns:${staffColsCss} !important;
+            gap:${staffGap} !important;
             width:100% !important;max-width:none !important;
+            justify-content:center !important;
           }
           #expCanvas .hier-staff{max-width:none !important;width:100% !important}
           #expCanvas *{animation:none !important;transition:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
@@ -899,8 +905,9 @@ async function expRender(){
           photos.forEach(el=>el.style.setProperty("filter","none","important"));
           const grids=cn.querySelectorAll(".hier-staff-grid");
           grids.forEach(g=>{
-            g.style.setProperty("grid-template-columns","repeat("+staffCols+",minmax(0,1fr))","important");
-            g.style.setProperty("gap","16px","important");
+            g.style.setProperty("grid-template-columns",staffColsCss,"important");
+            g.style.setProperty("gap",staffGap,"important");
+            g.style.setProperty("justify-content","center","important");
             g.style.setProperty("width","100%","important");
           });
           sanitizeColors(cn);
