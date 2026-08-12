@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 body.cgb-is-admin .nav a[data-admin],body.cgb-is-admin .footer-col a[data-admin]{display:inline-flex !important}
@@ -255,23 +255,23 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
 </div>
 
 <script src="html2canvas.min.js?v=4"></script>
-<script src="supabase-loader.js?v=15"></script>
-<script src="config.js?v=15"></script>
-<script src="main.js?v=15"></script>
-<script src="format-utils.js?v=15"></script>
-<script src="holiday-engine.js?v=15"></script>
-<script src="settings-panel.js?v=15"></script>
-<script src="sound-engine.js?v=15"></script>
-<script src="faq-engine.js?v=15"></script>
-<script src="search-engine.js?v=15"></script>
-<script src="ds-cache.js?v=15"></script>
-<script src="notify-engine.js?v=15"></script>
-<script src="notify-live.js?v=15"></script>
-<script src="auth.js?v=15"></script>
-<script src="roles-engine.js?v=15"></script>
-<script src="select-enhance.js?v=15"></script>
-<script src="image-compress.js?v=15"></script>
-<script src="composition-engine.js?v=15"></script>
+<script src="supabase-loader.js?v=16"></script>
+<script src="config.js?v=16"></script>
+<script src="main.js?v=16"></script>
+<script src="format-utils.js?v=16"></script>
+<script src="holiday-engine.js?v=16"></script>
+<script src="settings-panel.js?v=16"></script>
+<script src="sound-engine.js?v=16"></script>
+<script src="faq-engine.js?v=16"></script>
+<script src="search-engine.js?v=16"></script>
+<script src="ds-cache.js?v=16"></script>
+<script src="notify-engine.js?v=16"></script>
+<script src="notify-live.js?v=16"></script>
+<script src="auth.js?v=16"></script>
+<script src="roles-engine.js?v=16"></script>
+<script src="select-enhance.js?v=16"></script>
+<script src="image-compress.js?v=16"></script>
+<script src="composition-engine.js?v=16"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 
@@ -427,14 +427,11 @@ function render(){
   const cmd=STATE.hq.cmd_brigade||{};
   const cmdHasPhoto=!!(cmd&&cmd.photo);
   const cmdFilled=!!cmd.name;
-  const cmdSlot=(STATE.hq_slots||[]).find(s=>s.key==="cmd_brigade")||{};
-  const cmdBadge=cmdSlot.badge||"";
   const cmdCard=`<div class="hier-cmd">
     <div class="hier-cmd-inner">
       <div class="hier-cmd-badge">Главный врач больницы</div>
       <div class="hier-officer-photo hier-cmd-photo ${cmdHasPhoto?"":"no-photo"}">
         ${cmdHasPhoto?`<img src="${esc(cmd.photo)}" alt="" style="${photoStyle(cmd)}">`:`<span class="hier-officer-initials">${cmdFilled?esc(initials(cmd.name)):"—"}</span>`}
-        ${cmdBadge?`<div class="hier-officer-role-tag">${esc(cmdBadge)}</div>`:""}
       </div>
       <div class="hier-cmd-body">
         <div class="hier-cmd-name">${cmdFilled?esc(cmd.name):`<span style="opacity:.5">Вакансия</span>`}</div>
@@ -1094,7 +1091,6 @@ function openHqEdit(key,isNew){
     <div class="form-group"><label>Категория должности (бейдж)</label><input name="badge" value="${esc(slot.badge||"")}" placeholder="Свободный текст, можно оставить пустым"></div>
     `:`
     <div class="form-group" style="opacity:.6;font-size:12px">Должность: <b>${esc(slot.label)}</b> (защищена от изменений)</div>
-    <div class="form-group"><label>Категория должности (бейдж)</label><input name="badge" value="${esc(slot.badge||"")}" placeholder="Свободный текст, можно оставить пустым"></div>
     `}
     <div class="form-group"><label>ФИО</label><input name="name" value="${esc(p.name||"")}" placeholder="Иван Иванов"></div>
     <div class="form-group"><label>Статик / Код</label><input name="code" value="${esc(p.code||"")}" placeholder="123-456"></div>
@@ -1149,7 +1145,8 @@ pForm.addEventListener("submit",async e=>{
     const slot=(STATE.hq_slots||[]).find(s=>s.key===ctx[1]);
     if(slot){
       if(!slot.locked&&data.label) slot.label=data.label;
-      if(data.badge) slot.badge=data.badge;
+      if(slot.key==="cmd_brigade") slot.badge="";   // бейдж у главврача не показываем и не храним
+      else if(data.badge) slot.badge=data.badge;
     }
     STATE.hq[ctx[1]]={name:data.name,code:data.code,comm:data.comm,tag:data.tag,photo:data.photo,photo_zoom:parseFloat(data.photo_zoom)||1,photo_x:parseFloat(data.photo_x)||50,photo_y:parseFloat(data.photo_y)||50};
   }else if(ctx[0]==="hqnew"){

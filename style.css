@@ -7730,3 +7730,28 @@ html::-webkit-scrollbar-thumb:hover{background:rgba(74,142,165,.65);background-c
 
 /* Иконка «Запись к врачу» в боковом меню */
 .nav a[data-page="appointment.html"]{--nav-icon:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234a8ea5"><path d="M17 10H7v2h10v-2zm2-7h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5H7v2h7v-2z"/></svg>')}
+
+/* --- Тесты: картинки у вариантов ответа --- */
+.q-opt-row-fields{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.q-opt-img{display:none;font-size:12px}
+.te-q-edit.optimg-on .q-opt-img{display:block}
+.q-ord-pos{min-width:22px;color:var(--gold-b,#c9a227);font-weight:700;padding-top:8px;text-align:right}
+.test-q-opt-img{display:block;max-width:220px;max-height:150px;width:auto;height:auto;border-radius:8px;margin-top:6px;object-fit:cover;border:1px solid rgba(201,162,39,.3)}
+.test-q-opt>span{flex:1;min-width:0}
+
+/* --- Тесты: вопрос «Расставьте по порядку» (плеер) --- */
+.test-q-order{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.test-ord-item{display:flex;align-items:center;gap:10px;background:rgba(20,20,24,.55);border:1px solid rgba(201,162,39,.22);border-radius:10px;padding:8px 10px}
+.test-ord-num{min-width:24px;color:var(--gold-b,#c9a227);font-weight:700}
+.test-ord-txt{flex:1;min-width:0;word-break:break-word}
+.test-ord-btns{display:flex;gap:4px}
+.test-ord-btn{cursor:pointer;background:rgba(201,162,39,.12);border:1px solid rgba(201,162,39,.35);color:var(--gold-b,#c9a227);border-radius:8px;padding:4px 10px;font-size:14px;line-height:1}
+.test-ord-btn:hover{background:rgba(201,162,39,.25)}
+.test-ord-btn:active{transform:scale(.95)}
+@media (max-width:520px){
+  .test-q-opt-img{max-width:100%;max-height:120px}
+}
+
+/* --- Просмотр попытки: сравнение порядка --- */
+.ad-q-order{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
+.ad-q-order>div{flex:1;min-width:220px}

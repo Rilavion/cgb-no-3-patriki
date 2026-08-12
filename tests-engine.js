@@ -195,6 +195,9 @@ window.CGB_TESTS=(function(){
       let ok=false;
       if(q.kind==="single"){
         ok=(user!=null)&&correct.length===1&&correct[0]===user;
+      } else if(q.kind==="order"){
+        const uArr=Array.isArray(user)?user:[];
+        ok=uArr.length===correct.length&&uArr.every((v,i)=>v===correct[i]);
       } else if(q.kind==="multi"){
         const uArr=Array.isArray(user)?user:[];
         const uSet=new Set(uArr);

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 [data-staff]{display:none !important}
@@ -188,17 +188,17 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
 
 <div class="fab-stack"><button class="fab" id="fabUp" title="Наверх"><svg viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8z"/></svg></button></div>
 
-<script src="supabase-loader.js?v=15"></script>
-<script src="config.js?v=15"></script>
-<script src="auth.js?v=15"></script>
-<script src="roles-engine.js?v=15"></script>
-<script src="tests-engine.js?v=15"></script>
-<script src="main.js?v=15"></script>
-<script src="search-engine.js?v=15"></script>
-<script src="format-utils.js?v=15"></script>
-<script src="holiday-engine.js?v=15"></script>
-<script src="settings-panel.js?v=15"></script>
-<script src="sound-engine.js?v=15"></script>
+<script src="supabase-loader.js?v=16"></script>
+<script src="config.js?v=16"></script>
+<script src="auth.js?v=16"></script>
+<script src="roles-engine.js?v=16"></script>
+<script src="tests-engine.js?v=16"></script>
+<script src="main.js?v=16"></script>
+<script src="search-engine.js?v=16"></script>
+<script src="format-utils.js?v=16"></script>
+<script src="holiday-engine.js?v=16"></script>
+<script src="settings-panel.js?v=16"></script>
+<script src="sound-engine.js?v=16"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -409,9 +409,21 @@ async function openAttempt(id){
   </div>`);
   body.push(`<div class="ad-qs">`);
   for(const q of qs){
+    if(q.kind==="prefilled") continue;
     const u=ans[q.id];
     const cor=q.correct||[];
     const uArr=Array.isArray(u)?u:(u==null?[]:[u]);
+    if(q.kind==="order"){
+      const ok=uArr.length===cor.length&&uArr.every((v,i)=>v===cor[i]);
+      body.push(`<div class="ad-q ${ok?"ad-q-ok":"ad-q-bad"}">
+        <div class="ad-q-text"><b>${esc(q.text)}</b> <span class="tq-pts">${q.points||1} б.</span> <span class="msg-help">(расставить по порядку)</span></div>
+        <div class="ad-q-order">
+          <div><div class="msg-help" style="margin-bottom:4px">Правильный порядок:</div>${cor.map((o,i)=>`<div class="ad-q-opt is-correct">${i+1}. ${esc(o)}</div>`).join("")}</div>
+          <div><div class="msg-help" style="margin-bottom:4px">Ответ пользователя:</div>${uArr.length?uArr.map((o,i)=>`<div class="ad-q-opt ${cor[i]===o?"is-correct":"is-user"}">${cor[i]===o?"✓":"✗"} ${i+1}. ${esc(o)}</div>`).join(""):'<div class="ad-q-opt">—</div>'}</div>
+        </div>
+      </div>`);
+      continue;
+    }
     const ok=q.kind==="single"?(cor.length===1&&cor[0]===u):(cor.length===uArr.length&&cor.every(x=>uArr.includes(x)));
     body.push(`<div class="ad-q ${ok?"ad-q-ok":"ad-q-bad"}">
       <div class="ad-q-text"><b>${esc(q.text)}</b> <span class="tq-pts">${q.points||1} б.</span></div>

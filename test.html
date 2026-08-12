@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
@@ -43,13 +43,13 @@
   <div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span><span class="footer-note">🐞 Нашли баг? Обратитесь: <b>@rilavion</b></span></div></div>
 </footer>
 
-<script src="supabase-loader.js?v=15"></script>
-<script src="config.js?v=15"></script>
-<script src="auth.js?v=15"></script>
-<script src="tests-engine.js?v=15"></script>
-<script src="main.js?v=15"></script>
-<script src="search-engine.js?v=15"></script>
-<script src="format-utils.js?v=15"></script>
+<script src="supabase-loader.js?v=16"></script>
+<script src="config.js?v=16"></script>
+<script src="auth.js?v=16"></script>
+<script src="tests-engine.js?v=16"></script>
+<script src="main.js?v=16"></script>
+<script src="search-engine.js?v=16"></script>
+<script src="format-utils.js?v=16"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -158,15 +158,35 @@ function renderQuestions(){
       return;
     }
     vidx++;
+    if(q.kind==="order"){
+      const base=(q.correct&&q.correct.length?q.correct:q.options||[]).slice();
+      let items=base.slice();
+      for(let k=items.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[items[k],items[j]]=[items[j],items[k]]}
+      if(items.length>1&&items.every((v,i)=>v===base[i])) items.reverse();
+      html.push(`<div class="test-q" data-qid="${q.id}">
+        <div class="test-q-num">Вопрос ${vidx} из ${graded.length} <span class="tq-pts">${q.points||1} балл${(q.points||1)>1?"а":""}</span></div>
+        <div class="test-q-text">${esc(q.text).replace(/\n/g,"<br>")}</div>
+        ${(q.images||[]).length?`<div class="test-q-images">${q.images.map(u=>`<img src="${esc(u)}" alt="" onerror="this.style.display='none'">`).join("")}</div>`:""}
+        <div class="te-hint" style="margin:8px 0 4px">↕ Расставьте пункты в правильном порядке (кнопки ↑ / ↓)</div>
+        <div class="test-q-order" data-ord="${q.id}">
+          ${items.map(t=>`<div class="test-ord-item" data-val="${esc(t)}">
+            <span class="test-ord-num"></span>
+            <span class="test-ord-txt">${esc(t)}</span>
+            <span class="test-ord-btns"><button type="button" class="test-ord-btn" data-ord-up>↑</button><button type="button" class="test-ord-btn" data-ord-dn>↓</button></span>
+          </div>`).join("")}
+        </div>
+      </div>`);
+      return;
+    }
     html.push(`<div class="test-q" data-qid="${q.id}">
       <div class="test-q-num">Вопрос ${vidx} из ${graded.length} <span class="tq-pts">${q.points||1} балл${(q.points||1)>1?"а":""}</span></div>
       <div class="test-q-text">${esc(q.text).replace(/\n/g,"<br>")}</div>
       ${(q.images||[]).length?`<div class="test-q-images">${q.images.map(u=>`<img src="${esc(u)}" alt="" onerror="this.style.display='none'">`).join("")}</div>`:""}
       <div class="test-q-opts">
-        ${(q.options||[]).map(o=>`<label class="test-q-opt">
+        ${(q.options||[]).map((o,oi)=>{const oim=(q.option_images||[])[oi];return `<label class="test-q-opt">
           <input type="${q.kind==="multi"?"checkbox":"radio"}" name="q_${q.id}" value="${esc(o)}">
-          <span>${esc(o)}</span>
-        </label>`).join("")}
+          <span><span class="test-q-opt-txt">${esc(o)}</span>${oim?`<img class="test-q-opt-img" src="${esc(oim)}" alt="" onerror="this.style.display='none'">`:""}</span>
+        </label>`}).join("")}
       </div>
     </div>`);
   });
@@ -178,15 +198,29 @@ function renderQuestions(){
   </div>`);
   root.innerHTML=html.join("");
   document.querySelectorAll(".test-q-opts input").forEach(inp=>inp.addEventListener("change",updateProgress));
+  document.querySelectorAll("[data-ord]").forEach(box=>{
+    renumberOrder(box);
+    box.querySelectorAll(".test-ord-btn").forEach(btn=>btn.addEventListener("click",()=>{
+      const item=btn.closest(".test-ord-item");
+      if(btn.hasAttribute("data-ord-up")&&item.previousElementSibling) item.parentNode.insertBefore(item,item.previousElementSibling);
+      if(btn.hasAttribute("data-ord-dn")&&item.nextElementSibling) item.parentNode.insertBefore(item.nextElementSibling,item);
+      renumberOrder(box);
+    }));
+  });
   $("tSubmitBtn").addEventListener("click",submitTest);
   updateProgress();
   if(DEADLINE) startTimer();
+}
+
+function renumberOrder(box){
+  box.querySelectorAll(".test-ord-item").forEach((el,i)=>{const n=el.querySelector(".test-ord-num");if(n)n.textContent=(i+1)+"."});
 }
 
 function updateProgress(){
   const graded=ACTIVE_QS.filter(q=>q.kind!=="prefilled");
   let done=0;
   for(const q of graded){
+    if(q.kind==="order"){done++;continue}
     const inputs=document.querySelectorAll(`input[name="q_${q.id}"]:checked`);
     if(inputs.length) done++;
   }
@@ -212,6 +246,7 @@ async function submitTest(auto){
   if(!auto){
     let missed=0;
     for(const q of gradedQs){
+      if(q.kind==="order") continue;
       const inputs=document.querySelectorAll(`input[name="q_${q.id}"]:checked`);
       if(!inputs.length) missed++;
     }
@@ -219,6 +254,11 @@ async function submitTest(auto){
   }
   for(const q of ACTIVE_QS){
     if(q.kind==="prefilled"){ANSWERS[q.id]=q.prefilled_value||"";continue}
+    if(q.kind==="order"){
+      const box=document.querySelector(`[data-ord="${q.id}"]`);
+      ANSWERS[q.id]=box?Array.from(box.querySelectorAll(".test-ord-item")).map(el=>el.dataset.val):[];
+      continue;
+    }
     const inputs=document.querySelectorAll(`input[name="q_${q.id}"]:checked`);
     if(q.kind==="single") ANSWERS[q.id]=inputs.length?inputs[0].value:null;
     else ANSWERS[q.id]=Array.from(inputs).map(i=>i.value);

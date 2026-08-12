@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 body.cgb-is-admin [data-admin]{display:initial !important}
@@ -97,6 +97,7 @@ body.cgb-is-admin [data-admin]{display:initial !important}
           <div class="te-add-panel">
             <button class="btn btn-gold btn-sm" data-q-add-type="single">🔘 Один ответ</button>
             <button class="btn btn-gold btn-sm" data-q-add-type="multi">☑ Несколько ответов</button>
+            <button class="btn btn-gold btn-sm" data-q-add-type="order" title="Пункты в правильном порядке — ученик расставляет их стрелками">↕ Расставьте по порядку</button>
             <button class="btn btn-ghost btn-sm" data-q-add-type="prefilled" title="Обязательное поле с предустановленным ответом (например «Звание: Ефрейтор»)">📌 Предустановленное поле</button>
           </div>
 
@@ -167,14 +168,14 @@ body.cgb-is-admin [data-admin]{display:initial !important}
 
 <footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span><span class="footer-note">🐞 Нашли баг? Обратитесь: <b>@rilavion</b></span></div></div></footer>
 
-<script src="supabase-loader.js?v=15"></script>
-<script src="config.js?v=15"></script>
-<script src="auth.js?v=15"></script>
-<script src="roles-engine.js?v=15"></script>
-<script src="tests-engine.js?v=15"></script>
-<script src="main.js?v=15"></script>
-<script src="search-engine.js?v=15"></script>
-<script src="format-utils.js?v=15"></script>
+<script src="supabase-loader.js?v=16"></script>
+<script src="config.js?v=16"></script>
+<script src="auth.js?v=16"></script>
+<script src="roles-engine.js?v=16"></script>
+<script src="tests-engine.js?v=16"></script>
+<script src="main.js?v=16"></script>
+<script src="search-engine.js?v=16"></script>
+<script src="format-utils.js?v=16"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -366,11 +367,12 @@ function renderQs(){
 function renderQItem(q,i){
   const isOpen=EXPANDED_QID===q.id;
   const isPre=q.kind==="prefilled";
-  const kindLabel=isPre?"📌 Предустановлено":(q.kind==="multi"?"☑ Несколько":"🔘 Один");
-  const opts=q.options||[];const cor=q.correct||[];
+  const isOrd=q.kind==="order";
+  const kindLabel=isPre?"📌 Предустановлено":(isOrd?"↕ По порядку":(q.kind==="multi"?"☑ Несколько":"🔘 Один"));
+  const opts=q.options||[];const cor=q.correct||[];const oImgs=q.option_images||[];
   const summary=isPre
     ? `<div class="te-q-opts"><span class="tq-opt tq-opt-c">${esc(q.prefilled_value||"—")}</span></div>`
-    : `<div class="te-q-opts">${opts.map(o=>`<span class="tq-opt ${cor.includes(o)?"tq-opt-c":""}">${cor.includes(o)?"✓ ":""}${esc(o)}</span>`).join("")}</div>`;
+    : `<div class="te-q-opts">${opts.map((o,oi)=>`<span class="tq-opt ${!isOrd&&cor.includes(o)?"tq-opt-c":""}">${!isOrd&&cor.includes(o)?"✓ ":""}${oImgs[oi]?"🖼 ":""}${isOrd?(oi+1)+". ":""}${esc(o)}</span>`).join("")}</div>`;
   return `<div class="te-q-item ${isOpen?"te-q-open":""} ${isPre?"te-q-pre":""}" data-qid="${q.id}">
     <div class="te-q-head" data-q-toggle="${q.id}">
       <div class="te-q-num">#${i+1}</div>
@@ -404,21 +406,58 @@ function renderQEditor(q){
   }
   const opts=q.options&&q.options.length?q.options:["",""];
   const cor=q.correct||[];
-  return `<div class="te-q-edit">
+  const oImgs=q.option_images||[];
+  if(q.kind==="order"){
+    return `<div class="te-q-edit">
+      <div class="form-group"><label>Текст вопроса *</label><textarea data-qf="text" class="msg-input msg-textarea msg-textarea-sm" placeholder="Что нужно расставить по порядку?">${esc(q.text||"")}</textarea></div>
+      <div class="form-group">
+        <label>Пункты <span class="msg-help">вводи в ПРАВИЛЬНОМ порядке — ученику они будут показаны вперемешку</span></label>
+        <div class="q-opt-list" data-q-opts="${q.id}">
+          ${opts.map((o,i)=>`<div class="q-opt-row">
+            <span class="q-ord-pos">${i+1}.</span>
+            <div class="q-opt-row-fields"><input type="text" class="msg-input q-opt-text" value="${esc(o)}" placeholder="Пункт ${i+1}"></div>
+            <button type="button" class="btn btn-ghost btn-sm q-opt-del">×</button>
+          </div>`).join("")}
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm q-opt-add" data-q-optadd="${q.id}" style="margin-top:6px">+ Добавить пункт</button>
+      </div>
+      <div class="form-group">
+        <label>Изображения к вопросу (URL, по одному на строку, опц.)</label>
+        <textarea data-qf="images" class="msg-input msg-textarea msg-textarea-sm" placeholder="https://...">${esc((q.images||[]).join("\n"))}</textarea>
+      </div>
+      <div class="msg-row">
+        <div class="form-group msg-flex-1"><label>Баллы (засчитывается только полностью верный порядок)</label><input type="number" data-qf="points" class="msg-input" min="1" value="${q.points||1}"></div>
+        <div class="form-group msg-flex-1"><label>Порядок</label><input type="number" data-qf="sort" class="msg-input" value="${q.sort||100}"></div>
+      </div>
+      <div class="te-q-actions">
+        <div class="form-msg" data-qmsg></div>
+        <div style="flex:1"></div>
+        <button class="btn btn-ghost btn-sm" data-q-cancel="${q.id}">Отмена</button>
+        <button class="btn btn-gold btn-sm" data-q-save="${q.id}">💾 Сохранить</button>
+      </div>
+    </div>`;
+  }
+  const optImgOn=oImgs.some(Boolean);
+  return `<div class="te-q-edit${optImgOn?" optimg-on":""}">
     <div class="form-group"><label>Текст вопроса *</label><textarea data-qf="text" class="msg-input msg-textarea msg-textarea-sm" placeholder="Что спрашиваем?">${esc(q.text||"")}</textarea></div>
     <div class="form-group">
       <label>Варианты ответа <span class="msg-help">Нажмите ☑ для правильных</span></label>
       <div class="q-opt-list" data-q-opts="${q.id}">
         ${opts.map((o,i)=>`<div class="q-opt-row">
           <input type="${q.kind==="multi"?"checkbox":"radio"}" name="cor_${q.id}" ${cor.includes(o)?"checked":""}>
-          <input type="text" class="msg-input q-opt-text" value="${esc(o)}" placeholder="Вариант ${i+1}">
+          <div class="q-opt-row-fields">
+            <input type="text" class="msg-input q-opt-text" value="${esc(o)}" placeholder="Вариант ${i+1}">
+            <input type="text" class="msg-input q-opt-img" value="${esc(oImgs[i]||"")}" placeholder="URL картинки для этого варианта (опц.)">
+          </div>
           <button type="button" class="btn btn-ghost btn-sm q-opt-del">×</button>
         </div>`).join("")}
       </div>
       <button type="button" class="btn btn-ghost btn-sm q-opt-add" data-q-optadd="${q.id}" style="margin-top:6px">+ Добавить вариант</button>
+      <div style="margin-top:8px"><label style="cursor:pointer;font-size:13px"><input type="checkbox" data-qoptimg="${q.id}" ${optImgOn?"checked":""} style="margin-right:6px">🖼 Добавить к каждому варианту изображение?</label>
+      <div class="te-hint">Включи — под каждым вариантом появится поле для ссылки на картинку. Ссылки добавляются через URL.</div></div>
     </div>
     <div class="form-group">
-      <label>Изображения (URL, по одному на строку, опц.)</label>
+      <label>Изображения к вопросу (URL, по одному на строку, опц.)</label>
       <textarea data-qf="images" class="msg-input msg-textarea msg-textarea-sm" placeholder="https://...">${esc((q.images||[]).join("\n"))}</textarea>
     </div>
     <div class="msg-row">
@@ -459,11 +498,24 @@ function bindQItems(){
     const kind=q.kind;
     const row=document.createElement("div");
     row.className="q-opt-row";
-    row.innerHTML=`<input type="${kind==="multi"?"checkbox":"radio"}" name="cor_${q.id}">
-      <input type="text" class="msg-input q-opt-text" placeholder="Новый вариант">
-      <button type="button" class="btn btn-ghost btn-sm q-opt-del">×</button>`;
+    if(kind==="order"){
+      row.innerHTML=`<span class="q-ord-pos"></span>
+        <div class="q-opt-row-fields"><input type="text" class="msg-input q-opt-text" placeholder="Новый пункт"></div>
+        <button type="button" class="btn btn-ghost btn-sm q-opt-del">×</button>`;
+    }else{
+      row.innerHTML=`<input type="${kind==="multi"?"checkbox":"radio"}" name="cor_${q.id}">
+        <div class="q-opt-row-fields">
+          <input type="text" class="msg-input q-opt-text" placeholder="Новый вариант">
+          <input type="text" class="msg-input q-opt-img" placeholder="URL картинки для этого варианта (опц.)">
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm q-opt-del">×</button>`;
+    }
     box.appendChild(row);
     bindOptDelete(box);
+  }));
+  document.querySelectorAll("[data-qoptimg]").forEach(cb=>cb.addEventListener("change",()=>{
+    const ed=cb.closest(".te-q-edit");
+    if(ed) ed.classList.toggle("optimg-on",cb.checked);
   }));
   document.querySelectorAll("[data-q-opts]").forEach(box=>bindOptDelete(box));
 }
@@ -517,19 +569,33 @@ async function saveQuestion(qid){
     else if(k==="points"||k==="sort") patch[k]=parseInt(el.value)||(k==="points"?1:100);
     else patch[k]=el.value;
   });
-  if(q.kind!=="prefilled"){
+  if(q.kind==="order"){
     const rows=item.querySelectorAll(".q-opt-row");
-    const opts=[],cor=[];
+    const opts=[];
+    rows.forEach(r=>{
+      const t=r.querySelector(".q-opt-text").value.trim();
+      if(!t) return;
+      opts.push(t);
+    });
+    if(opts.length<2){setQMsg(item,"error","Нужно минимум 2 пункта");return}
+    patch.options=opts;patch.correct=opts.slice();patch.option_images=[];
+  } else if(q.kind!=="prefilled"){
+    const rows=item.querySelectorAll(".q-opt-row");
+    const wantOptImgs=(()=>{const cb=item.querySelector("[data-qoptimg]");return cb?cb.checked:false})();
+    const opts=[],cor=[],optImgs=[];
     rows.forEach(r=>{
       const t=r.querySelector(".q-opt-text").value.trim();
       if(!t) return;
       opts.push(t);
       const inp=r.querySelector("input[type=radio],input[type=checkbox]");
       if(inp&&inp.checked) cor.push(t);
+      const im=r.querySelector(".q-opt-img");
+      optImgs.push(wantOptImgs&&im?im.value.trim():"");
     });
     if(opts.length<2){setQMsg(item,"error","Нужно минимум 2 варианта");return}
     if(!cor.length){setQMsg(item,"error","Отметьте хотя бы один правильный");return}
     patch.options=opts;patch.correct=cor;
+    patch.option_images=wantOptImgs?optImgs:[];
   } else {
     if(!patch.text.trim()){setQMsg(item,"error","Введите название поля");return}
   }
