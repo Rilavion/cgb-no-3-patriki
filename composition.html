@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="logo.png" type="image/png">
 <link rel="apple-touch-icon" href="logo.png">
-<title>Состав - ЦГБ №3 · ЦГБ №3</title>
+<title>Состав — ЦГБ №3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 body.cgb-is-admin .nav a[data-admin],body.cgb-is-admin .footer-col a[data-admin]{display:inline-flex !important}
@@ -106,6 +106,7 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
           <p>Командование и подразделения больницы.</p>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap" id="adminBar" class="admin-only">
+          <button class="btn btn-ghost btn-sm" id="ranksBtn">🗂 Категории</button>
           <button class="btn btn-ghost btn-sm" id="editModeBtn">✎ Режим редактирования</button>
           <button class="btn btn-gold btn-sm" id="exportPngBtn" style="display:none">📸 Скопировать иерархию (PNG)</button>
         </div>
@@ -210,6 +211,20 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
 
 <div class="toast" id="toast"></div>
 
+<div class="modal-back" id="ranksModal">
+  <div class="modal modal-xl">
+    <button class="modal-close" aria-label="Закрыть">✕</button>
+    <h3>🗂 Категории состава</h3>
+    <div class="modal-sub" id="ranksSub" style="max-width:760px;margin-left:auto;margin-right:auto;text-align:center">Порядок в списке = старшинство: верхняя категория — самая старшая. Категории общие для всех подразделений и командования.</div>
+    <div id="ranksList" style="display:flex;flex-direction:column;gap:8px;margin:14px auto;max-width:760px;width:100%"></div>
+    <div style="display:flex;gap:8px;margin:0 auto 6px;max-width:760px;width:100%">
+      <input id="rankNewLabel" class="msg-input" placeholder="Название новой категории (например: Зав. отделением)" style="flex:1">
+      <button class="btn btn-gold btn-sm" id="rankAddBtn" type="button">＋ Добавить</button>
+    </div>
+    <div class="form-msg" id="ranksMsg" style="max-width:760px;margin-left:auto;margin-right:auto;text-align:center"></div>
+  </div>
+</div>
+
 <div class="modal-back" id="exportModal">
   <div class="modal modal-lg" style="max-width:1000px;width:96vw">
     <button class="modal-close" aria-label="Закрыть">✕</button>
@@ -239,23 +254,23 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
 </div>
 
 <script src="html2canvas.min.js?v=4"></script>
-<script src="supabase-loader.js?v=10"></script>
-<script src="config.js?v=10"></script>
-<script src="main.js?v=10"></script>
-<script src="format-utils.js?v=10"></script>
-<script src="holiday-engine.js?v=10"></script>
-<script src="settings-panel.js?v=10"></script>
-<script src="sound-engine.js?v=10"></script>
-<script src="faq-engine.js?v=10"></script>
-<script src="search-engine.js?v=10"></script>
-<script src="ds-cache.js?v=10"></script>
-<script src="notify-engine.js?v=10"></script>
-<script src="notify-live.js?v=10"></script>
-<script src="auth.js?v=10"></script>
-<script src="roles-engine.js?v=10"></script>
-<script src="select-enhance.js?v=10"></script>
-<script src="image-compress.js?v=10"></script>
-<script src="composition-engine.js?v=10"></script>
+<script src="supabase-loader.js?v=11"></script>
+<script src="config.js?v=11"></script>
+<script src="main.js?v=11"></script>
+<script src="format-utils.js?v=11"></script>
+<script src="holiday-engine.js?v=11"></script>
+<script src="settings-panel.js?v=11"></script>
+<script src="sound-engine.js?v=11"></script>
+<script src="faq-engine.js?v=11"></script>
+<script src="search-engine.js?v=11"></script>
+<script src="ds-cache.js?v=11"></script>
+<script src="notify-engine.js?v=11"></script>
+<script src="notify-live.js?v=11"></script>
+<script src="auth.js?v=11"></script>
+<script src="roles-engine.js?v=11"></script>
+<script src="select-enhance.js?v=11"></script>
+<script src="image-compress.js?v=11"></script>
+<script src="composition-engine.js?v=11"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 
@@ -293,14 +308,22 @@ function shade(hex,percent){
   return "#"+((r<<16)|(g<<8)|b).toString(16).padStart(6,"0");
 }
 
+function ranksOf(){return (STATE&&Array.isArray(STATE.ranks))?STATE.ranks:[]}
+function rankInfoOf(m){
+  const r=CGB_COMP.rankInfo(m&&m.rank,ranksOf());
+  if(r.found) return r;
+  const lbl=(m&&m.rank_label)||"";
+  return {key:(m&&m.rank)||"",label:lbl,short:lbl,tier:999,found:false};
+}
+
 function memberCardHtml(sub,m,origIdx,color){
-  const r=CGB_COMP.rankInfo(m.rank);
+  const r=rankInfoOf(m);
   const hasPhoto=!!(m&&m.photo);
   const drag=editing?`draggable="true" data-drag-src="${sub.id}::${origIdx}"`:"";
   return `<div class="hier-member ${editing?"is-draggable":""}" style="--m-color:${color}" ${drag}>
     <div class="hier-member-photo ${hasPhoto?"":"no-photo"}">
       ${hasPhoto?`<img src="${esc(m.photo)}" alt="" style="${photoStyle(m)}">`:`<span class="hier-officer-initials">${esc(initials(m.name||""))}</span>`}
-      <div class="hier-member-rank-tag" style="background:${color}">${esc(r.label)}</div>
+      ${r.label?`<div class="hier-member-rank-tag" style="background:${color}">${esc(r.label)}</div>`:""}
     </div>
     <div class="hier-member-body">
       <div class="hier-member-name">${esc(m.name)}</div>
@@ -331,7 +354,7 @@ function ensureGridPositions(sub){
     }
   });
   if(!anyPlaced){
-    const sorted=arr.slice().sort((a,b)=>CGB_COMP.rankInfo(a.rank).tier-CGB_COMP.rankInfo(b.rank).tier);
+    const sorted=arr.slice().sort((a,b)=>rankInfoOf(a).tier-rankInfoOf(b).tier);
     let idx=0;
     sorted.forEach(m=>{
       m.grid_row=Math.floor(idx/cols);
@@ -404,13 +427,13 @@ function render(){
   const cmdHasPhoto=!!(cmd&&cmd.photo);
   const cmdFilled=!!cmd.name;
   const cmdSlot=(STATE.hq_slots||[]).find(s=>s.key==="cmd_brigade")||{};
-  const cmdBadge=cmdSlot.badge||"Ген-Майор";
+  const cmdBadge=cmdSlot.badge||"";
   const cmdCard=`<div class="hier-cmd">
     <div class="hier-cmd-inner">
       <div class="hier-cmd-badge">Главный врач больницы</div>
       <div class="hier-officer-photo hier-cmd-photo ${cmdHasPhoto?"":"no-photo"}">
         ${cmdHasPhoto?`<img src="${esc(cmd.photo)}" alt="" style="${photoStyle(cmd)}">`:`<span class="hier-officer-initials">${cmdFilled?esc(initials(cmd.name)):"—"}</span>`}
-        <div class="hier-officer-role-tag">${esc(cmdBadge)}</div>
+        ${cmdBadge?`<div class="hier-officer-role-tag">${esc(cmdBadge)}</div>`:""}
       </div>
       <div class="hier-cmd-body">
         <div class="hier-cmd-name">${cmdFilled?esc(cmd.name):`<span style="opacity:.5">Вакансия</span>`}</div>
@@ -435,7 +458,7 @@ function render(){
         return `<div class="hier-officer ${filled?"":"hier-officer-empty"}" data-hq="${slot.key}">
           <div class="hier-officer-photo ${hasPhoto?"":"no-photo"}">
             ${hasPhoto?`<img src="${esc(p.photo)}" alt="" style="${photoStyle(p)}">`:`<span class="hier-officer-initials">${filled?esc(initials(p.name)):"—"}</span>`}
-            <div class="hier-officer-role-tag">${esc(slot.badge)}</div>
+            ${slot.badge?`<div class="hier-officer-role-tag">${esc(slot.badge)}</div>`:""}
           </div>
           <div class="hier-officer-body">
             <div class="hier-officer-role">${esc(slot.label)}</div>
@@ -1040,7 +1063,7 @@ function bindPhotoField(form){
 }
 
 function openHqEdit(key,isNew){
-  const slot=isNew?{key:"",label:"",badge:"Зам. Гл-Врача",tier:2}:(STATE.hq_slots||[]).find(s=>s.key===key);
+  const slot=isNew?{key:"",label:"",badge:"",tier:2}:(STATE.hq_slots||[]).find(s=>s.key===key);
   if(!slot) return;
   const p=isNew?{}:(STATE.hq[key]||{});
   $("pModalTitle").textContent=isNew?"Новая должность в штабе":slot.label;
@@ -1048,11 +1071,11 @@ function openHqEdit(key,isNew){
   const canEditMeta=isNew||!slot.locked;
   pFields.innerHTML=`
     ${canEditMeta?`
-    <div class="form-group"><label>Название должности</label><input name="label" value="${esc(slot.label||"")}" placeholder="Зам. по связи" required></div>
-    <div class="form-group"><label>Категория должности (бейдж)</label><input name="badge" value="${esc(slot.badge||"")}" placeholder="Зам. Гл-Врача"></div>
+    <div class="form-group"><label>Название должности</label><input name="label" value="${esc(slot.label||"")}" placeholder="Зам. по медицинской части" required></div>
+    <div class="form-group"><label>Категория должности (бейдж)</label><input name="badge" value="${esc(slot.badge||"")}" placeholder="Свободный текст, можно оставить пустым"></div>
     `:`
     <div class="form-group" style="opacity:.6;font-size:12px">Должность: <b>${esc(slot.label)}</b> (защищена от изменений)</div>
-    <div class="form-group"><label>Категория должности (бейдж)</label><input name="badge" value="${esc(slot.badge||"")}" placeholder="Гл-Врач"></div>
+    <div class="form-group"><label>Категория должности (бейдж)</label><input name="badge" value="${esc(slot.badge||"")}" placeholder="Свободный текст, можно оставить пустым"></div>
     `}
     <div class="form-group"><label>ФИО</label><input name="name" value="${esc(p.name||"")}" placeholder="Иван Иванов"></div>
     <div class="form-group"><label>Статик / Код</label><input name="code" value="${esc(p.code||"")}" placeholder="123-456"></div>
@@ -1068,14 +1091,21 @@ function openHqEdit(key,isNew){
 
 function openMemberEdit(subId,memberIdx){
   const sub=STATE.subs.find(s=>s.id===subId);if(!sub) return;
-  const m=memberIdx>=0?sub.members[memberIdx]:{rank:"maj",name:"",code:"",role:"",photo:""};
+  const m=memberIdx>=0?sub.members[memberIdx]:{rank:"",rank_label:"",name:"",code:"",role:"",photo:""};
+  const ranks=ranksOf();
+  const inList=ranks.some(r=>r.key===m.rank);
+  const legacyLabel=m.rank_label||m.rank||"";
+  const legacyOpt=(!inList&&legacyLabel)?`<option value="${esc(m.rank||"")}" selected>${esc(legacyLabel)} (нет в списке)</option>`:"";
   $("pModalTitle").textContent=(memberIdx>=0?"Изменить":"Новый участник")+" · "+sub.name;
   pForm.ctx.value=`member:${subId}:${memberIdx}`;
   pFields.innerHTML=`
     <div class="form-group"><label>Категория</label>
       <select name="rank" class="form-select-custom">
-        ${CGB_COMP.RANKS.map(r=>`<option value="${r.key}" ${r.key===m.rank?"selected":""}>${esc(r.label)}</option>`).join("")}
+        <option value="">— без категории —</option>
+        ${legacyOpt}
+        ${ranks.map(r=>`<option value="${esc(r.key)}" ${(inList&&r.key===m.rank)?"selected":""}>${esc(r.label)}</option>`).join("")}
       </select>
+      ${!ranks.length?`<div style="margin-top:6px;font-size:12px;color:var(--muted)">Список категорий пуст — добавьте их через кнопку «🗂 Категории» над иерархией.</div>`:""}
     </div>
     <div class="form-group"><label>ФИО</label><input name="name" value="${esc(m.name||"")}" required></div>
     <div class="form-group"><label>Должность / роль</label><input name="role" value="${esc(m.role||"")}" placeholder="Зав. отделением"></div>
@@ -1106,12 +1136,15 @@ pForm.addEventListener("submit",async e=>{
   }else if(ctx[0]==="hqnew"){
     if(!data.label){pForm.querySelector(".form-msg").className="form-msg error";pForm.querySelector(".form-msg").textContent="Укажите название должности";return}
     const newKey="hq_"+Math.random().toString(36).slice(2,8);
-    STATE.hq_slots.push({key:newKey,label:data.label,badge:data.badge||"Зам. Гл-Врача",tier:2});
+    STATE.hq_slots.push({key:newKey,label:data.label,badge:data.badge||"",tier:2});
     STATE.hq[newKey]={name:data.name,code:data.code,tag:data.tag,photo:data.photo,photo_zoom:parseFloat(data.photo_zoom)||1,photo_x:parseFloat(data.photo_x)||50,photo_y:parseFloat(data.photo_y)||50};
   }else{
     const sub=STATE.subs.find(s=>s.id===ctx[1]);if(!sub) return;
     const idx=parseInt(ctx[2]);
-    const m={rank:data.rank,name:data.name,code:data.code,comm:data.comm,role:data.role,photo:data.photo,photo_zoom:parseFloat(data.photo_zoom)||1,photo_x:parseFloat(data.photo_x)||50,photo_y:parseFloat(data.photo_y)||50};
+    const rankSel=pForm.querySelector('select[name="rank"]');
+    const selOpt=rankSel?rankSel.options[rankSel.selectedIndex]:null;
+    const selLabel=selOpt?String(selOpt.textContent||"").replace(/\s*\(нет в списке\)\s*$/,"").trim():"";
+    const m={rank:data.rank,rank_label:data.rank?selLabel:"",name:data.name,code:data.code,comm:data.comm,role:data.role,photo:data.photo,photo_zoom:parseFloat(data.photo_zoom)||1,photo_x:parseFloat(data.photo_x)||50,photo_y:parseFloat(data.photo_y)||50};
     if(idx>=0){
       const old=sub.members[idx];
       if(old){if(typeof old.grid_row==="number") m.grid_row=old.grid_row;if(typeof old.grid_col==="number") m.grid_col=old.grid_col}
@@ -1166,6 +1199,80 @@ sDel.addEventListener("click",async()=>{
   STATE.subs=STATE.subs.filter(s=>s.id!==id);
   await CGB_COMP.save(STATE);
   sModal.classList.remove("active");render();showToast("Удалено","success");
+});
+
+/* ---------- Кастомные категории (ранги) ---------- */
+const rModal=$("ranksModal"),rList=$("ranksList"),rMsg=$("ranksMsg"),rInput=$("rankNewLabel");
+function renderRanksList(){
+  const ranks=ranksOf();
+  if(!ranks.length){
+    rList.innerHTML=`<div style="padding:16px;border:1.5px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13px;text-align:center">Категорий пока нет. Добавьте первую ниже — например: «Зав. отделением», «Ст. врач», «Врач», «Интерн»…</div>`;
+    return;
+  }
+  rList.innerHTML=ranks.map((r,i)=>`
+    <div style="display:flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card-bg)">
+      <span style="color:var(--muted);font-size:11px;min-width:22px;text-align:center;font-weight:700">${i+1}</span>
+      <input class="msg-input" data-rank-rename="${esc(r.key)}" value="${esc(r.label)}" style="flex:1;min-height:34px">
+      <span style="display:flex;gap:4px;flex-shrink:0">
+        <button type="button" class="mini-icon-btn" data-rank-move="${i}:-1" title="Выше (старше)" ${i===0?"disabled":""}>↑</button>
+        <button type="button" class="mini-icon-btn" data-rank-move="${i}:1" title="Ниже (младше)" ${i===ranks.length-1?"disabled":""}>↓</button>
+        <button type="button" class="mini-icon-btn danger" data-rank-del="${esc(r.key)}" title="Удалить категорию">×</button>
+      </span>
+    </div>`).join("");
+}
+function saveRanks(msg){
+  rMsg.className="form-msg";rMsg.textContent="Сохранение...";
+  CGB_COMP.save(STATE).then(res=>{
+    rMsg.className="form-msg";rMsg.textContent=res&&res.remote===false?"Сохранено локально (нет связи с базой)":"";
+    render();renderRanksList();
+    if(msg) showToast(msg,"success");
+  }).catch(err=>{rMsg.className="form-msg error";rMsg.textContent="Ошибка сохранения: "+err.message});
+}
+$("ranksBtn").addEventListener("click",()=>{
+  if(!STATE){showToast("Ещё грузится...","error");return}
+  rMsg.className="form-msg";rMsg.textContent="";rInput.value="";renderRanksList();rModal.classList.add("active");
+});
+rModal.addEventListener("click",e=>{if(e.target===rModal) rModal.classList.remove("active")});
+rModal.querySelector(".modal-close").addEventListener("click",()=>rModal.classList.remove("active"));
+$("rankAddBtn").addEventListener("click",()=>{
+  const label=rInput.value.trim();
+  if(!label){rMsg.className="form-msg error";rMsg.textContent="Введите название категории";return}
+  if(!Array.isArray(STATE.ranks)) STATE.ranks=[];
+  STATE.ranks.push({key:CGB_COMP.rankUid(),label:label,short:label});
+  rInput.value="";rMsg.className="form-msg";rMsg.textContent="";
+  saveRanks("Категория добавлена");
+});
+rInput.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("rankAddBtn").click()}});
+rList.addEventListener("click",e=>{
+  const mv=e.target.closest("[data-rank-move]");
+  if(mv){
+    if(mv.disabled) return;
+    const parts=mv.dataset.rankMove.split(":");const i=parseInt(parts[0]),d=parseInt(parts[1]);
+    const j=i+d;
+    if(j<0||j>=STATE.ranks.length) return;
+    const t=STATE.ranks[i];STATE.ranks[i]=STATE.ranks[j];STATE.ranks[j]=t;
+    saveRanks("Порядок обновлён");return;
+  }
+  const del=e.target.closest("[data-rank-del]");
+  if(del){
+    const key=del.dataset.rankDel;
+    const rk=STATE.ranks.find(r=>r.key===key);if(!rk) return;
+    let used=0;(STATE.subs||[]).forEach(s=>(s.members||[]).forEach(m=>{if(m.rank===key) used++}));
+    if(!confirm(`Удалить категорию «${rk.label}»?${used?`\nОна назначена участникам: ${used} чел. — у них останется просто текстовая метка.`:""}`)) return;
+    STATE.ranks=STATE.ranks.filter(r=>r.key!==key);
+    (STATE.subs||[]).forEach(s=>(s.members||[]).forEach(m=>{if(m&&m.rank===key){m.rank_label=rk.label;m.rank=""}}));
+    saveRanks("Категория удалена");return;
+  }
+});
+rList.addEventListener("change",e=>{
+  const rn=e.target.closest("[data-rank-rename]");
+  if(!rn) return;
+  const rk=STATE.ranks.find(r=>r.key===rn.dataset.rankRename);if(!rk) return;
+  const v=rn.value.trim();
+  if(!v){rn.value=rk.label;return}
+  if(v===rk.label) return;
+  rk.label=v;rk.short=v;
+  saveRanks("Категория переименована");
 });
 
 hier.addEventListener("click",e=>{

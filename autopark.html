@@ -9,25 +9,59 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 body.cgb-is-admin .nav a[data-admin],body.cgb-is-admin .footer-col a[data-admin]{display:inline-flex !important}
 body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
 </style>
 <style>
-/* ===== Автопарк: фотогалерея ===== */
-.gal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:8px}
+/* ===== Автопарк: фотогалерея =====
+   Карточка подстраивается под РЕАЛЬНЫЙ размер картинки (а не наоборот),
+   поэтому сетка — masonry на CSS-колонках: высота каждого элемента = высоте его фото. */
+.gal-grid{columns:3;column-gap:18px;margin-top:8px}
+.gal-grid .empty-state{column-span:all}
 .gal-item{
-  position:relative;border-radius:20px;overflow:hidden;cursor:zoom-in;
-  border:1px solid var(--line);background:var(--card-bg);aspect-ratio:4/3;
+  position:relative;border-radius:20px;overflow:hidden;cursor:pointer;
+  border:1px solid var(--line);
+  margin:0 0 18px;break-inside:avoid;
+  /* красивый анимированный задний фон за фото (фото без фона) */
+  background:
+    radial-gradient(120% 90% at 15% 10%,rgba(34,211,238,.20),rgba(34,211,238,0) 55%),
+    radial-gradient(110% 90% at 85% 90%,rgba(76,124,238,.16),rgba(76,124,238,0) 55%),
+    radial-gradient(90% 70% at 60% 40%,rgba(52,211,153,.10),rgba(52,211,153,0) 60%),
+    linear-gradient(165deg,#0b1f2e 0%,#071423 60%,#050e18 100%);
+  background-size:220% 220%,220% 220%,200% 200%,100% 100%;
+  animation:galAurora 16s ease-in-out infinite;
+  animation-delay:calc(var(--gi,0)*-2.4s);
   transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s,border-color .35s;
 }
+@keyframes galAurora{
+  0%{background-position:0% 0%,100% 100%,50% 0%,0 0}
+  50%{background-position:100% 100%,0% 0%,30% 100%,0 0}
+  100%{background-position:0% 0%,100% 100%,50% 0%,0 0}
+}
+.gal-item::before{ /* мягкий световой блик, медленно проплывающий по карточке */
+  content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;pointer-events:none;z-index:1;
+  background:linear-gradient(100deg,rgba(255,255,255,0) 0%,rgba(190,240,252,.09) 45%,rgba(255,255,255,0) 100%);
+  transform:skewX(-14deg);
+  animation:galShine 9s ease-in-out infinite;
+  animation-delay:calc(var(--gi,0)*-1.8s);
+}
+@keyframes galShine{0%{left:-70%}55%{left:130%}100%{left:130%}}
+[data-theme="light"] .gal-item{
+  background:
+    radial-gradient(120% 90% at 15% 10%,rgba(14,116,144,.14),rgba(14,116,144,0) 55%),
+    radial-gradient(110% 90% at 85% 90%,rgba(76,124,238,.10),rgba(76,124,238,0) 55%),
+    radial-gradient(90% 70% at 60% 40%,rgba(22,163,120,.08),rgba(22,163,120,0) 60%),
+    linear-gradient(165deg,#f0f8fc 0%,#e4eff6 60%,#dbe8f1 100%);
+  background-size:220% 220%,220% 220%,200% 200%,100% 100%;
+}
 .gal-item:hover{transform:translateY(-5px);border-color:var(--gold);box-shadow:0 18px 44px rgba(14,116,144,.22)}
-.gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
-.gal-item:hover img{transform:scale(1.06)}
+/* картинка задаёт размер элемента: без приближения и обрезки */
+.gal-item img{width:100%;height:auto;display:block;filter:drop-shadow(0 12px 18px rgba(0,0,0,.35))}
 .gal-del{
-  position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:10px;border:none;
+  position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:10px;border:none;z-index:2;
   display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;
   background:rgba(8,20,28,.72);color:#fca5a5;backdrop-filter:blur(6px);
   opacity:0;transform:translateY(-4px);transition:.25s;
@@ -35,7 +69,7 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
 .gal-item:hover .gal-del{opacity:1;transform:translateY(0)}
 .gal-del:hover{background:rgba(180,40,50,.85);color:#fff}
 .gal-zoom-hint{
-  position:absolute;left:10px;bottom:10px;padding:5px 11px;border-radius:999px;font-size:10.5px;font-weight:700;
+  position:absolute;left:10px;bottom:10px;padding:5px 11px;border-radius:999px;font-size:10.5px;font-weight:700;z-index:2;
   letter-spacing:.08em;text-transform:uppercase;color:#eaf6fa;background:rgba(8,20,28,.66);backdrop-filter:blur(6px);
   opacity:0;transition:.25s;pointer-events:none;
 }
@@ -67,8 +101,8 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
 .gal-l-prev{left:22px;top:50%;transform:translateY(-50%)}
 .gal-l-next{right:22px;top:50%;transform:translateY(-50%)}
 .gal-l-count{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:#9fc3d2;font-size:13px;font-weight:600;letter-spacing:.1em}
-@media(max-width:1100px){.gal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:640px){.gal-grid{grid-template-columns:1fr}.gal-light-btn{width:40px;height:40px}}
+@media(max-width:1100px){.gal-grid{columns:2}}
+@media(max-width:640px){.gal-grid{columns:1}.gal-light-btn{width:40px;height:40px}}
 @media print{.gal-light,.site-set-btn,.site-set-panel{display:none !important}}
 </style>
 </head>
@@ -233,22 +267,22 @@ body.cgb-is-admin .footer-col a[data-admin]{display:block !important}
   <div class="gal-l-count" id="galCount"></div>
 </div>
 
-<script src="supabase-loader.js?v=10"></script>
-<script src="config.js?v=10"></script>
-<script src="auth.js?v=10"></script>
-<script src="roles-engine.js?v=10"></script>
-<script src="main.js?v=10"></script>
-<script src="format-utils.js?v=10"></script>
-<script src="holiday-engine.js?v=10"></script>
-<script src="sound-engine.js?v=10"></script>
-<script src="settings-panel.js?v=10"></script>
-<script src="faq-engine.js?v=10"></script>
-<script src="search-engine.js?v=10"></script>
-<script src="ds-cache.js?v=10"></script>
-<script src="notify-engine.js?v=10"></script>
-<script src="notify-live.js?v=10"></script>
-<script src="image-compress.js?v=10"></script>
-<script src="autopark-engine.js?v=10"></script>
+<script src="supabase-loader.js?v=11"></script>
+<script src="config.js?v=11"></script>
+<script src="auth.js?v=11"></script>
+<script src="roles-engine.js?v=11"></script>
+<script src="main.js?v=11"></script>
+<script src="format-utils.js?v=11"></script>
+<script src="holiday-engine.js?v=11"></script>
+<script src="sound-engine.js?v=11"></script>
+<script src="settings-panel.js?v=11"></script>
+<script src="faq-engine.js?v=11"></script>
+<script src="search-engine.js?v=11"></script>
+<script src="ds-cache.js?v=11"></script>
+<script src="notify-engine.js?v=11"></script>
+<script src="notify-live.js?v=11"></script>
+<script src="image-compress.js?v=11"></script>
+<script src="autopark-engine.js?v=11"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 
@@ -287,9 +321,9 @@ function render(){
     return;
   }
   grid.innerHTML=PHOTOS.map((p,i)=>`
-    <div class="gal-item" data-i="${i}">
+    <div class="gal-item" data-i="${i}" style="--gi:${i%6}">
       <img src="${esc(p.image)}" alt="Фото автопарка ЦГБ №3" loading="lazy">
-      <span class="gal-zoom-hint">🔍 Открыть</span>
+      <span class="gal-zoom-hint">⤢ Открыть</span>
       ${can?`<button class="gal-del" data-del="${i}" title="Удалить фото">✕</button>`:""}
     </div>`).join("");
 }

@@ -1,22 +1,24 @@
 window.CGB_COMP=(function(){
-  const RANKS=[
-    {key:"gen_maj",label:"Гл-Врач",short:"Гл-В",tier:1},
-    {key:"gen_lt",label:"Зам. Гл-Врача",short:"ЗГВ",tier:1},
-    {key:"col",label:"Зав-Отделением",short:"ЗО",tier:2},
-    {key:"lt_col",label:"Ст-Врач",short:"СВ",tier:3},
-    {key:"maj",label:"Врач",short:"Вр",tier:4},
-    {key:"capt",label:"Интерн",short:"Инт",tier:5},
-    {key:"lt",label:"Фельдшер",short:"Фел",tier:6}
-  ];
+  /* Категории (ранги) — полностью кастомные, хранятся в state.ranks.
+     Дефолтного списка больше нет: администратор добавляет свои категории
+     через кнопку «🗂 Категории» на странице состава. */
+
+  /* Легаси-маппинг старых захардкоженных ключей — только для одноразовой
+     миграции text-меток существующих участников (rank_label), чтобы
+     карточки не «слетели» после включения кастомных категорий. */
+  const LEGACY_RANK_LABELS={
+    gen_maj:"Гл-Врач",gen_lt:"Зам. Гл-Врача",col:"Зав-Отделением",
+    lt_col:"Ст-Врач",maj:"Врач",capt:"Интерн",lt:"Фельдшер"
+  };
 
   const DEFAULT_HQ_SLOTS=[
-    {key:"cmd_brigade",label:"Главный врач",badge:"Гл-Врач",tier:1,locked:true},
-    {key:"first_deputy",label:"Первый заместитель главврача",badge:"Зам. Гл-Врача",tier:2},
-    {key:"chief_staff",label:"Зам. по медицинской части",badge:"Зам. Гл-Врача",tier:2},
-    {key:"deputy_vp_vk",label:"Зам. по кадрам",badge:"Зам. Гл-Врача",tier:2},
-    {key:"deputy_sso_roio",label:"Зам. по клинико-экспертной работе",badge:"Зам. Гл-Врача",tier:2},
-    {key:"deputy_mch",label:"Зам. по адм.-хоз. части",badge:"Зам. Гл-Врача",tier:2},
-    {key:"assistant",label:"Помощник главврача",badge:"Ст-Врач",tier:3}
+    {key:"cmd_brigade",label:"Главный врач",badge:"",tier:1,locked:true},
+    {key:"first_deputy",label:"Первый заместитель главврача",badge:"",tier:2},
+    {key:"chief_staff",label:"Зам. по медицинской части",badge:"",tier:2},
+    {key:"deputy_vp_vk",label:"Зам. по кадрам",badge:"",tier:2},
+    {key:"deputy_sso_roio",label:"Зам. по клинико-экспертной работе",badge:"",tier:2},
+    {key:"deputy_mch",label:"Зам. по адм.-хоз. части",badge:"",tier:2},
+    {key:"assistant",label:"Помощник главврача",badge:"",tier:3}
   ];
 
   const SUB_PRESETS={
@@ -29,48 +31,23 @@ window.CGB_COMP=(function(){
   };
 
   const DEFAULT_STATE={
+    ranks:[],
     hq_slots:JSON.parse(JSON.stringify(DEFAULT_HQ_SLOTS)),
-    hq:{
-      cmd_brigade:{name:"Ян Милонов",code:"376-939",tag:"главврач",photo:""},
-      first_deputy:{name:"Эдвард Милонов",code:"617-798",tag:"первый зам",photo:""},
-      chief_staff:{name:"Николай Фирсов",code:"571-179",tag:"зам. по медчасти",photo:""},
-      deputy_vp_vk:{name:"Александр Милонов",code:"227-368",tag:"зам. по кадрам",photo:""},
-      deputy_sso_roio:{name:"",code:"",tag:"зам. по КЭР",photo:""},
-      deputy_mch:{name:"",code:"",tag:"зам. по АХЧ",photo:""},
-      assistant:{name:"Иридий Милонов",code:"753-294",tag:"помощник",photo:""}
-    },
-    subs:[
-      {id:"vp",name:"Администрация больницы",short:"АБ",color:"#c94b4b",icon:"🏛",members:[
-        {rank:"lt_col",name:"Анна Милонова",code:"395-957",role:"Руководитель АБ",photo:""},
-        {rank:"maj",name:"Дмитрий Милонов",code:"487-898",role:"Старший администратор",photo:""},
-        {rank:"maj",name:"Максим Милонов",code:"877-506",role:"Администратор",photo:""}
-      ]},
-      {id:"vk",name:"Отдел кадров",short:"ОК",color:"#4b6dc9",icon:"📋",members:[
-        {rank:"lt_col",name:"Евгений Милонов 54",code:"737-054",role:"Начальник отдела кадров",photo:""},
-        {rank:"maj",name:"Марина Милонова",code:"705-377",role:"Зам. начальника ОК",photo:""},
-        {rank:"maj",name:"Алик Милонов",code:"301-420",role:"Специалист по кадрам",photo:""},
-        {rank:"maj",name:"Алексей Милонов",code:"826-970",role:"Инспектор ОК",photo:""}
-      ]},
-      {id:"sso",name:"Служба скорой помощи",short:"СП",color:"#2f7a52",icon:"🚑",members:[
-        {rank:"lt_col",name:"Владислав Милонов",code:"982-671",role:"Зав. службой скорой помощи",photo:""},
-        {rank:"maj",name:"Кира Милонова",code:"895-214",role:"Старший врач выездной бригады",photo:""},
-        {rank:"maj",name:"Егор Милонов",code:"812-635",role:"Врач выездной бригады",photo:""}
-      ]},
-      {id:"roio",name:"Служба охраны больницы",short:"СО",color:"#c78a2a",icon:"🛡",members:[
-        {rank:"lt_col",name:"Георгий Милонов",code:"105-547",role:"Начальник охраны",photo:""},
-        {rank:"maj",name:"Евгений Милонов 80",code:"552-580",role:"Старший охранник",photo:""},
-        {rank:"maj",name:"Андрей Милонов",code:"848-254",role:"Старший охранник",photo:""}
-      ]},
-      {id:"mch",name:"Приёмное отделение",short:"ПО",color:"#a34a8e",icon:"⚕",members:[
-        {rank:"lt_col",name:"Данила Донецкий",code:"556-484",role:"Зав. приёмным отделением",photo:""},
-        {rank:"maj",name:"Александр Тугодумов",code:"981-182",role:"Врач приёмного отделения",photo:""}
-      ]}
-    ],
+    hq:{},
+    subs:[],
     updated_at:null
   };
 
   function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-  function rankInfo(k){return RANKS.find(r=>r.key===k)||{key:k,label:k,short:k,tier:9}}
+
+  /* Поиск категории по ключу в списке state.ranks.
+     tier = позиция в списке (чем выше в списке, тем старше категория). */
+  function rankInfo(k,ranks){
+    const list=Array.isArray(ranks)?ranks:[];
+    const i=list.findIndex(r=>r&&r.key===k);
+    if(i>=0) return {key:k,label:list[i].label||k,short:list[i].short||list[i].label||k,tier:i+1,found:true};
+    return {key:k,label:k,short:k,tier:999,found:false};
+  }
 
   function waitReady(){
     return new Promise(resolve=>{
@@ -91,6 +68,24 @@ window.CGB_COMP=(function(){
     }
     if(!st.hq) st.hq={};
     if(!st.subs) st.subs=[];
+    if(!Array.isArray(st.ranks)) st.ranks=[];
+    // нормализация категорий
+    st.ranks=st.ranks.filter(r=>r&&r.key&&r.label).map(r=>({key:String(r.key),label:String(r.label),short:String(r.short||r.label)}));
+    // миграция легаси-рангов: ставим участникам текстовую метку,
+    // если её категория не существует в кастомном списке
+    (st.subs||[]).forEach(sub=>{
+      (sub.members||[]).forEach(m=>{
+        if(!m) return;
+        const found=st.ranks.some(r=>r.key===m.rank);
+        if(!found){
+          if(!m.rank_label){
+            m.rank_label=LEGACY_RANK_LABELS[m.rank]||(m.rank&&m.rank!=="none"?m.rank:"");
+          }
+        }else{
+          // категория есть — следом подтянем актуальный label при показе
+        }
+      });
+    });
     return st;
   }
   async function load(){
@@ -142,6 +137,7 @@ window.CGB_COMP=(function(){
   }
 
   function uid(){return "s_"+Math.random().toString(36).slice(2,9)}
+  function rankUid(){return "rk_"+Math.random().toString(36).slice(2,9)}
 
-  return {RANKS,DEFAULT_HQ_SLOTS,DEFAULT_STATE,SUB_PRESETS,load,save,uploadPhoto,esc,rankInfo,uid};
+  return {DEFAULT_HQ_SLOTS,DEFAULT_STATE,SUB_PRESETS,LEGACY_RANK_LABELS,load,save,migrate,uploadPhoto,esc,rankInfo,uid,rankUid};
 })();
