@@ -158,7 +158,7 @@ const KIND_OPTIONS=["Предупреждение","Выговор","Бесед�
 // иначе форму нельзя отправить: сайт требует kind, а срок нужен для «Дисц. заключения».
 function effectiveFields(){
   const fs=Array.isArray(CUR&&CUR.fields)?CUR.fields.slice():[];
-  if(!fs.some(f=>f&&f.key==="kind")) fs.unshift({key:"kind",label:"Вид наказания",type:"select",required:true,options:KIND_OPTIONS,help:"Добавлено автоматически — в шаблоне поля «kind» не было"});
+  if(!fs.some(f=>f&&f.key==="kind")) fs.unshift({key:"kind",label:"Вид наказания",type:"select",required:true,options:KIND_OPTIONS,help:""});
   if(!fs.some(f=>f&&f.key==="confinement_minutes")) fs.push({key:"confinement_minutes",label:"Срок дисц. заключения (минут)",type:"number",required:false,help:"Заполняется только для «Дисциплинарного заключения»"});
   return fs;
 }
