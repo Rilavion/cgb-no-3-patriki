@@ -73,9 +73,17 @@ window.CGB_TESTS=(function(){
   }
   async function saveQuestion(row){
     const c=await client();if(!c) return {ok:false,error:"no client"};
-    const {data,error}=await c.from("test_questions").upsert(row).select().single();
+    let res=await c.from("test_questions").upsert(row).select().single();
+    let droppedOptImgs=false;
+    // Страховка: если в базе ещё нет колонки option_images (не выполнен
+    // SUPABASE-FIX.sql), сохраняем вопрос без картинок вариантов, а не роняем форму.
+    if(res.error&&/Could not find the 'option_images' column/i.test(res.error.message||"")){
+      const row2=Object.assign({},row);delete row2.option_images;droppedOptImgs=true;
+      res=await c.from("test_questions").upsert(row2).select().single();
+    }
+    const {data,error}=res;
     if(error) return {ok:false,error:error.message};
-    return {ok:true,row:data};
+    return {ok:true,row:data,droppedOptImgs};
   }
   async function removeQuestion(id){
     const c=await client();if(!c) return {ok:false,error:"no client"};
