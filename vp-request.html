@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
@@ -131,20 +131,20 @@
 
 <footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span><span class="footer-note">🐞 Нашли баг? Обратитесь: <b>@rilavion</b></span></div></div></footer>
 
-<script src="supabase-loader.js?v=13"></script>
-<script src="config.js?v=13"></script>
-<script src="auth.js?v=13"></script>
-<script src="roles-engine.js?v=13"></script>
-<script src="ds-autocomplete.js?v=13"></script>
-<script src="main.js?v=13"></script>
-<script src="format-utils.js?v=13"></script>
-<script src="holiday-engine.js?v=13"></script>
-<script src="settings-panel.js?v=13"></script>
-<script src="sound-engine.js?v=13"></script>
-<script src="search-engine.js?v=13"></script>
-<script src="ds-cache.js?v=13"></script>
-<script src="notify-engine.js?v=13"></script>
-<script src="notify-live.js?v=13"></script>
+<script src="supabase-loader.js?v=14"></script>
+<script src="config.js?v=14"></script>
+<script src="auth.js?v=14"></script>
+<script src="roles-engine.js?v=14"></script>
+<script src="ds-autocomplete.js?v=14"></script>
+<script src="main.js?v=14"></script>
+<script src="format-utils.js?v=14"></script>
+<script src="holiday-engine.js?v=14"></script>
+<script src="settings-panel.js?v=14"></script>
+<script src="sound-engine.js?v=14"></script>
+<script src="search-engine.js?v=14"></script>
+<script src="ds-cache.js?v=14"></script>
+<script src="notify-engine.js?v=14"></script>
+<script src="notify-live.js?v=14"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -152,6 +152,22 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 
 const LS_KEY="cgb_vpq_draft_v1";
 const KIND_MAP={"Предупреждение":"warn","Выговор":"reproach","Беседа с АБ":"talk","Беседа с ВП":"talk","Дисциплинарное заключение":"confinement","Отстранение":"uval","Увал":"uval"};
+const KIND_CODES=["warn","reproach","talk","confinement","uval"];
+const KIND_OPTIONS=["Предупреждение","Выговор","Беседа с АБ","Дисциплинарное заключение","Отстранение"];
+// Если в шаблоне нет служебных полей (вид наказания / срок заключения) — подставляем сами,
+// иначе форму нельзя отправить: сайт требует kind, а срок нужен для «Дисц. заключения».
+function effectiveFields(){
+  const fs=Array.isArray(CUR&&CUR.fields)?CUR.fields.slice():[];
+  if(!fs.some(f=>f&&f.key==="kind")) fs.unshift({key:"kind",label:"Вид наказания",type:"select",required:true,options:KIND_OPTIONS,help:"Добавлено автоматически — в шаблоне поля «kind» не было"});
+  if(!fs.some(f=>f&&f.key==="confinement_minutes")) fs.push({key:"confinement_minutes",label:"Срок дисц. заключения (минут)",type:"number",required:false,help:"Заполняется только для «Дисциплинарного заключения»"});
+  return fs;
+}
+function updateConfVisibility(){
+  const kindEl=$("vpqF_kind"), confEl=$("vpqF_confinement_minutes");
+  if(!confEl||!kindEl) return;
+  const grp=confEl.closest(".form-group");
+  if(grp) grp.style.display=(kindEl.value==="Дисциплинарное заключение")?"":"none";
+}
 let FORMS=[], CUR=null;
 
 async function boot(){
@@ -186,12 +202,15 @@ function selectForm(id){
 }
 
 function renderFields(){
-  const fields=Array.isArray(CUR.fields)?CUR.fields:[];
+  const fields=effectiveFields();
   const html=`<div class="cf-group">
     <div class="cf-group-title">📝 ${esc(CUR.label)}</div>
     <div class="cf-group-body">${fields.map(f=>renderField(f)).join("")}</div>
   </div>`;
   $("vpqDynamic").innerHTML=html;
+  const kindEl=$("vpqF_kind");
+  if(kindEl) kindEl.addEventListener("change",updateConfVisibility);
+  updateConfVisibility();
 }
 function renderField(f){
   const key=esc(f.key||""), lbl=esc(f.label||f.key||"—");
@@ -216,7 +235,7 @@ function renderField(f){
 }
 
 function collect(){
-  const fields=Array.isArray(CUR.fields)?CUR.fields:[];
+  const fields=effectiveFields();
   const values={}; const missing=[];
   for(const f of fields){
     const el=$("vpqF_"+f.key); if(!el) continue;
@@ -232,7 +251,7 @@ function saveDraft(){
     const s={form:CUR&&CUR.id, fio:$("vpqFio").value, static:$("vpqStatic").value, pos:$("vpqPos").value, tfio:$("vpqTFio").value, tstatic:$("vpqTStatic").value};
     if(CUR){
       s.values={};
-      for(const f of (CUR.fields||[])){
+      for(const f of effectiveFields()){
         const el=$("vpqF_"+f.key); if(!el) continue;
         s.values[f.key]=f.type==="checkbox"?el.checked:el.value;
       }
@@ -253,6 +272,7 @@ function restoreDraft(){
         const el=$("vpqF_"+k); if(!el) continue;
         if(el.type==="checkbox") el.checked=!!s.values[k]; else el.value=s.values[k]||"";
       }
+      updateConfVisibility();
     }
   }catch(e){}
 }
@@ -278,7 +298,7 @@ $("vpqSend").addEventListener("click",async()=>{
   if(missing.length){ msg.className="stats-copy-msg err"; msg.textContent="Заполни: "+missing.join(", "); return; }
 
   const kindHuman=values.kind||"";
-  const kind=KIND_MAP[kindHuman];
+  const kind=KIND_MAP[kindHuman]||(KIND_CODES.includes(kindHuman)?kindHuman:null);
   if(!kind){ msg.className="stats-copy-msg err"; msg.textContent="Выбери вид наказания"; return; }
   const confMin=kind==="confinement"?parseInt(values.confinement_minutes)||0:null;
   if(kind==="confinement" && (!confMin||confMin<=0)){ msg.className="stats-copy-msg err"; msg.textContent="Для «Дисц. заключения» укажи срок в минутах"; return; }
