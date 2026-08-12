@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=14">
+<link rel="stylesheet" href="style.css?v=15">
 <style id="cgb-admin-guard">
 [data-admin]{display:none !important}
 [data-staff]{display:none !important}
@@ -302,22 +302,22 @@ body.cgb-is-staff [data-staff]:not(.nav a){display:initial !important}
 
 <footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span id="year"></span> · ЦГБ №3 · Центральная Городская</span><span class="footer-note">🐞 Нашли баг? Обратитесь: <b>@rilavion</b></span></div></div></footer>
 
-<script src="supabase-loader.js?v=14"></script>
-<script src="config.js?v=14"></script>
-<script src="ds-autocomplete.js?v=14"></script>
-<script src="main.js?v=14"></script>
-<script src="holiday-engine.js?v=14"></script>
-<script src="settings-panel.js?v=14"></script>
-<script src="sound-engine.js?v=14"></script>
-<script src="auth.js?v=14"></script>
-<script src="roles-engine.js?v=14"></script>
-<script src="search-engine.js?v=14"></script>
-<script src="ds-cache.js?v=14"></script>
-<script src="notify-engine.js?v=14"></script>
-<script src="notify-live.js?v=14"></script>
-<script src="format-utils.js?v=14"></script>
-<script src="complaints-engine.js?v=14"></script>
-<script src="registry-engine.js?v=14"></script>
+<script src="supabase-loader.js?v=15"></script>
+<script src="config.js?v=15"></script>
+<script src="ds-autocomplete.js?v=15"></script>
+<script src="main.js?v=15"></script>
+<script src="holiday-engine.js?v=15"></script>
+<script src="settings-panel.js?v=15"></script>
+<script src="sound-engine.js?v=15"></script>
+<script src="auth.js?v=15"></script>
+<script src="roles-engine.js?v=15"></script>
+<script src="search-engine.js?v=15"></script>
+<script src="ds-cache.js?v=15"></script>
+<script src="notify-engine.js?v=15"></script>
+<script src="notify-live.js?v=15"></script>
+<script src="format-utils.js?v=15"></script>
+<script src="complaints-engine.js?v=15"></script>
+<script src="registry-engine.js?v=15"></script>
 <script>
 document.getElementById("year").textContent=new Date().getFullYear();
 const $=id=>document.getElementById(id);
@@ -347,9 +347,12 @@ const VERDICTS=[
   {key:"warn",label:"Предупреждение",color:"#e6b800",icon:"⚠",req_comment:false,notify:true},
   {key:"reproach",label:"Выговор",color:"#e67e22",icon:"‼",req_comment:false,notify:true},
   {key:"talk",label:"Беседа с АБ",color:"#38bdf8",icon:"💬",req_comment:false,notify:true},
-  {key:"confinement",label:"Дисциплинарное заключение",color:"#9b59b6",icon:"🔒",req_comment:false,notify:true,confinement:true},
   {key:"uval",label:"Отстранение",color:"#e74c3c",icon:"⛔",req_comment:false,notify:true}
 ];
+// Виды, которые можно выбрать при редактировании запроса на наказание.
+// «confinement» (дисц. заключение) тут нет — вид убран из обращения,
+// но старые записи с ним в списках отображаются корректно.
+const EDITABLE_KINDS=["warn","reproach","talk","uval"];
 
 const FIELD_LABELS={
   submitter_fio:"ФИО заявителя",
@@ -484,6 +487,7 @@ function openVpReqModal(id){
     </div>
     ${v.kind==="confinement"&&v.confinement_minutes?`<div class="cr-tb-box" style="margin-top:10px"><div class="cr-tb-title">⏱ Срок</div><div class="cr-tb-body">${v.confinement_minutes} мин</div></div>`:""}
     ${extra.article?`<div class="cr-tb-box" style="margin-top:10px"><div class="cr-tb-title">📖 Статья</div><div class="cr-tb-body">${esc(extra.article)}</div></div>`:""}
+    ${extra.norms?`<div class="cr-tb-box" style="margin-top:10px"><div class="cr-tb-title">📜 Нарушенные нормы</div><div class="cr-tb-body">${esc(extra.norms).replace(/\n/g,"<br>")}</div></div>`:""}
     ${v.evidence_url?`<div class="cr-tb-box" style="margin-top:10px"><div class="cr-tb-title">🔗 Доказательства</div><div class="cr-tb-body"><a href="${esc(v.evidence_url)}" target="_blank" style="color:var(--gold)">Открыть →</a></div></div>`:""}
     <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
       ${canEdit?`<button class="btn btn-ghost btn-sm" id="crVpqEditBtn">✎ Редактировать</button>`:""}
@@ -516,18 +520,20 @@ async function reviewVpq(approve){
           if(v.kind==="confinement"&&v.confinement_minutes) expiresAt=new Date(Date.now()+v.confinement_minutes*60000).toISOString();
         }
       }catch(e){}
-      const {error}=await c.from("violations_registry").update({
+      const {data:upd,error}=await c.from("violations_registry").update({
         status:"active", reviewed_by_uid:u.id, reviewed_by_name:nm, reviewed_at:new Date().toISOString(),
         reviewer_comment:comment||null, expires_at:expiresAt, issued_by_name:v.requested_by_name
-      }).eq("id",v.id);
+      }).eq("id",v.id).select("id");
       if(error) throw error;
+      if(!upd||!upd.length) throw new Error("База не применила изменения (0 строк). Перезапусти SUPABASE-FIX.sql и повтори.");
       await c.from("violations_history").insert({violation_id:v.id, action:"approve", changed_by_uid:u.id, changed_by_name:nm, comment:comment||null, after_data:{status:"active"}});
     } else {
-      const {error}=await c.from("violations_registry").update({
+      const {data:upd,error}=await c.from("violations_registry").update({
         status:"refused", reviewed_by_uid:u.id, reviewed_by_name:nm, reviewed_at:new Date().toISOString(),
         reviewer_comment:comment, removed_at:new Date().toISOString(), removed_by_name:nm, removed_reason:"Отказ по запросу: "+comment
-      }).eq("id",v.id);
+      }).eq("id",v.id).select("id");
       if(error) throw error;
+      if(!upd||!upd.length) throw new Error("База не применила изменения (0 строк). Перезапусти SUPABASE-FIX.sql и повтори.");
       await c.from("violations_history").insert({violation_id:v.id, action:"refuse", changed_by_uid:u.id, changed_by_name:nm, comment:comment, after_data:{status:"refused"}});
     }
     document.getElementById("crVpReqModal").classList.remove("active");
@@ -536,37 +542,49 @@ async function reviewVpq(approve){
 }
 
 function openVpEdit(v){
+  // «confinement» из выбора убран; если у старой записи он был — показываем его как «замороженный» вариант, чтобы не потерять значение
+  const kindOpts=EDITABLE_KINDS.includes(v.kind)?EDITABLE_KINDS:[v.kind,...EDITABLE_KINDS];
+  const extra=v.request_extra||{};
   const html=`<h3>✎ Редактирование запроса</h3>
     <div class="form-group"><label>ФИО нарушителя</label><input class="msg-input" id="veTFio" value="${esc(v.target_fio||"")}"></div>
     <div class="form-group"><label>Статик нарушителя</label><input class="msg-input" id="veTStatic" value="${esc(v.target_static||"")}"></div>
     <div class="form-group"><label>Должность нарушителя</label><input class="msg-input" id="veTPos" value="${esc(v.target_position||"")}"></div>
-    <div class="form-group"><label>Вид наказания</label><select class="msg-input" id="veKind">${Object.entries(KIND_L).map(([k,l])=>`<option value="${k}" ${k===v.kind?"selected":""}>${KIND_I[k]} ${esc(l)}</option>`).join("")}</select></div>
+    <div class="form-group"><label>Вид наказания</label><select class="msg-input" id="veKind">${kindOpts.map(k=>`<option value="${k}" ${k===v.kind?"selected":""}>${KIND_I[k]||"•"} ${esc(KIND_L[k]||k)}</option>`).join("")}</select></div>
     <div class="form-group"><label>Срок (мин, для Дисц.закл.)</label><input type="number" class="msg-input" id="veConf" value="${v.confinement_minutes||0}"></div>
-    <div class="form-group"><label>Описание</label><textarea class="msg-input" id="veReason" rows="4">${esc(v.reason||"")}</textarea></div>
+    <div class="form-group"><label>Обстоятельства / Суть нарушения</label><textarea class="msg-input" id="veReason" rows="4">${esc(v.reason||"")}</textarea></div>
+    <div class="form-group"><label>Нарушенные нормы (ВУ ЦГБ №3, УК, ПК и иные)</label><textarea class="msg-input" id="veNorms" rows="3">${esc(extra.norms||"")}</textarea></div>
     <div class="form-group"><label>Ссылка на доказательства</label><input class="msg-input" id="veEv" value="${esc(v.evidence_url||"")}"></div>
     <div class="form-group"><label>Комментарий к правке (лог)</label><input class="msg-input" id="veLog" placeholder="Что и почему поменяли"></div>
     <div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-gold" id="veSave">💾 Сохранить</button><button class="btn btn-ghost btn-sm" id="veCancel">Отмена</button></div>`;
   $("crVpEditBody").innerHTML=html;
   document.getElementById("crVpReqModal").classList.remove("active");
   document.getElementById("crVpEditModal").classList.add("active");
+  const veKind=document.getElementById("veKind");
+  const veConfGrp=document.getElementById("veConf").closest(".form-group");
+  const updVeConf=()=>{veConfGrp.style.display=(veKind.value==="confinement")?"":"none"};
+  veKind.addEventListener("change",updVeConf); updVeConf();
   document.getElementById("veCancel").addEventListener("click",()=>document.getElementById("crVpEditModal").classList.remove("active"));
   document.getElementById("veSave").addEventListener("click",async()=>{
     const c=window.CGB_AUTH.state.client;
     const u=window.CGB_AUTH.state.user;
     const nm=(localStorage.getItem("cgb-my-display-name")||u.email);
-    const before={target_fio:v.target_fio,target_static:v.target_static,kind:v.kind,reason:v.reason,evidence_url:v.evidence_url,confinement_minutes:v.confinement_minutes,target_position:v.target_position};
+    const before={target_fio:v.target_fio,target_static:v.target_static,kind:v.kind,reason:v.reason,evidence_url:v.evidence_url,confinement_minutes:v.confinement_minutes,target_position:v.target_position,norms:extra.norms||null};
+    const afterExtra=Object.assign({},extra,{norms:document.getElementById("veNorms").value.trim()||null});
     const after={
       target_fio:document.getElementById("veTFio").value.trim(),
       target_static:document.getElementById("veTStatic").value.trim(),
       target_position:document.getElementById("veTPos").value.trim()||null,
-      kind:document.getElementById("veKind").value,
-      confinement_minutes:parseInt(document.getElementById("veConf").value)||null,
+      kind:veKind.value,
+      confinement_minutes:veKind.value==="confinement"?(parseInt(document.getElementById("veConf").value)||null):null,
       reason:document.getElementById("veReason").value.trim(),
-      evidence_url:document.getElementById("veEv").value.trim()||null
+      evidence_url:document.getElementById("veEv").value.trim()||null,
+      request_extra:afterExtra
     };
-    const {error}=await c.from("violations_registry").update(after).eq("id",v.id);
+    const {data:upd,error}=await c.from("violations_registry").update(after).eq("id",v.id).select("id");
     if(error){alert("Ошибка: "+error.message);return}
-    await c.from("violations_history").insert({violation_id:v.id, action:"edit", changed_by_uid:u.id, changed_by_name:nm, comment:document.getElementById("veLog").value.trim()||null, before_data:before, after_data:after});
+    if(!upd||!upd.length){alert("Правка не применилась (база вернула 0 строк).\nСкорее всего, у роли нет прав на изменение таблицы — перезапусти SUPABASE-FIX.sql в Supabase и повтори.");return}
+    const {error:hErr}=await c.from("violations_history").insert({violation_id:v.id, action:"edit", changed_by_uid:u.id, changed_by_name:nm, comment:document.getElementById("veLog").value.trim()||null, before_data:before, after_data:after});
+    if(hErr){alert("Правка сохранена, но запись в истории не создалась: "+hErr.message+"\n(перезапусти SUPABASE-FIX.sql — таблица history там гарантированно создаётся)")}
     document.getElementById("crVpEditModal").classList.remove("active");
     await loadAll();
   });
